@@ -14,7 +14,7 @@
                     <h1>Create Account</h1>
                     <input type="email" name="email" id="email" placeholder="Email">
                     <input type="password" name="password" id="password" placeholder="Password">
-                    <input type="password" name="confirm" id="confirm" placeholder="Re-enter Password">
+                    <input type="password" name="confirm" id="confirm" placeholder="Confirm Password">
                     <button type="submit" name="submit">
                         <span>
                             Next
