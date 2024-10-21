@@ -14,10 +14,18 @@
             $sql = "INSERT INTO user(email, password, date_created) VALUES (:email, :password, NOW());";
             $query = $this->conn->prepare($sql);
 
+            if($this->duplicate_record_exists('user', [
+                'email' => $email
+            ])){
+                return false;
+            }
+            
             $query->bindParam(":email",$email);
             $query->bindParam(":password",$hashed_password);
-
+            
             if($query->execute()){
+                $user_id = $this->conn->lastInsertId();
+                header('refresh: 2, url=profiling.php?user_id=' . $user_id);
                 return true;
             } else {
                 return false;

@@ -4,8 +4,7 @@
         
         function connect() {
             try {
-                $db = new PDO("mysql:host=localhost;dbname=opms;", "root", "");
-                echo "Connection Success!";
+                $this->connection = new PDO("mysql:host=localhost;dbname=opms;", "root", "");
             } catch (PDOException $e) {
                 echo "Connection Failed! " . $e->getMessage();
             }
