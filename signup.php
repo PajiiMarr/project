@@ -1,3 +1,15 @@
+<?php
+    session_start();
+    if (isset($_SESSION['user'])) {
+        if ($_SESSION['user']['facilitator_id'] == 1) {
+            header('Location: facilitator.php');
+        } else {
+            header('Location: student.php');
+        }
+        session_write_close();
+        exit;
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,15 +27,15 @@
 
                 $signupObj = new Signup;
 
-                session_start();
-
                 $email = $password = $confirm = "";
                 $emailErr = $passwordErr = $confirmErr = $overallErr = "";
                 $allinputsfield = true;
-                if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit'])){
+                if($_SERVER['REQUEST_METHOD'] == 'POST'){
                     $email = clean_input($_POST['email']);
                     $password = clean_input($_POST['password']);
                     $confirm = clean_input($_POST['confirm']);
+                    
+                    $_SESSION['step'] = 1;
 
                     if(empty($email)){
                         $emailErr = ' Email is required!';
@@ -48,12 +60,8 @@
                             $overallErr = ' Email exist!';
                         } else {
                             $signupObj->sign_up($email, $password);
-                            $success = true;
                         }
                     }
-
-
-
                 }
             ?>
             <div class="setup">
@@ -66,6 +74,7 @@
                     <span class="error"> <?= $passwordErr; ?></span>
                     <input type="password" name="confirm" id="confirm" placeholder="Confirm Password" value="<?= $confirm ?>">
                     <span class="error"> <?= $confirmErr; ?></span>
+                    <a href="login.php">Already have an account?</a>
                     <button type="submit" name="submit">
                         <span>
                             Next
