@@ -23,6 +23,13 @@
                     'is_facilitator' => $user['is_facilitator'],
                     'is_student' => $user['is_student']
                 ];
+                $date = date('Y-m-d H:i:s');
+                $sql_update = "UPDATE user SET date_updated = :date_updated WHERE user_id = :user_id;";
+                $query_update = $this->conn->prepare($sql_update);
+                $query_update->bindParam(':user_id', $_SESSION['user']['user_id']);
+                $query_update->bindParam(':date_updated', $date);
+                $query_update->execute();
+                
                 if ($user['is_facilitator'] == 1) {
                     header('Location: facilitator.php');
                 } else {
