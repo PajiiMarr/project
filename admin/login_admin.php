@@ -13,6 +13,10 @@ if (isset($_SESSION['user'])) {
     exit;
 }
 
+if(isset($_SESSION['admin_id'])){
+    header('Location: admin_home.php');
+}
+
 $admin_username = $admin_password = '';
 $admin_usernameErr = $admin_passwordErr = $overallErr = '';
 $allinputsfield = true;

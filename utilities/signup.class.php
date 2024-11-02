@@ -38,8 +38,7 @@
                 session_write_close();
                 exit;
             } else {
-                echo "Incorrect credentials!";
-                return false;
+                $_SESSION['incorrect_credentials'] = 'Incorrect Credentials';
             }
         }
 
