@@ -30,17 +30,6 @@ class Admin {
         }
     }
 
-    function viewOrgs(){
-        $sql = 'SELECT * FROM organization;';
-        $query = $this->conn->prepare($sql);
-        if($query->execute()){
-            $data = $query->fetchAll();
-        } else {
-            return false;
-        }
-        return $data;
-    }
-
     function orgDetails($organization_id){
         $sql = 'SELECT * FROM organization WHERE organization_id = :organization_id;';
         $query = $this->conn->prepare($sql);
@@ -52,22 +41,46 @@ class Admin {
         return $data;
     }
 
-    function viewStudents($organization_id, $payment_status){
-        $sql = 'SELECT student.*, payment.payment_status, payment.semester, organization.org_name
-                FROM payment 
-                JOIN student_organization ON payment.student_org_id = student_organization.stud_org_id
-                JOIN student ON student_organization.student_id = student.student_id
-                JOIN organization ON student_organization.organization_id = organization.organization_id
-                WHERE organizaion.organization_id = :organization_id AND payment.payment_status = :payment_status
-                ORDER BY student.last_name ASC;';
-        $query = $this->conn->prepare($sql);
-        if($query->execute()){
-            $data = $query->fetchAll();
-            return $data;
-        } else {
-            return null;
+    function viewStudents($course_id, $student_search = '', $student_filter = '') {
+        $sql = 'SELECT student.*, organization.org_name, user.status
+                FROM student 
+                JOIN user ON student.student_id = user.user_id
+                JOIN student_organization ON student.student_id = student_organization.student_id 
+                JOIN organization ON student_organization.organization_id = organization.organization_id 
+                WHERE student.course_id = :course_id';
+    
+        if (!empty($student_search)) {
+            $sql .= ' AND (student.first_name LIKE :search OR student.last_name LIKE :search)';
         }
+    
+        if (!empty($student_filter)) {
+            $validFilters = ['last_name', 'org_name', 'status'];
+            if (in_array($student_filter, $validFilters)) {
+                $sql .= " ORDER BY $student_filter ASC";
+            }
+        }
+    
+        $query = $this->conn->prepare($sql);
+        $query->bindParam(':course_id', $course_id);
+        
+        if (!empty($student_search)) {
+            $searchTerm = "%$student_search%";
+            $query->bindParam(':search', $searchTerm);
+        }
+        if ($query->execute()) {
+            $students = $query->fetchAll();
+            if (empty($students)) {
+                echo "No students found for course ID: $course_id";
+            } else {
+                return $students;
+            }
+        } else {
+            $errorInfo = $query->errorInfo();
+            echo "Query failed: " . $errorInfo[2];
+        }
+        
     }
+    
 
     function updatePayment($payment_id){
         $sql = "UPDATE payment SET payment_status = 'Paid', date_of_payment = NOW(), admin_id = 1 WHERE payment_id = :payment_id";
@@ -117,15 +130,15 @@ class Admin {
         }
     }
 
-    function allStudents(){
-        $sql = 'SELECT * FROM students';
-        $query = $this->conn->prepare($sql);
-        if($query->execute()){
-            return $query->fetchAll();
-        } else {
-            return null;
-        }
-    }
+    // function allStudents(){
+    //     $sql = 'SELECT * FROM students';
+    //     $query = $this->conn->prepare($sql);
+    //     if($query->execute()){
+    //         return $query->fetchAll();
+    //     } else {
+    //         return null;
+    //     }
+    // }
 
     function addOrganization($org_name, $org_description){
         $sql = "INSERT INTO organization(org_name, org_description, created_date)
@@ -137,15 +150,13 @@ class Admin {
         $query->execute();
         $organization_id = $this->conn->lastInsertId();
 
-        $allstudents = $this->allStudents();
-        foreach($allstudents as $as){
-            $sql_add_stud_org = "INSERT INTO student_organization(student_id, organization_id)
-                                 VALUES(:student_id, :organization_id);";
-            $query_add_stud_org = $this->conn->prepare($sql_add_stud_org);
-            $query_add_stud_org->bindParam(':student_id', $as['student_id']);
-            $query_add_stud_org->bindParam(':organization_id', $organization_id);
-            $query_add_stud_org->execute();
-        }
+        $sql_add_stud_org = "INSERT INTO student_organization (student_id, organization_id)
+                             SELECT student_id, :organization_id 
+                             FROM student 
+                             WHERE status = 'Active'";
+        $query_add_stud_org = $this->conn->prepare($sql_add_stud_org);
+        $query_add_stud_org->bindParam(':organization_id', $organization_id);
+        $query_add_stud_org->execute();
     }
 
     function removeOrganization($organization_id){
@@ -156,5 +167,36 @@ class Admin {
         $query->bindParam(':organization_id', $organization_id);
         $query->execute();
     }
+
+    function viewOrgsSearchAndFilter($search = null, $filter = null) {
+        $sql = 'SELECT organization.*, COUNT(facilitator.facilitator_id) AS facilitator_count
+                FROM organization
+                LEFT JOIN facilitator ON organization.organization_id = facilitator.organization_id';
+        
+        if (!empty($search)) {
+            $sql .= " WHERE organization.org_name LIKE :search";
+        }
+    
+        $sql .= ' GROUP BY organization.organization_id';
+    
+        $validFilters = ['org_name', 'facilitator_count', 'status'];
+        if (in_array($filter, $validFilters)) {
+            $sql .= " ORDER BY $filter ASC";
+        }
+    
+        $query = $this->conn->prepare($sql);
+    
+        if (!empty($search)) {
+            $searchTerm = "%$search%";
+            $query->bindParam(":search", $searchTerm);
+        }
+    
+        if ($query->execute()) {
+            return $query->fetchAll();
+        }
+        return false;
+    }
+    
+    
 }
 ?>

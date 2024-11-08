@@ -49,6 +49,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin | Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../allcss/admin_login.css">
 </head>
 <body>
@@ -62,12 +63,26 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
                 </div>
                 <div class="input">
                     Password <span class="required">* <?= $admin_passwordErr; ?></span><br>
-                    <input type="password" name="admin_password" id="admin_password" value="<?= $admin_password  ?>">
+                    <div style="position: relative;">
+                        <input type="password" name="admin_password" id="admin_password" value="<?= $admin_password ?>" style="width: 100%; padding-right: 30px;">
+                        <i class="fas fa-eye" id="togglePassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;"></i>
+                    </div>
                 </div>
                 <span class="required"><?= $overallErr; ?></span>
                 <input type="submit" value="Log in">
             </form>
         </div>
     </section>
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordField = document.getElementById('admin_password');
+            const passwordFieldType = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', passwordFieldType);
+            
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+    </script>
+
 </body>
 </html>
