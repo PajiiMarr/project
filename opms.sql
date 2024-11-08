@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 27, 2024 at 02:03 PM
+-- Generation Time: Nov 08, 2024 at 03:07 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.0.28
 
@@ -30,15 +30,16 @@ SET time_zone = "+00:00";
 CREATE TABLE `admin` (
   `admin_id` int(11) NOT NULL,
   `admin_username` varchar(50) NOT NULL,
-  `admin_password` varchar(50) NOT NULL
+  `admin_password` varchar(100) NOT NULL,
+  `date_updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `admin`
 --
 
-INSERT INTO `admin` (`admin_id`, `admin_username`, `admin_password`) VALUES
-(1, 'admin', 'ccs_admin_1234');
+INSERT INTO `admin` (`admin_id`, `admin_username`, `admin_password`, `date_updated`) VALUES
+(1, 'admin', '$2y$10$87RfoQxL13LD9xgxvQvEz.7AfxpXeAqCdQxPmd3bYEjqp1orUfZTC', '2024-11-08 13:02:04');
 
 -- --------------------------------------------------------
 
@@ -79,7 +80,8 @@ CREATE TABLE `facilitator` (
   `dob` date NOT NULL,
   `age` int(11) NOT NULL,
   `course_year` varchar(15) NOT NULL,
-  `course_section` text DEFAULT NULL
+  `course_section` text DEFAULT NULL,
+  `status` enum('Active','Inactive') NOT NULL DEFAULT 'Active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -91,16 +93,24 @@ CREATE TABLE `facilitator` (
 CREATE TABLE `organization` (
   `organization_id` int(11) NOT NULL,
   `org_name` varchar(100) DEFAULT NULL,
-  `admin_id` int(11) DEFAULT NULL
+  `admin_id` int(11) DEFAULT 1,
+  `org_description` varchar(255) NOT NULL,
+  `required_fee` decimal(10,2) DEFAULT NULL,
+  `total_collected` decimal(10,2) DEFAULT NULL,
+  `pending_balance` decimal(10,2) DEFAULT NULL,
+  `created_date` date NOT NULL,
+  `last_updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `contact_email` varchar(100) NOT NULL,
+  `status` enum('Active','Inactive') NOT NULL DEFAULT 'Active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `organization`
 --
 
-INSERT INTO `organization` (`organization_id`, `org_name`, `admin_id`) VALUES
-(1, 'Venom Publication', 1),
-(2, 'Gender Club', 1);
+INSERT INTO `organization` (`organization_id`, `org_name`, `admin_id`, `org_description`, `required_fee`, `total_collected`, `pending_balance`, `created_date`, `last_updated`, `contact_email`, `status`) VALUES
+(1, 'Venom Publication', 1, '', 70.00, 0.00, 0.00, '2019-10-01', '2024-10-29 12:18:08', '', 'Active'),
+(2, 'Gender Club', 1, '', 150.00, 0.00, 0.00, '2019-05-02', '2024-10-29 12:18:08', '', 'Active');
 
 -- --------------------------------------------------------
 
@@ -112,7 +122,7 @@ CREATE TABLE `payment` (
   `payment_id` int(11) NOT NULL,
   `student_org_id` int(11) DEFAULT NULL,
   `facilitator_id` int(11) DEFAULT NULL,
-  `admin_id` int(11) DEFAULT 1,
+  `admin_id` int(11) DEFAULT NULL,
   `payment_status` enum('Paid','Unpaid') DEFAULT 'Unpaid',
   `date_of_payment` date DEFAULT NULL,
   `semester` enum('First Semester','Second Semester') DEFAULT NULL
@@ -134,7 +144,8 @@ CREATE TABLE `student` (
   `dob` date NOT NULL,
   `age` int(11) NOT NULL,
   `course_year` varchar(15) NOT NULL,
-  `course_section` char(1) DEFAULT NULL
+  `course_section` char(1) DEFAULT NULL,
+  `status` enum('Active','Inactive') NOT NULL DEFAULT 'Active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -236,7 +247,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `admin`
 --
 ALTER TABLE `admin`
-  MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `course`
@@ -254,19 +265,19 @@ ALTER TABLE `organization`
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- AUTO_INCREMENT for table `student_organization`
 --
 ALTER TABLE `student_organization`
-  MODIFY `stud_org_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `stud_org_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
 
 --
 -- Constraints for dumped tables

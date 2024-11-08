@@ -42,9 +42,8 @@ class Admin {
     }
 
     function viewStudents($course_id, $student_search = '', $student_filter = '') {
-        $sql = 'SELECT student.*, organization.org_name, user.status
+        $sql = 'SELECT student.*, organization.org_name
                 FROM student 
-                JOIN user ON student.student_id = user.user_id
                 JOIN student_organization ON student.student_id = student_organization.student_id 
                 JOIN organization ON student_organization.organization_id = organization.organization_id 
                 WHERE student.course_id = :course_id';
