@@ -79,6 +79,11 @@ main {
     color: white;
 }
 
+.bg-crimson:hover {
+    background-color: #fb9c9a;
+    color: black;
+}
+
 .bg-pink {
     background-color: #fb9c9a;
 }
@@ -126,8 +131,9 @@ main {
 }
 
 .bg-light-crimson {
-    background-color: #991B1B99;
+    background-color: #991B1B99; /* Crimson color with transparency */
 }
+
 
 
 .rounded-large {
@@ -162,3 +168,4 @@ select:focus {
     border-bottom: 2px solid #9C1F1D;
     outline: none;
 }
+
