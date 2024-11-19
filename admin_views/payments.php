@@ -33,7 +33,7 @@ $paymentHist = $objAdmin->paymentHistory($organization_id, $from_date, $to_date)
             <div class="container-fluid h-80 w-100 py-5 px-5">
                 <div class="h-100 w-100 shadow rounded-large overflow-scroll">
                     <div class="w-100 d-flex justify-content-between p-2">
-                        <form method="post" action="" class="p-1 d-flex align-items-center justify-content-between w-100">
+                        <form method="post" action="" class="form-selector p-1 d-flex align-items-center justify-content-between w-100">
                             <div class="w-50 justify-content-start">
                                 <?php foreach($allOrgs as $orgs): ?>
                                     <?php $buttonClass = ($organization_id == $orgs['organization_id']) ? 'bg-light-crimson text-white' : 'bg-transparent'; ?>

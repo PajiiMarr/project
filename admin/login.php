@@ -5,16 +5,16 @@ $adminobj = new Admin;
 
 if (isset($_SESSION['user'])) {
     if ($_SESSION['user']['facilitator_id'] == 1) {
-        header('Location: ../facilitator.php');
+        header('Location: ../facilitator/facilitator.php');
     } else {
-        header('Location: ../student.php');
+        header('Location: ../student/student.php');
     }
     session_write_close();
     exit;
 }
 
 if(isset($_SESSION['admin_id'])){
-    header('Location: admin_home.php');
+    header('Location: dashboard.php');
 }
 
 $admin_username = $admin_password = '';

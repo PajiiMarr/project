@@ -1,7 +1,21 @@
 <?php 
 session_start();
 
-if(empty($_SESSION['admin_id'])) header('Location: login_admin.php');
+if(empty($_SESSION['admin_id'])) header('Location: login.php');
+else if (isset($_SESSION['user'])) {
+    if ($_SESSION['user']['facilitator_id'] == 1) {
+        header('Location: ../facilitator/facilitator.php');
+    } else {
+        header('Location: ../student/student.php');
+    }
+    session_write_close();
+    exit;
+}
+
+if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['course_id'])){
+    $_SESSION['course_id'] = clean_input($_POST['course_id']);
+    header('location: student.php');
+}
 
 
 ?>
@@ -14,6 +28,8 @@ if(empty($_SESSION['admin_id'])) header('Location: login_admin.php');
     <title>Payments | Admin</title>
     <?php require_once '../utilities/__link.php'; ?>
     <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="../node_modules/datatables/css/dataTables.min.css">
+
     <link rel="stylesheet" href="../allcss/admin_home.css">
     <style>
         .subheader-list {

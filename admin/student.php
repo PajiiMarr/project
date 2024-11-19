@@ -2,6 +2,15 @@
 session_start();
 
 if(empty($_SESSION['admin_id'])) header('Location: login_admin.php');
+else if (isset($_SESSION['user'])) {
+    if ($_SESSION['user']['facilitator_id'] == 1) {
+        header('Location: ../facilitator/facilitator.php');
+    } else {
+        header('Location: ../student/student.php');
+    }
+    session_write_close();
+    exit;
+}
 
 
 ?>
@@ -14,6 +23,8 @@ if(empty($_SESSION['admin_id'])) header('Location: login_admin.php');
     </title>
     <?php require_once '../utilities/__link.php'; ?>
     <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="../node_modules/datatables/css/dataTables.min.css">
+
     <link rel="stylesheet" href="../allcss/admin_home.css">
     <style>
         .subheader-list {

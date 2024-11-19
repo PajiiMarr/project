@@ -3,12 +3,24 @@ require_once 'admin.class.php';
 require_once '../utilities/clean.php';
 
 session_start();
-if(empty($_SESSION['admin_id'])) header('Location: login_admin.php');
-else if(empty($_SESSION['organization_id'])) header('location: admin_home.php');
-
+if(empty($_SESSION['admin_id'])) header('Location: login.php');
+else if (isset($_SESSION['user'])) {
+    if ($_SESSION['user']['facilitator_id'] == 1) {
+        header('Location: ../facilitator/facilitator.php');
+    } else {
+        header('Location: ../student/student.php');
+    }
+    session_write_close();
+    exit;
+}
 $objAdmin = new Admin;
 
 $organization_details = $objAdmin->orgDetails($_SESSION['organization_id']);
+
+if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['course_id'])){
+    $_SESSION['course_id'] = clean_input($_POST['course_id']);
+    header('location: student.php');
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -18,6 +30,8 @@ $organization_details = $objAdmin->orgDetails($_SESSION['organization_id']);
     <title><?= $organization_details['org_name'];  ?> | Admin</title>
     <?php require_once '../utilities/__link.php'; ?>
     <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="../node_modules/datatables/css/dataTables.min.css">
+
     <link rel="stylesheet" href="../allcss/admin_home.css">
     <style>
         .li-student {

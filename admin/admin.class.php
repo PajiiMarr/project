@@ -23,7 +23,7 @@ class Admin {
             $query_date_updated = $this->conn->prepare($sql_date_updated);
             $query_date_updated->execute();
 
-            header('Location: admin_home.php');
+            header('Location: dashboard.php');
             exit;
         } else {
             $_SESSION['incorrect_credentials'] = 'Incorrect Credentials';

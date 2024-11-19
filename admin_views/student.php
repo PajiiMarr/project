@@ -52,7 +52,7 @@ $allOrgs = $objAdmin->allOrgs();
     <div class="container-fluid h-80 w-100 py-5 px-5">
         <div class="h-100 w-100 shadow rounded-large overflow-scroll">
             <div class="w-100 d-flex justify-content-between p-2">
-                <form method="post" action="" class="p-2 d-flex align-items-center justify-content-between w-100">
+                <form method="post" action="" class="form-selector p-2 d-flex align-items-center justify-content-between w-100">
                     <div class="w-18 d-flex align-items-center justify-content-around">
                         <label for="search">
                             <i class="fa-solid fa-magnifying-glass fs-4"></i>
@@ -73,7 +73,7 @@ $allOrgs = $objAdmin->allOrgs();
                     </div>
                 </form>
             </div>
-            <form action="" method="post" class="d-flex w-50 pb-2">
+            <form action="" method="post" class="form-selector d-flex w-50 pb-2">
                 <?php
                     foreach($allOrgs as $orgs){
                         $buttonClass = ($organization_id == $orgs['organization_id']) ? 'bg-light-crimson text-white' : 'bg-transparent';
