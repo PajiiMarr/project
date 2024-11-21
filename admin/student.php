@@ -98,6 +98,24 @@ else if (isset($_SESSION['user'])) {
                 transform: translateY(0);
             }
         }
+        .radio-label {
+            background-color: transparent;
+            color: black;
+            cursor: pointer;
+            display: inline-block;
+            text-align: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .radio-label.selected {
+            background-color: #9C1F1D;
+            color: white;
+        }
+
+        .radio-label:hover {
+            background-color: #fb9c9a;
+            color: black;
+        }
 
     </style>
 </head>

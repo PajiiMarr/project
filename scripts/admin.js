@@ -24,9 +24,19 @@ $(document).ready(function () {
       e.preventDefault();
       viewPayments();
     });
-    $(".form-selector").on("submit", function(e){
-      e.preventDefault();
-    })
+
+  //   $(document).ready(function() {
+  //     $(".form-selector").on("submit", function(e) {
+  //         e.preventDefault();
+  //     });
+  
+  //     $("#search").on("keypress", function(event) {
+  //         if (event.key === "Enter") {
+  //             event.preventDefault();
+  //         }
+  //     });
+  // });
+  
 
     let url = window.location.href;
     if (url.endsWith("dashboard.php")) {
@@ -37,12 +47,14 @@ $(document).ready(function () {
       $("#students-link").trigger("click"); // Trigger the products click event
     } else if (url.endsWith("payment.php")) {
       $("#payment-link").trigger("click"); // Trigger the products click event
+    } else {
+      $("#dashboard-link").trigger("click");
     }
 
 
     function viewOrganization(){
       $.ajax({
-          type: "POST",
+          type: "GET",
           url: "../admin_views/organization.php",
           datatype: "php",
           success: function (response) {
@@ -55,8 +67,64 @@ $(document).ready(function () {
               $(document).on("keyup", "#search", function () {
                 table.search(this.value).draw();
               });
+
+              $("#add-organization").off("click").on("click", function(e) {
+                e.preventDefault();
+                addOrganization();
+              });
           }
       }); 
+    }
+
+    function addOrganization() {
+      $.ajax({
+        type: 'GET',
+        url: "../admin_views/add-organization.html" ,
+        datatype: "html",
+        success: function (response) {
+          $(".modal-container").html(response);
+          $("#staticBackdrop").modal('show');
+
+          $("#form-add-organization").on("submit", function(e) {
+            e.preventDefault();
+            saveOrganization();
+          });
+
+        }
+      })
+    }
+
+    function saveOrganization() {
+      $.ajax({
+        type: "POST", // Use POST request
+        url: "../admin_views/add-organization.php ", // URL for saving product
+        data: $("#form-add-organization").serialize(), // Serialize the form data for submission
+        dataType: "json", // Expect JSON response
+        success: function (response) {
+
+          if (response.status === "error") {
+            console.log(response.status);
+
+            // Handle validation errors
+            if (response.org_nameErr) {
+              $("#org_name").addClass("is-invalid"); // Mark field as invalid
+              $("#org_name").next(".invalid-feedback").text(response.org_nameErr).show(); // Show error message
+            } else {
+              $("#org_name").removeClass("is-invalid"); // Remove invalid class if no error
+            }
+            if (response.required_feeErr) {
+              $("#required_fee").addClass("is-invalid");
+              $("#required_fee").next(".invalid-feedback").text(response.required_feeErr).show();
+            } else {
+              $("#required_fee").removeClass("is-invalid");
+            }
+          } else if (response.status === "success") {
+            $("#staticBackdrop").modal("hide");
+            $("#form-add-organization")[0].reset(); // Reset the form
+            viewOrganization();
+          }
+        },
+      });
     }
 
     function viewDashboard(){
@@ -75,9 +143,24 @@ $(document).ready(function () {
       $.ajax({
         type: "GET",
         url: "../admin_views/student.php",
-        datatype: "html",
+        datatype: "php",
         success: function (response){
           $(".content-page").html(response);
+
+          // var table = $("#table-student").DataTable({
+          //   dom: "rtp"
+          // });
+          
+          // $(document).on("keyup", "#search", function(){
+          //   table.search(this.value).draw();
+          // });
+
+          $(document).on("click", "#enroll-student", function(e) {
+
+            e.preventDefault();
+            console.log("hi");
+            enrollStudent();
+          });
         }
       });
     }
@@ -92,4 +175,47 @@ $(document).ready(function () {
         }
       });
     }
+
+    function enrollStudent(){
+      $.ajax({
+        type: "GET",
+        url: "../admin_views/enroll_students_form.php",
+        datatype: "html",
+        success: function (view){
+          $(".modal-container").html(view);
+          $("#staticBackdrop").modal("show");
+
+          $("#form-enroll-student").on("submit", function (e){
+            e.preventDefault();
+            saveStudent();
+          });
+        }
+      });
+    }
+
+    function saveStudent(){
+      $.ajax({
+        type: "POST",
+        url: "../admin_views/enroll_students.php",
+        data: $("form").serialize(), // Serialize the form data for
+        datatype: "json",
+        success: function (response) {
+          if (response.status === "error") {
+            if (response.error['email']) {
+              $("#email").addClass("is-invalid"); // Mark field as invalid
+              $("#email").next(".invalid-feedback").text(response.codeErr).show(); // Show error message
+            } else {
+              $("#email").removeClass("is-invalid"); // Remove invalid class if no error
+            }
+          } else {
+            $("#staticBackdrop").modal("hide");
+            $("form")[0].reset(); // Reset the form
+            // Optionally, reload products to show new entry
+            viewStudent();
+          }
+        }
+      });
+    }
+
+
 });

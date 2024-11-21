@@ -150,23 +150,31 @@ class Admin {
     //     }
     // }
 
-    function addOrganization($org_name, $org_description){
-        $sql = "INSERT INTO organization(org_name, org_description, created_date)
-                VALUES(:org_name, :org_description, NOW());";
+    function addOrganization($org_name, $org_description, $required_fee){
+        $sql = "INSERT INTO organization(org_name, org_description, created_date, required_fee)
+                VALUES(:org_name, :org_description, NOW(), :required_fee);";
         $query = $this->conn->prepare($sql);
         $query->bindParam(':org_name', $org_name);
         $query->bindParam(':org_description', $org_description);
+        $query->bindParam(':required_fee', $required_fee);
 
-        $query->execute();
-        $organization_id = $this->conn->lastInsertId();
 
-        $sql_add_stud_org = "INSERT INTO student_organization (student_id, organization_id)
-                             SELECT student_id, :organization_id 
-                             FROM student 
-                             WHERE status = 'Active'";
-        $query_add_stud_org = $this->conn->prepare($sql_add_stud_org);
-        $query_add_stud_org->bindParam(':organization_id', $organization_id);
-        $query_add_stud_org->execute();
+
+        if($query->execute()){
+            return true;
+            $organization_id = $this->conn->lastInsertId();
+
+            $sql_add_stud_org = "INSERT INTO student_organization (student_id, organization_id)
+                                SELECT student_id, :organization_id 
+                                FROM student 
+                                WHERE status = 'Active'";
+            $query_add_stud_org = $this->conn->prepare($sql_add_stud_org);
+            $query_add_stud_org->bindParam(':organization_id', $organization_id);
+        } else {
+            return false;
+        }
+
+
     }
 
     function allOrgs(){

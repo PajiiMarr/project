@@ -4,6 +4,7 @@ session_start();
 $orgObj = new Admin;
 $allOrganizations = $orgObj->allOrgs();
 ?>
+<div class="modal-container"></div>
 <section class="container-fluid w-100 h-100">
     <div class="h-18 w-100 border-bottom">
         <div class="h-50 w-100 custom-border-bottom d-flex align-items-center justify-content-center">
@@ -42,11 +43,11 @@ $allOrganizations = $orgObj->allOrgs();
                     <?php
                     $counter = 1;
                     foreach ($allOrganizations as $allorgs) {
-                        ?>
+                       ?>
 
                         <tr class="border-bottom shadow-hover"
                             onclick="selectOrganization(<?= $allorgs['organization_id'] ?>)">
-                            <td class="p-2"><?= $counter; ?></td>
+                            <td class="p-2 text-start"><?= $counter; ?></td>
                             <td class="p-2"><?= $allorgs['org_name']; ?></td>
                             <td class="p-2"><?= $allorgs['status']; ?></td>
                             <td class="p-2 text-black">
@@ -59,7 +60,7 @@ $allOrganizations = $orgObj->allOrgs();
                     }
                     ?>
                 </tbody>
-                <div class="position-absolute d-flex align-items-center justify-content-between bg-crimson p-4 rounded-4 add-div"
+                <a id="add-organization" class="position-absolute d-flex align-items-center justify-content-between bg-crimson p-4 rounded-4 add-div text-decoration-none"
                     style=" bottom:10%; right:5%;">
                     <div class="w-100 d-flex align-items-center justify-content-center">
                         <i class="fa-solid fa-plus fs-4 add"></i>
@@ -67,7 +68,7 @@ $allOrganizations = $orgObj->allOrgs();
                     <div class="text-white fs-4 enroll">
                         Add Organization
                     </div>
-                </div>
+                </a>
             </table>
         </div>
     </div>

@@ -3,35 +3,13 @@ session_start();
 require_once 'utilities/signup.class.php';
 require_once 'utilities/clean.php';
 
-if (isset($_SESSION['user'])) {
-    if ($_SESSION['user']['facilitator_id'] == 1) {
-        header('Location: facilitator.php');
-    } else {
-        header('Location: student.php');
-    }
-    session_write_close();
-    exit;
-} else if(empty($_SESSION['user_id']) && (!isset($_SESSION['step']) || $_SESSION['step'] != 2)){
-?>
-    <section>
-        <h1>You should sign up first!</h1>
-        <p>Redirecting you to sign up page</p>
-    </section>
-    <?php
-    header('refresh: 2; url=signup.php');
-} 
-
 $objProfile = new Signup;
-$getOrganization = $objProfile->getOrganization();
-$getCourse = $objProfile->getCourse();
 
-$last_name = $first_name = $middle_name = $course_id = $course_year = $course_section = $dob = $age = $organization_id = $phone_number = '';
-$last_nameErr = $first_nameErr = $course_idErr = $course_yearErr = $course_sectionErr = $dobErr = $ageErr = $organization_idErr = $overallErr = $phone_numberErr = '';
-$allinputsfield = true;
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $email = isset($_POST['email']) ? clean_input($_POST['email']) : '';
+    $password = isset($_POST['password']) ? clean_input($_POST['password']) : '';
 
-
-if($_SERVER['REQUEST_METHOD'] == 'POST'){
-    $user_id = $_SESSION['user_id'];
+    // $user_id = $_SESSION['user_id'];
     $last_name = isset($_POST['last_name']) ? clean_input($_POST['last_name']) : '';
     $first_name = isset($_POST['first_name']) ? clean_input($_POST['first_name']) : '';
     $middle_name = isset($_POST['middle_name']) ? clean_input($_POST['middle_name']) : '';
@@ -43,56 +21,57 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $age = isset($_POST['age']) ? clean_input($_POST['age']) : '';
     $organization_id = isset($_POST['organization_id']) ? clean_input($_POST['organization_id']) : '';
 
-    if($_SESSION['user_type']['is_facilitator'] == 1) {
-        $_SESSION['profile']['organization_id'] = $organization_id;
-        if(empty($organization_id)){
-            $organization_idErr = ' Please select organization you joined.';
-            $allinputsfield = false;
-        }
+    $errors = [];
+
+    if (empty($email)) {
+        $errors['email'] = 'Email is required!';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors['email'] = 'Invalid email format!';
     }
 
-    if(empty($last_name)){
-        $last_nameErr = ' Last Name is required!';
-        $allinputsfield = false;
+    if (empty($password)) {
+        $errors['password'] = 'Password is required!';
     }
-    if(empty($first_name)){
-        $first_nameErr = ' First Name is required!';
-        $allinputsfield = false;
+    
+    if (empty($last_name)) {
+        $errors['last_name'] = 'Last Name is required!';
     }
-    if(empty($course_id)){
-        $course_idErr = ' Please select course enrolled in.';
-        $allinputsfield = false;
+    if (empty($first_name)) {
+        $errors['first_name'] = 'First Name is required!';
     }
-    if(empty($course_year)){
-        $course_yearErr = ' Please select course year.';
-        $allinputsfield = false;
+    if (empty($course_id)) {
+        $errors['course_id'] = 'Please select course enrolled in.';
     }
-    if(empty($phone_number)){
-        $phone_numberErr = ' Phone number is required!';
-        $allinputsfield = false;
+    if (empty($course_year)) {
+        $errors['course_year'] = 'Please select course year.';
     }
-    if($course_id == 1 || $course_id == 2){
-        if(empty($course_section)){
-            $course_sectionErr = ' Please select your section.';
-            $allinputsfield = false;
-        }
+    if (empty($phone_number)) {
+        $errors['phone_number'] = 'Phone number is required!';
     }
-    if(empty($dob)){
-        $dobErr = ' Date of Birth is required!';
-        $allinputsfield = false;
+    if (($course_id == 1 || $course_id == 2) && empty($course_section)) {
+        $errors['course_section'] = 'Please select your section.';
     }
-    if(empty($age)){
-        $ageErr = ' Age is required!';
-        $allinputsfield = false;
+    if (empty($dob)) {
+        $errors['dob'] = 'Date of Birth is required!';
+    }
+    if (empty($age)) {
+        $errors['age'] = 'Age is required!';
+    } else if (!is_numeric($age)) {
+        $errors['age'] = 'Age must be a number!';
     } else if ($age < 15) {
-        $ageErr = ' You should be at least 15 years old!';
-        $allinputsfield = false;
+        $errors['age'] = 'You should be at least 15 years old!';
     }
 
-    if($allinputsfield){
+    if (!empty($errors)) {
+        echo json_encode([
+            "status" => "error",
+            "errors" => $errors
+        ]);
+        exit;
+    } else {
+
         $isCourseIdSpecial = ($course_id == 1 || $course_id == 2);
         $profileFields = [
-            'user_id' => $user_id,
             'course_id' => $course_id,
             'course_year' => $course_year,
             'last_name' => $last_name,
@@ -103,54 +82,33 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
             'age' => $age,
             'course_section' => $isCourseIdSpecial ? $course_section : null
         ];
-    
-        if($objProfile->duplicate_record_exists('student', ['student_id' => $user_id])){
-            $overallErr = 'Duplicate profile exist';
+
+        $result = $objProfile->sign_up_and_set_profile(
+            $email,
+            $password,
+            $profileFields['course_id'],
+            $profileFields['course_year'],
+            $profileFields['last_name'],
+            $profileFields['first_name'],
+            $profileFields['middle_name'],
+            $profileFields['phone_number'],
+            $profileFields['dob'],
+            $profileFields['age'],
+            $profileFields['course_section']
+        );
+        if (isset($result['error'])) {
+            echo json_encode([
+                "status" => "error",
+                "message" => $result['error']
+            ]);
+            exit;
         } else {
-            $objProfile->set_profile(
-                $profileFields['user_id'],
-                $profileFields['course_id'],
-                $profileFields['course_year'],
-                $profileFields['last_name'],
-                $profileFields['first_name'],
-                $profileFields['middle_name'],
-                $profileFields['phone_number'],
-                $profileFields['dob'],
-                $profileFields['age'],
-                $profileFields['course_section']
-            );
-    
-            if($_SESSION['user_type']['is_facilitator'] == 0){
-                $_SESSION['step'] = 0;
-                header('Location: student.php');
-                exit();
-            }
-        }
-        if($_SESSION['user_type']['is_facilitator'] == 1){
-            if($objProfile->duplicate_record_exists('facilitator', ['facilitator_id' => $user_id])){
-                $overallErr = 'Duplicate profile exist';
-            } else {
-                $objProfile->set_facilitator(
-                    $profileFields['user_id'],
-                    $organization_id,
-                    $profileFields['course_id'],
-                    $profileFields['last_name'],
-                    $profileFields['first_name'],
-                    $profileFields['middle_name'],
-                    $profileFields['phone_number'],
-                    $profileFields['dob'],
-                    $profileFields['age'],
-                    $profileFields['course_year'],
-                    $isCourseIdSpecial ? $profileFields['course_section'] : null
-                );
-    
-                $_SESSION['step'] = 0;
-                header('Location: facilitator.php');
-                exit();
-            }
+            echo json_encode(["status" => "success"]);
+            exit;
         }
     }
 }
+
 
 
 ?>
@@ -242,18 +200,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
                             <input type="hidden" name="age" id="hidden_age" value="<?= $age; ?>">
                         </div>
                     </div>
-                    <?php if($_SESSION['user_type']['is_facilitator'] == 1){ ?>
-                    <h1>Facilitator</h1>
-                    <div>
-                        Organization <span class="required">* <?= $organization_idErr; ?></span><br>
-                        <select name="organization_id" id="organization_id">
-                            <option value="" selected disabled></option>
-                            <?php foreach($getOrganization as $org): extract($org); ?>
-                                <option value="<?=$organization_id?>"><?= $org_name;?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <?php }?>
                     </div>
                     <button type="submit" name="get_started">
                         <span>Get Started</span>
