@@ -13,7 +13,7 @@ $password = "temp_2020";
             <h5 class="modal-title">Enroll Student</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div> 
-        <form action="" method="post" id="form-enroll-student">
+        <form method="POST" id="form-enroll-student">
             <div class="modal-body">
                 <div class="mb-2">
                     <label for="code" class="form-label">email</label>

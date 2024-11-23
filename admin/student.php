@@ -1,15 +1,20 @@
 <?php 
 session_start();
+require_once '../utilities/clean.php';
 
-if(empty($_SESSION['admin_id'])) header('Location: login_admin.php');
+if(empty($_SESSION['admin_id'])) header('Location: login.php');
 else if (isset($_SESSION['user'])) {
     if ($_SESSION['user']['facilitator_id'] == 1) {
         header('Location: ../facilitator/facilitator.php');
     } else {
         header('Location: ../student/student.php');
     }
-    session_write_close();
     exit;
+}
+
+if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['course_id'])){
+    $_SESSION['course_id'] = clean_input($_POST['course_id']);
+    header('location: student.php');
 }
 
 
@@ -19,14 +24,17 @@ else if (isset($_SESSION['user'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Students | Admin
-    </title>
+    <title>Students | Admin</title>
     <?php require_once '../utilities/__link.php'; ?>
     <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="../node_modules/datatables/css/dataTables.min.css">
 
     <link rel="stylesheet" href="../allcss/admin_home.css">
     <style>
+        .li-student {
+            position: relative;
+        }
+
         .subheader-list {
             display: block;
             opacity: 0;
@@ -40,7 +48,7 @@ else if (isset($_SESSION['user'])) {
         }
 
         /* Show subheader list on hover */
-        li:hover .subheader-list {
+        .li-student:hover .subheader-list {
             visibility: visible;
             opacity: 1;
         }
@@ -98,24 +106,6 @@ else if (isset($_SESSION['user'])) {
                 transform: translateY(0);
             }
         }
-        .radio-label {
-            background-color: transparent;
-            color: black;
-            cursor: pointer;
-            display: inline-block;
-            text-align: center;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .radio-label.selected {
-            background-color: #9C1F1D;
-            color: white;
-        }
-
-        .radio-label:hover {
-            background-color: #fb9c9a;
-            color: black;
-        }
 
     </style>
 </head>
@@ -123,8 +113,11 @@ else if (isset($_SESSION['user'])) {
     <header>
         <?php require_once '../utilities/__sidebar.php' ?>
     </header>
-    <main class="container-page">
+    <main class="content-page">
+
     </main>
-    <?php require_once '../utilities/__scripts.php'; ?>
+    <script>
+    </script>
+    <?php require_once '../utilities/__scripts.php'; ?> 
 </body>
 </html>

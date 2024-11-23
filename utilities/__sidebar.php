@@ -19,12 +19,12 @@
                     </a>
                 </li>
                 <li class="header-list w-100 h-25 px-2 li-unselected li-student">
-                    <a href="student.php" id="students-link" class="anchor-tag d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none crimson px-3">
+                    <a href="student.php" id="student-link" class="anchor-tag student-anchor d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none crimson px-3">
                         <i class="fa-regular fa-user w-25 mt-1 fs-4"></i>
                         <p class="w-75 fs-5 pt-3">Students</p>
                     </a>
 
-                    <form class="subheader-list list-unstyled position-absolute w-100 text-center" method="POST">
+                    <form id="form-sort-course" class="subheader-list list-unstyled position-absolute w-100 text-center" method="POST">
                         <button type="submit" name="course_id" value="1" class="text-white text-decoration-none d-block p-2 w-100 border-none">BSIT</button>
                         <button type="submit" name="course_id" value="2" class="text-white text-decoration-none d-block p-2 w-100 border-none">BSCS</button>
                         <button type="submit" name="course_id" value="3" class="text-white text-decoration-none d-block p-2 w-100 border-none">ACT AD</button>
@@ -37,6 +37,7 @@
                         <p class="w-75 fs-5 pt-3">Payment History</p>
                     </a>
                 </li>
+                    
             </ul>
         </nav>
     </div>

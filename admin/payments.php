@@ -1,6 +1,7 @@
 <?php 
-session_start();
 
+session_start();
+require_once '../utilities/clean.php';
 if(empty($_SESSION['admin_id'])) header('Location: login.php');
 else if (isset($_SESSION['user'])) {
     if ($_SESSION['user']['facilitator_id'] == 1) {

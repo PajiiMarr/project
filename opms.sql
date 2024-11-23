@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 18, 2024 at 01:58 PM
+-- Generation Time: Nov 22, 2024 at 03:16 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.0.28
 
@@ -39,7 +39,7 @@ CREATE TABLE `admin` (
 --
 
 INSERT INTO `admin` (`admin_id`, `admin_username`, `admin_password`, `date_updated`) VALUES
-(1, 'admin', '$2y$10$87RfoQxL13LD9xgxvQvEz.7AfxpXeAqCdQxPmd3bYEjqp1orUfZTC', '2024-11-16 05:19:01');
+(1, 'admin', '$2y$10$87RfoQxL13LD9xgxvQvEz.7AfxpXeAqCdQxPmd3bYEjqp1orUfZTC', '2024-11-22 13:28:16');
 
 -- --------------------------------------------------------
 
@@ -110,7 +110,9 @@ CREATE TABLE `organization` (
 
 INSERT INTO `organization` (`organization_id`, `org_name`, `admin_id`, `org_description`, `required_fee`, `total_collected`, `pending_balance`, `created_date`, `last_updated`, `contact_email`, `status`) VALUES
 (1, 'Venom Publication', 1, '', 70.00, 0.00, 0.00, '2019-10-01', '2024-10-29 12:18:08', '', 'Active'),
-(2, 'Gender Club', 1, '', 150.00, 0.00, 0.00, '2019-05-02', '2024-10-29 12:18:08', '', 'Active');
+(2, 'Gender Club', 1, '', 150.00, 0.00, 0.00, '2019-05-02', '2024-10-29 12:18:08', '', 'Active'),
+(9, 'PSITS', 1, 'hello', 75.00, NULL, NULL, '2024-11-21', '2024-11-21 05:09:32', 'hi@gmail.com', 'Active'),
+(10, 'csc', 1, 'hellpo', 200.00, NULL, NULL, '2024-11-21', '2024-11-21 07:36:56', 'csc@gmail.com', 'Active');
 
 -- --------------------------------------------------------
 
@@ -127,6 +129,20 @@ CREATE TABLE `payment` (
   `date_of_payment` date DEFAULT NULL,
   `semester` enum('First Semester','Second Semester') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `payment`
+--
+
+INSERT INTO `payment` (`payment_id`, `student_org_id`, `facilitator_id`, `admin_id`, `payment_status`, `date_of_payment`, `semester`) VALUES
+(49, 52, NULL, NULL, 'Unpaid', NULL, 'First Semester'),
+(50, 52, NULL, NULL, 'Unpaid', NULL, 'Second Semester'),
+(51, 53, NULL, NULL, 'Unpaid', NULL, 'First Semester'),
+(52, 53, NULL, NULL, 'Unpaid', NULL, 'Second Semester'),
+(53, 54, NULL, NULL, 'Unpaid', NULL, 'First Semester'),
+(54, 54, NULL, NULL, 'Unpaid', NULL, 'Second Semester'),
+(55, 55, NULL, NULL, 'Unpaid', NULL, 'First Semester'),
+(56, 55, NULL, NULL, 'Unpaid', NULL, 'Second Semester');
 
 -- --------------------------------------------------------
 
@@ -148,6 +164,13 @@ CREATE TABLE `student` (
   `status` enum('Active','Inactive') NOT NULL DEFAULT 'Active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `student`
+--
+
+INSERT INTO `student` (`student_id`, `course_id`, `last_name`, `first_name`, `middle_name`, `phone_number`, `dob`, `age`, `course_year`, `course_section`, `status`) VALUES
+(78, 4, 'manon-og', 'marlo', 'baylen', '09531331877', '2009-11-10', 15, 'Second Year', NULL, 'Active');
+
 -- --------------------------------------------------------
 
 --
@@ -159,6 +182,16 @@ CREATE TABLE `student_organization` (
   `student_id` int(11) DEFAULT NULL,
   `organization_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `student_organization`
+--
+
+INSERT INTO `student_organization` (`stud_org_id`, `student_id`, `organization_id`) VALUES
+(52, 78, 1),
+(53, 78, 2),
+(54, 78, 9),
+(55, 78, 10);
 
 -- --------------------------------------------------------
 
@@ -173,9 +206,16 @@ CREATE TABLE `user` (
   `date_created` date NOT NULL,
   `date_updated` datetime DEFAULT NULL,
   `admin_id` int(11) DEFAULT 1,
-  `is_student` tinyint(1) NOT NULL DEFAULT 0,
+  `is_student` tinyint(1) NOT NULL DEFAULT 1,
   `is_facilitator` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`user_id`, `email`, `password`, `date_created`, `date_updated`, `admin_id`, `is_student`, `is_facilitator`) VALUES
+(78, 'hz202301575@wmsu.edu.ph', '$2y$10$TSKLV7vEdMeDurUZ/l47gOIdRLQuTDbL3redBYUoESXhbEb1J0KS6', '2024-11-22', '2024-11-22 15:08:21', 1, 0, 0);
 
 --
 -- Indexes for dumped tables
@@ -259,25 +299,25 @@ ALTER TABLE `course`
 -- AUTO_INCREMENT for table `organization`
 --
 ALTER TABLE `organization`
-  MODIFY `organization_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `organization_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- AUTO_INCREMENT for table `student_organization`
 --
 ALTER TABLE `student_organization`
-  MODIFY `stud_org_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `stud_org_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
 
 --
 -- Constraints for dumped tables

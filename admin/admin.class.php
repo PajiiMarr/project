@@ -42,7 +42,7 @@ class Admin {
         return $data;
     }
 
-    function viewStudents($course_id, $organization_id ='', $student_search = '', $student_filter = '') {
+    function viewStudents($course_id, $organization_id ='') {
         $sql = 'SELECT student.*, organization.org_name, payment.*
                 FROM payment 
                 JOIN student_organization ON payment.student_org_id = student_organization.stud_org_id 
@@ -50,27 +50,10 @@ class Admin {
                 JOIN organization ON student_organization.organization_id = organization.organization_id
                 WHERE student.course_id = :course_id AND organization.organization_id = :organization_id';
     
-        if (!empty($student_search)) {
-            $sql .= ' AND (student.first_name LIKE :search OR student.last_name LIKE :search)';
-        }
-    
-        if (!empty($student_filter)) {
-            $validFilters = ['org_name', 'status'];
-            if (in_array($student_filter, $validFilters)) {
-                $sql .= " ORDER BY $student_filter ASC";
-            }
-        } else {
-            $sql .= " ORDER BY last_name ASC";
-        }
-    
         $query = $this->conn->prepare($sql);
         $query->bindParam(':course_id', $course_id);
         $query->bindParam(':organization_id', $organization_id);
         
-        if (!empty($student_search)) {
-            $searchTerm = "%$student_search%";
-            $query->bindParam(':search', $searchTerm);
-        }
         if ($query->execute()) {
             $students = $query->fetchAll();
             return $students;
@@ -126,11 +109,7 @@ class Admin {
     
 
     function reports(){
-        $sql = "SELECT organization.COUNT(*) as total_organization, organization.SUM(total_collected) payments_collected, student.COUNT(*) as students_enrolled
-                FROM student_organization
-                JOIN organization ON student_organization.organization_id = organization.organization_id
-                JOIN student ON student_organization.student_id = student.organization_id
-                ";
+        $sql = "";
 
         $query = $this->conn->prepare($sql);
         if($query->execute()){
@@ -150,13 +129,14 @@ class Admin {
     //     }
     // }
 
-    function addOrganization($org_name, $org_description, $required_fee){
-        $sql = "INSERT INTO organization(org_name, org_description, created_date, required_fee)
-                VALUES(:org_name, :org_description, NOW(), :required_fee);";
+    function addOrganization($org_name, $org_description, $contact_email, $required_fee){
+        $sql = "INSERT INTO organization(org_name, contact_email, org_description, created_date, required_fee)
+                VALUES(:org_name, :contact_email, :org_description, NOW(), :required_fee);";
         $query = $this->conn->prepare($sql);
         $query->bindParam(':org_name', $org_name);
         $query->bindParam(':org_description', $org_description);
         $query->bindParam(':required_fee', $required_fee);
+        $query->bindParam(':contact_email', $contact_email);
 
 
 

@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once 'utilities/signup.class.php';
-require_once 'utilities/clean.php';
+require_once '../utilities/signup.class.php';
+require_once '../utilities/clean.php';
 
 $objProfile = new Signup;
 
@@ -19,7 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $course_section = isset($_POST['course_section']) ? clean_input($_POST['course_section']) : '';
     $dob = isset($_POST['dob']) ? clean_input($_POST['dob']) : '';
     $age = isset($_POST['age']) ? clean_input($_POST['age']) : '';
-    $organization_id = isset($_POST['organization_id']) ? clean_input($_POST['organization_id']) : '';
 
     $errors = [];
 
@@ -68,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             "errors" => $errors
         ]);
         exit;
-    } else {
+    }
 
         $isCourseIdSpecial = ($course_id == 1 || $course_id == 2);
         $profileFields = [
@@ -96,19 +95,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $profileFields['age'],
             $profileFields['course_section']
         );
+
         if (isset($result['error'])) {
             echo json_encode([
                 "status" => "error",
                 "message" => $result['error']
             ]);
             exit;
-        } else {
-            echo json_encode(["status" => "success"]);
-            exit;
         }
-    }
+        echo json_encode(["status" => "success"]);
 }
-
-header('Content-type: application/json');
-
 ?>

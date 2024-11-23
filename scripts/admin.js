@@ -16,7 +16,7 @@ $(document).ready(function () {
       e.preventDefault();
       viewOrganization();
     });
-    $("#students-link").on("click", function(e){
+    $("#student-link").on("click", function(e){
       e.preventDefault();
       viewStudent();
     });
@@ -44,8 +44,8 @@ $(document).ready(function () {
     } else if (url.endsWith("organization.php")) {
       $("#org-overview-link").trigger("click"); // Trigger the products click event
     } else if (url.endsWith("student.php")) {
-      $("#students-link").trigger("click"); // Trigger the products click event
-    } else if (url.endsWith("payment.php")) {
+      $("#student-link").trigger("click"); // Trigger the products click event
+    } else if (url.endsWith("payments.php")) {
       $("#payment-link").trigger("click"); // Trigger the products click event
     } else {
       $("#dashboard-link").trigger("click");
@@ -73,7 +73,7 @@ $(document).ready(function () {
                 addOrganization();
               });
           }
-      }); 
+      });
     }
 
     function addOrganization() {
@@ -101,29 +101,21 @@ $(document).ready(function () {
         data: $("#form-add-organization").serialize(), // Serialize the form data for submission
         dataType: "json", // Expect JSON response
         success: function (response) {
-
-          if (response.status === "error") {
-            console.log(response.status);
-
-            // Handle validation errors
-            if (response.org_nameErr) {
-              $("#org_name").addClass("is-invalid"); // Mark field as invalid
-              $("#org_name").next(".invalid-feedback").text(response.org_nameErr).show(); // Show error message
-            } else {
-              $("#org_name").removeClass("is-invalid"); // Remove invalid class if no error
-            }
-            if (response.required_feeErr) {
-              $("#required_fee").addClass("is-invalid");
-              $("#required_fee").next(".invalid-feedback").text(response.required_feeErr).show();
-            } else {
-              $("#required_fee").removeClass("is-invalid");
-            }
-          } else if (response.status === "success") {
-            $("#staticBackdrop").modal("hide");
-            $("#form-add-organization")[0].reset(); // Reset the form
-            viewOrganization();
+          console.log(response);
+          
+          if (response.status == "error") {
+            Object.keys(response.errors).forEach(key => {
+              $(`#${key}`).addClass("is-invalid");
+              $(`#${key}`).next(".invalid-feedback").text(response.errors[key]).show(); // Show error message
+            });
+            exit;
           }
-        },
+
+          $("#staticBackdrop").modal("hide");
+          $("form")[0].reset(); // Reset the form
+          // Optionally, reload products to show new entry
+          viewOrganization();
+        }
       });
     }
 
@@ -142,8 +134,8 @@ $(document).ready(function () {
     function viewStudent(){
       $.ajax({
         type: "GET",
-        url: "../admin_views/student.php",
-        datatype: "php",
+        url: "../admin_views/students-view.php",
+        datatype: "html",
         success: function (response){
           $(".content-page").html(response);
 
@@ -155,26 +147,36 @@ $(document).ready(function () {
           //   table.search(this.value).draw();
           // });
 
-          $(document).on("click", "#enroll-student", function(e) {
+          // $("#form-sort-course").on("submit", function(e){
+          //   e.preventDefault();
+          //   sortCourse();
+          // });
 
+          $(document).on("click", "#enroll-student", function(e) {
             e.preventDefault();
-            console.log("hi");
             enrollStudent();
           });
         }
       });
     }
 
-    function viewPayments(){
-      $.ajax({
-        type: "GET",
-        url: "../admin_views/payments.php",
-        datatype: "html",
-        success: function (response){
-          $(".content-page").html(response);
-        }
-      });
-    }
+  //   function sortCourse() {
+  //     $.ajax({
+  //         type: "POST",
+  //         url: "../admin_views/student_sorting.php",
+  //         data: $("#form-sort-course").serialize(), // Ensure the correct form ID
+  //         dataType: "json",
+  //         success: function (response) {
+  //             $("#table-student tbody tr").html(response); // Replace table content
+              
+              
+  //         },
+  //         error: function (xhr, status, error) {
+  //             console.error("AJAX error:", status, error);
+  //         }
+  //     });
+  // }
+  
 
     function enrollStudent(){
       $.ajax({
@@ -193,29 +195,72 @@ $(document).ready(function () {
       });
     }
 
-    function saveStudent(){
+    function viewPayments(){
       $.ajax({
-        type: "POST",
-        url: "../admin_views/enroll_students.php",
-        data: $("form").serialize(), // Serialize the form data for
-        datatype: "json",
-        success: function (response) {
-          if (response.status === "error") {
-            if (response.error['email']) {
-              $("#email").addClass("is-invalid"); // Mark field as invalid
-              $("#email").next(".invalid-feedback").text(response.codeErr).show(); // Show error message
-            } else {
-              $("#email").removeClass("is-invalid"); // Remove invalid class if no error
-            }
-          } else {
-            $("#staticBackdrop").modal("hide");
-            $("form")[0].reset(); // Reset the form
-            // Optionally, reload products to show new entry
-            viewStudent();
-          }
+        type: "GET",
+        url: "../admin_views/payments.php",
+        datatype: "html",
+        success: function (response){
+          $(".content-page").html(response);
         }
       });
     }
+
+
+    // function saveStudent(){
+    //   $.ajax({
+    //     type: "POST",
+    //     url: "../admin_views/enroll_students.php",
+    //     data: $("#form-enroll-student").serialize(), // Serialize the form data for
+    //     datatype: "json",
+    //     success: function (response) {
+
+    //       if (response.status == "error") {
+    //         Object.keys(response.errors).forEach(key => {
+    //           $(`#${key}`).addClass("is-invalid");
+    //           $(`#${key}`).next(".invalid-feedback").text(response.errors[key]).show(); // Show error message
+    //         });
+    //         exit;
+    //       }
+
+    //       console.log(response.status);
+
+
+    //       $("#staticBackdrop").modal("hide");
+    //       $("form")[0].reset();
+    //       viewStudent();
+    //     }
+    //   });
+    // }
+
+    function saveStudent() {
+      $.ajax({
+        type: "POST",
+        url: "../admin_views/enroll_students.php",
+        data: $("#form-enroll-student").serialize(),
+        dataType: "json", // Ensure proper parsing of JSON response
+        success: function (response) {
+          console.log(response);
+    
+          if (response.status === "error") {
+            Object.keys(response.errors).forEach(key => {
+              $(`#${key}`).addClass("is-invalid");
+              $(`#${key}`).next(".invalid-feedback").text(response.errors[key]).show();
+            });
+            return; // Stop further execution
+          }
+    
+          // Reset modal and form on success
+          $("#staticBackdrop").modal("hide");
+          $("#form-enroll-student")[0].reset();
+          viewStudent();
+        },
+        error: function (xhr, status, error) {
+          console.error("AJAX error:", status, error);
+        }
+      });
+    }
+    
 
 
 });

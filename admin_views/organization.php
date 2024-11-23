@@ -1,8 +1,10 @@
 <?php
 require_once '../admin/admin.class.php';
+require_once '../utilities/clean.php';
 session_start();
 $orgObj = new Admin;
 $allOrganizations = $orgObj->allOrgs();
+
 ?>
 <div class="modal-container"></div>
 <section class="container-fluid w-100 h-100">
@@ -27,9 +29,6 @@ $allOrganizations = $orgObj->allOrgs();
                     </div>
                 </form>
             </div>
-            <form method="POST" id="org-form" style="display: none;" class="form-selector">
-                <input type="hidden" name="organization_id" id="hidden-org-id">
-            </form>
             <table id="table-organization" class="max-h-100 w-100 table-hover">
                 <thead>
                     <tr class="bg-light-crimson">
@@ -40,25 +39,22 @@ $allOrganizations = $orgObj->allOrgs();
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
+                <?php
                     $counter = 1;
                     foreach ($allOrganizations as $allorgs) {
-                       ?>
-
-                        <tr class="border-bottom shadow-hover"
-                            onclick="selectOrganization(<?= $allorgs['organization_id'] ?>)">
+                    ?>
+                        <tr class="border-bottom shadow-hover" data-org-id="<?= $allorgs['organization_id'] ?>" style="cursor: pointer;">
                             <td class="p-2 text-start"><?= $counter; ?></td>
                             <td class="p-2"><?= $allorgs['org_name']; ?></td>
                             <td class="p-2"><?= $allorgs['status']; ?></td>
                             <td class="p-2 text-black">
-                                <a href="#" class="text-decoration-none text-black">View</a>
                                 <a href="#" class="mx-5 text-decoration-none text-black">Remove</a>
                             </td>
                         </tr>
                         <?php
                         $counter++;
                     }
-                    ?>
+                ?>
                 </tbody>
                 <a id="add-organization" class="position-absolute d-flex align-items-center justify-content-between bg-crimson p-4 rounded-4 add-div text-decoration-none"
                     style=" bottom:10%; right:5%;">
@@ -73,9 +69,4 @@ $allOrganizations = $orgObj->allOrgs();
         </div>
     </div>
 </section>
-<script>
-    function selectOrganization(orgId) {
-        document.getElementById('hidden-org-id').value = orgId;
-        document.getElementById('org-form').submit();
-    }
-</script>
+<script src="../scripts/select-organization.js"></script>

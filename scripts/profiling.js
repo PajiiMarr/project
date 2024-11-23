@@ -4,7 +4,7 @@ document.getElementById('course_id').addEventListener('change', function() {
     const selectedCourseId = this.value;
     const courseYear = document.getElementById('course_year');
     const upperYears = document.querySelectorAll('.upper-year');
-    const section = document.querySelector('.section');
+    const section = document.getElementById('course_section');
 
     if(selectedCourseId){
         courseYear.disabled = false;
