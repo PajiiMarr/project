@@ -115,3 +115,14 @@ input:focus, select:focus {
     border-bottom: 2px solid #9C1F1D;
     outline: none;
 }
+
+.reports i {
+    color: #9C1F1D; 
+}
+
+
+.reports:hover {
+    background-color: #F8F9FA; /* Light grey for hover */
+    transform: translateY(-5px); /* Slight lift effect */
+    transition: 0.2s ease-in-out;
+}
