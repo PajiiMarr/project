@@ -1,6 +1,7 @@
 <?php 
 session_start();
 require_once '../utilities/clean.php';
+require_once 'admin.class.php';
 
 if(empty($_SESSION['admin_id'])) header('Location: login.php');
 else if (isset($_SESSION['user'])) {
@@ -12,12 +13,10 @@ else if (isset($_SESSION['user'])) {
     exit;
 }
 
-if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['course_id'])){
-    $_SESSION['course_id'] = clean_input($_POST['course_id']);
-    header('location: student.php');
-}
-
-
+// if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['course_id'])){
+//     $_SESSION['course_id'] = clean_input($_POST['course_id']);
+//     header('location: student.php');
+// }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -54,7 +53,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['course_id'])){
         }
 
         /* Optional: Styling for subheaders */
-        .subheader-list button {
+        .subheader-list a {
             padding: 10px;
             font-size: 1rem;
             background-color: #DC143C; /* crimson */
@@ -63,11 +62,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['course_id'])){
 
         }
 
-        .subheader-list button:hover {
+        .subheader-list a:hover {
             background-color: #C00; /* Darker crimson on hover */
         }
 
-        button {
+        a {
             border: none;
         }
 

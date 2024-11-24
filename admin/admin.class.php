@@ -43,12 +43,12 @@ class Admin {
     }
 
     function viewStudents($course_id, $organization_id ='') {
-        $sql = 'SELECT student.*, organization.org_name, payment.*
+        $sql = "SELECT student.*, organization.org_name, payment.*
                 FROM payment 
                 JOIN student_organization ON payment.student_org_id = student_organization.stud_org_id 
                 JOIN student ON student_organization.student_id = student.student_id 
                 JOIN organization ON student_organization.organization_id = organization.organization_id
-                WHERE student.course_id = :course_id AND organization.organization_id = :organization_id';
+                WHERE student.course_id = :course_id AND organization.organization_id = :organization_id AND semester = 'First Semester'";
     
         $query = $this->conn->prepare($sql);
         $query->bindParam(':course_id', $course_id);
@@ -108,16 +108,31 @@ class Admin {
     
     
 
-    function reports(){
-        $sql = "";
-
+    function reports() {
+        $sql = "SELECT COUNT(DISTINCT organization.organization_id) AS organization_count, 
+                       COUNT(DISTINCT student.student_id) AS students_enrolled, 
+                       SUM(organization.total_collected) AS fees_collected 
+                FROM organization 
+                INNER JOIN student_organization ON organization.organization_id = student_organization.organization_id 
+                INNER JOIN student ON student_organization.student_id = student.student_id;";
+    
         $query = $this->conn->prepare($sql);
-        if($query->execute()){
-            return $query->fetchAll();
-        } else {
-            return null;
+        $reportData = [];
+        
+        if ($query->execute()) {
+            $reportData = $query->fetch();
         }
+    
+        $sql_facilitator = "SELECT COUNT(facilitator_id) AS facilitators_count FROM facilitator;";
+        $query_facilitator = $this->conn->prepare($sql_facilitator);
+        
+        if ($query_facilitator->execute()) {
+            $reportData['facilitators_count'] = $query_facilitator->fetchColumn();
+        }
+    
+        return $reportData;
     }
+    
 
     // function allStudents(){
     //     $sql = 'SELECT * FROM students';

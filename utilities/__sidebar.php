@@ -24,12 +24,12 @@
                         <p class="w-75 fs-5 pt-3">Students</p>
                     </a>
 
-                    <form id="form-sort-course" class="subheader-list list-unstyled position-absolute w-100 text-center" method="POST">
-                        <button type="submit" name="course_id" value="1" class="text-white text-decoration-none d-block p-2 w-100 border-none">BSIT</button>
-                        <button type="submit" name="course_id" value="2" class="text-white text-decoration-none d-block p-2 w-100 border-none">BSCS</button>
-                        <button type="submit" name="course_id" value="3" class="text-white text-decoration-none d-block p-2 w-100 border-none">ACT AD</button>
-                        <button type="submit" name="course_id" value="4" class="text-white text-decoration-none d-block p-2 w-100 border-none">ACT NT</button>
-                    </form>
+                    <div  class="subheader-list list-unstyled position-absolute w-100 text-center">
+                        <a href="student.php" name="course_id" data-id="1" class="text-white text-decoration-none d-block p-2 w-100 border-none form-sort-course">BSIT</a>
+                        <a href="student.php" name="course_id" data-id="2" class="text-white text-decoration-none d-block p-2 w-100 border-none form-sort-course">BSCS</a>
+                        <a href="student.php" name="course_id" data-id="3" class="text-white text-decoration-none d-block p-2 w-100 border-none form-sort-course">ACT AD</a>
+                        <a href="student.php" name="course_id" data-id="4" class="text-white text-decoration-none d-block p-2 w-100 border-none form-sort-course">ACT NT</a>
+                    </div>
                 </li>
                 <li class="header-list w-100 h-25 li-unselected px-2">
                     <a href="payments.php" id="payment-link" class="anchor-tag d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none crimson px-3">

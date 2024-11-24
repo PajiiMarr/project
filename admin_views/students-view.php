@@ -4,17 +4,19 @@ require_once '../admin/admin.class.php';
 
 $viewOrgs = new Admin;
 
-$course_id = isset($_SESSION['course_id']) ? clean_input($_SESSION['course_id']) : 1;
-$organization_id = isset($_SESSION['organization_id']) ? clean_input($_SESSION['organization_id']) : 1;
+$viewOrgs = new Admin;
+
+$course_id = isset($_GET['course_id']) ? clean_input($_GET['course_id']) : 1;
+$organization_id = isset($_GET['organization_id']) ? clean_input($_GET['organization_id']) : 1;
 
 // Handle form submission to update session values
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['course_id'])) {
-        $_SESSION['course_id'] = clean_input($_POST['course_id']);
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+    if (isset($_GET['course_id'])) {
+        $_SESSION['course_id'] = clean_input($_GET['course_id']);
         $course_id = $_SESSION['course_id'];
     }
-    if (isset($_POST['organization_id'])) {
-        $_SESSION['organization_id'] = clean_input($_POST['organization_id']);
+    if (isset($_GET['organization_id'])) {
+        $_SESSION['organization_id'] = clean_input($_GET['organization_id']);
         $organization_id = $_SESSION['organization_id'];
     }
     $students = $viewOrgs->viewStudents($course_id, $organization_id);
@@ -22,7 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $students = $viewOrgs->viewStudents($course_id, $organization_id);
 }
 
-var_dump($course_id);
 
 $allOrgs = $viewOrgs->allOrgs();
 ?>

@@ -24,6 +24,10 @@ $(document).ready(function () {
       e.preventDefault();
       viewPayments();
     });
+    $(".form-sort-course").on("click", function(e){
+      e.preventDefault();
+      sortCourse(this.dataset.id);
+    });
 
   //   $(document).ready(function() {
   //     $(".form-selector").on("submit", function(e) {
@@ -160,22 +164,16 @@ $(document).ready(function () {
       });
     }
 
-  //   function sortCourse() {
-  //     $.ajax({
-  //         type: "POST",
-  //         url: "../admin_views/student_sorting.php",
-  //         data: $("#form-sort-course").serialize(), // Ensure the correct form ID
-  //         dataType: "json",
-  //         success: function (response) {
-  //             $("#table-student tbody tr").html(response); // Replace table content
-              
-              
-  //         },
-  //         error: function (xhr, status, error) {
-  //             console.error("AJAX error:", status, error);
-  //         }
-  //     });
-  // }
+    function sortCourse(course_id) {
+      $.ajax({
+          type: "GET",
+          url: `../admin_views/students-view.php?course_id=${course_id}`,
+          dataType: "html",
+          success: function (response) {
+            $(".content-page").html(response);
+          }
+      });
+    }
   
 
     function enrollStudent(){
