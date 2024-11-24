@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 * {
@@ -25,12 +26,7 @@ header > div {
     border-bottom: 1.5px solid #9C1F1D;
 }
 
-.custom-border-bottom {
-    border-bottom: 1px solid #9C1F1D;
-}
-
-
-.admin-icon {
+.facilitator-icon {
     height: 25%;
     width: 100%;
 }
@@ -39,7 +35,7 @@ header > div {
     color: #9C1F1D;
 }
 
-.admin-icon h2 {
+.facilitator-icon h2 {
     color: black;
 }
 
@@ -47,7 +43,7 @@ header > div {
     font-size: 10em;
 }
 
-.admin-nav {
+.facilitator-nav {
     height: 60%;
     width: 100%;
 }
@@ -84,10 +80,6 @@ main {
     color: black;
 }
 
-.bg-pink {
-    background-color: #fb9c9a;
-}
-
 .btn {
     transition: 0.15s ease-in-out;
     background-color: #9C1F1D;
@@ -102,59 +94,15 @@ main {
     color: #9C1F1D;
 }
 
-
-.add {
-    font-size: 10px;
-    position: absolute;
-}
-
-
-.h-20 {
-    height: 20%;
-}
-
 .li-unselected {
     transition: 0.15s ease-in-out;
 }
 
 .li-unselected:hover {
     background-color: #ffe8e8;
-
 }
 
-.ccs-green {
-    color: #31511E;
-}
-
-.max-h-100 {
-    max-height: 100%;
-}
-
-.bg-light-crimson {
-    background-color: #991B1B99; /* Crimson color with transparency */
-}
-
-
-
-.rounded-large {
-    border-radius: 15px;
-}
-
-.shadow-hover {
-    transition: 0.1s ease-in-out;
-}
-
-.shadow-hover:hover {
-    content: '';
-    box-shadow: inset 0 -1px 8px rgba(0, 0, 0, 0.2);
-    z-index: -1;
-}
-
-.w-18 {
-    width: 18%;
-}
-
-input,select {
+input, select {
     transition: 0.1s ease-in-out;
     border-bottom: 2px solid black;
     outline: none;
@@ -163,28 +111,18 @@ input,select {
     border-right: none;
 }
 
-input:focus,
-select:focus {
+input:focus, select:focus {
     border-bottom: 2px solid #9C1F1D;
     outline: none;
 }
 
-.radio-label {
-    background-color: transparent;
-    color: black;
-    cursor: pointer;
-    display: inline-block;
-    text-align: center;
-    transition: background-color 0.3s, color 0.3s;
+.reports i {
+    color: #9C1F1D; 
 }
 
-.radio-label.selected {
-    background-color: #9C1F1D;
-    color: white;
-}
 
-.radio-label:hover {
-    background-color: #fb9c9a;
-    color: black;
+.reports:hover {
+    background-color: #F8F9FA; /* Light grey for hover */
+    transform: translateY(-5px); /* Slight lift effect */
+    transition: 0.2s ease-in-out;
 }
-
