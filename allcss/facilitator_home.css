@@ -1,0 +1,117 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+* {
+    font-family: 'Roboto', sans-serif;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+body {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+}
+
+header {
+    height: 100%;
+    width: 15%;
+    color: white;
+    box-shadow: 2px 5px 10px 5px rgba(200, 200, 200, 0.8);
+}
+
+header > div {
+    border-bottom: 1.5px solid #9C1F1D;
+}
+
+.facilitator-icon {
+    height: 25%;
+    width: 100%;
+}
+
+.crimson {
+    color: #9C1F1D;
+}
+
+.facilitator-icon h2 {
+    color: black;
+}
+
+.icon-size {
+    font-size: 10em;
+}
+
+.facilitator-nav {
+    height: 60%;
+    width: 100%;
+}
+
+.sign-out {
+    height: 15%;
+    width: 100%;
+}
+
+main {
+    height: 100%;
+    width: 85%;
+}
+
+.h-35 {
+    height: 35%;
+}
+
+.h-80 {
+    height: 80%;
+}
+
+.h-18 {
+    height: 18%;
+}
+
+.bg-crimson {
+    background-color: #9C1F1D;
+    color: white;
+}
+
+.bg-crimson:hover {
+    background-color: #fb9c9a;
+    color: black;
+}
+
+.btn {
+    transition: 0.15s ease-in-out;
+    background-color: #9C1F1D;
+    color: white;
+}
+
+.btn:active i {
+    color: #9C1F1D;
+}
+
+.btn:active p {
+    color: #9C1F1D;
+}
+
+.li-unselected {
+    transition: 0.15s ease-in-out;
+}
+
+.li-unselected:hover {
+    background-color: #ffe8e8;
+}
+
+input, select {
+    transition: 0.1s ease-in-out;
+    border-bottom: 2px solid black;
+    outline: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+
+input:focus, select:focus {
+    border-bottom: 2px solid #9C1F1D;
+    outline: none;
+}
