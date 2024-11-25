@@ -33,6 +33,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['course_id'])){
 
     <link rel="stylesheet" href="../allcss/admin_home.css">
     <style>
+
+
         .li-student {
             position: relative;
         }

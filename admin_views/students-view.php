@@ -63,7 +63,7 @@ $allOrgs = $viewOrgs->allOrgs();
             <table id="table-student" class="max-h-100 w-100 table-hover position-relative">
                 <thead>
                     <tr class="bg-light-crimson">
-                        <th class="fs-4 text-white p-2">No.</th>
+                        <th class="fs-4 text-white p-2 text-start">No.</th>
                         <th class="fs-4 text-white p-2">Student</th>
                         <th class="fs-4 text-white p-2">Organization</th>
                         <th class="fs-4 text-white p-2">Status</th>
@@ -86,7 +86,8 @@ $allOrgs = $viewOrgs->allOrgs();
                                 <td class="p-2"><?= clean_input($student['org_name']); ?></td>
                                 <td class="p-2"><?= clean_input($student['payment_status']); ?></td>
                                 <td class="p-2">
-                                    <a href="#">hello</a>
+                                    <?php if($student['payment_status'] == 'Unpaid') {?><a href="" class="btn btn-primary create-payment" data-id="<?= clean_input($student['payment_id']);?>">Create Payment</a><?php }?>
+                                    <a href="" ></a>
                                 </td>
                             </tr>
                             <?php $counter++; ?>

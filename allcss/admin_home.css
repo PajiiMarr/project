@@ -88,17 +88,17 @@ main {
     background-color: #fb9c9a;
 }
 
-.btn {
+.for-btn {
     transition: 0.15s ease-in-out;
     background-color: #9C1F1D;
     color: white;
 }
 
-.btn:active i {
+.for-btn:active i {
     color: #9C1F1D;
 }
 
-.btn:active p {
+.for-btn:active p {
     color: #9C1F1D;
 }
 

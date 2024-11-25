@@ -33,6 +33,14 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['course_id'])){
     <link rel="stylesheet" href="../node_modules/datatables/css/dataTables.min.css">
     <link rel="stylesheet" href="../allcss/admin_home.css">
     <style>
+        .bg-gray {
+            transition: 0.1s ease-in-out;
+        }
+
+        .bg-gray:hover {
+            background-color: #E8E8E8;
+        }
+
         .li-student {
             position: relative;
         }

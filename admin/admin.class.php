@@ -145,32 +145,69 @@ class Admin {
     // }
 
     function addOrganization($org_name, $org_description, $contact_email, $required_fee){
-        $sql = "INSERT INTO organization(org_name, contact_email, org_description, created_date, required_fee)
-                VALUES(:org_name, :contact_email, :org_description, NOW(), :required_fee);";
+        $sql = "INSERT INTO organization (org_name, contact_email, org_description, created_date, required_fee)
+        VALUES (:org_name, :contact_email, :org_description, NOW(), :required_fee)";
         $query = $this->conn->prepare($sql);
         $query->bindParam(':org_name', $org_name);
         $query->bindParam(':org_description', $org_description);
         $query->bindParam(':required_fee', $required_fee);
         $query->bindParam(':contact_email', $contact_email);
+        $query->execute();
 
+        $organization_id = $this->conn->lastInsertId();
 
+        $this->insertStudOrg($organization_id);
 
-        if($query->execute()){
-            return true;
-            $organization_id = $this->conn->lastInsertId();
+        $sql_update_balance = "UPDATE organization SET pending_balance = (
+            SELECT SUM(o.required_fee)
+            FROM student_organization so
+            INNER JOIN payment ON so.stud_org_id = payment.student_org_id
+            INNER JOIN organization o ON o.organization_id = so.organization_id
+            WHERE o.organization_id = :organization_id
+              AND payment.payment_status = 'Unpaid'
+              AND payment.semester = 'First Semester'
+        ) 
+        WHERE organization_id = :organization_id";
 
-            $sql_add_stud_org = "INSERT INTO student_organization (student_id, organization_id)
-                                SELECT student_id, :organization_id 
-                                FROM student 
-                                WHERE status = 'Active'";
-            $query_add_stud_org = $this->conn->prepare($sql_add_stud_org);
-            $query_add_stud_org->bindParam(':organization_id', $organization_id);
-        } else {
-            return false;
-        }
-
-
+        $query_update_balance = $this->conn->prepare($sql_update_balance);
+        $query_update_balance->bindParam(":organization_id", $organization_id);
+        $query_update_balance->execute();
     }
+
+    function insertStudOrg($organization_id){
+        $sql_add_stud_org = "INSERT INTO student_organization (student_id, organization_id)
+        SELECT student_id, :organization_id 
+        FROM student 
+        WHERE status = 'Active'";
+        $query_add_stud_org = $this->conn->prepare($sql_add_stud_org);
+        $query_add_stud_org->bindParam(':organization_id', $organization_id);
+        $query_add_stud_org->execute();
+        
+        $this->insertPayment($organization_id);
+    }
+
+    function insertPayment($organization_id){
+        $sql = "SELECT * FROM student_organization WHERE organization_id = :organization_id";
+        $query = $this->conn->prepare($sql);
+        $query->bindParam(":organization_id", $organization_id);
+        $query->execute();
+
+        $stud_org_id = $query->fetchAll();
+
+        foreach($stud_org_id as $soi){
+            $sql_first_sem = "INSERT INTO payment (student_org_id, semester) VALUES(:stud_org_id, 'First Semester')";
+            $query_first_sem = $this->conn->prepare($sql_first_sem);
+            $query_first_sem->bindParam(':stud_org_id', $soi['stud_org_id']);
+            $query_first_sem->execute();
+    
+            $sql_second_sem = "INSERT INTO payment (student_org_id, semester) VALUES(:stud_org_id, 'Second Semester')";
+            $query_second_sem = $this->conn->prepare($sql_second_sem);
+            $query_second_sem->bindParam(':stud_org_id', $soi['stud_org_id']);
+            $query_second_sem->execute();
+        }
+    }
+
+    
 
     function allOrgs(){
         $sql = 'SELECT * FROM organization';
