@@ -9,6 +9,7 @@
             $this->conn = $db->connect();
         }
 
+        // Login function with check for facilitator
         function login($email, $password) {
             $sql = "SELECT user_id, password, is_facilitator, is_student FROM user WHERE email = :email LIMIT 1;";
             $query = $this->conn->prepare($sql);
@@ -30,10 +31,13 @@
                 $query_update->bindParam(':date_updated', $date);
                 $query_update->execute();
                 
+                // Redirect based on user role
                 if ($user['is_facilitator'] == 1) {
-                    header('Location: facilitator/facilitator.php');
+                    // Redirect to switch role modal for facilitators
+                    header('Location: switch_role.php');
                 } else {
-                    header('Location: student/student.php');
+                    header('Location: /student/student.php'); // Default redirect for students
+
                 }
                 session_write_close();
                 exit;
@@ -41,6 +45,18 @@
                 $_SESSION['incorrect_credentials'] = 'Incorrect Credentials';
             }
         }
+
+        // New function to check if the user is a facilitator (helper for switch role modal)
+        function isFacilitator($user_id) {
+            $sql = "SELECT is_facilitator FROM user WHERE user_id = :user_id;";
+            $query = $this->conn->prepare($sql);
+            $query->bindParam(':user_id', $user_id);
+            $query->execute();
+
+            $user = $query->fetch();
+            return $user['is_facilitator'] == 1;
+        }
+
 
         function sign_up_and_set_profile($email, $password, $course_id, $course_year, $last_name, $first_name, $middle_name, $phone_number, $dob, $age, $course_section) {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
