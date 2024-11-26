@@ -188,3 +188,6 @@ select:focus {
     color: black;
 }
 
+h5, h6, label {
+    color: black;
+}

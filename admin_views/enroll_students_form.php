@@ -100,7 +100,7 @@ $password = "temp_2020";
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary brand-bg-color">Save Product</button>
+                <button type="submit" class="btn btn-primary brand-bg-color">Enroll Student</button>
             </div>
         </form>
       </div>

@@ -85,9 +85,12 @@ $allOrgs = $viewOrgs->allOrgs();
                                 </td>
                                 <td class="p-2"><?= clean_input($student['org_name']); ?></td>
                                 <td class="p-2"><?= clean_input($student['payment_status']); ?></td>
-                                <td class="p-2">
-                                    <?php if($student['payment_status'] == 'Unpaid') {?><a href="" class="btn btn-primary create-payment" data-id="<?= clean_input($student['payment_id']);?>">Create Payment</a><?php }?>
-                                    <a href="" ></a>
+                                <td class="p-2 text-nowrap">
+                                    <?php if($student['payment_status'] == 'Unpaid') {?>
+                                        <a href="" class="btn btn-primary create-payment" data-id="<?= clean_input($student['payment_id']);?>">Create Payment</a>
+                                    <?php }?>
+                                        <a href="" class="btn btn-success" data-id="<?= clean_input($student['payment_id']);?>">View Student</a>
+                                        
                                 </td>
                             </tr>
                             <?php $counter++; ?>
@@ -96,14 +99,7 @@ $allOrgs = $viewOrgs->allOrgs();
                 </tbody>
             </table>
 
-            <a id="enroll-student" class="position-absolute d-flex align-items-center justify-content-between bg-crimson p-4 rounded-4 add-div text-decoration-none" style="bottom:10%; right:5%;">
-                <div class="w-100 d-flex align-items-center justify-content-center">
-                    <i class="fa-solid fa-plus fs-4 add"></i>
-                </div>
-                <div class="text-white fs-4 enroll">
-                    Enroll Students
-                </div>
-            </a>
+
         </div>
     </div>
 </section>

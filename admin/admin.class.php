@@ -63,47 +63,97 @@ class Admin {
         }
         
     }
-    
 
-    function updatePayment($payment_id){
-        $sql = "UPDATE payment SET payment_status = 'Paid', date_of_payment = NOW(), admin_id = 1 WHERE payment_id = :payment_id";
-        $query = $this->conn->prepare($sql);      
-        $query->bindParam(':payment_id', $payment_id);
+    function paymentModal($payment_id) {
+        $sql = "SELECT student.*, organization.*, course.course_code, payment.amount_to_pay
+            FROM payment
+            INNER JOIN student_organization ON payment.student_org_id = student_organization.stud_org_id
+            INNER JOIN organization ON student_organization.organization_id = organization.organization_id
+            INNER JOIN student ON student_organization.student_id = student.student_id
+            INNER JOIN course on student.course_id = course.course_id
+            WHERE payment.payment_id = :payment_id";
+        $query = $this->conn->prepare($sql);       
+        $query->bindParam(":payment_id", $payment_id);
         if($query->execute()){
-            return true;
-        } else{
-            return false;
+            return $query->fetch();
         }
     }
+    
 
-    function paymentHistory($organization_id, $from_date = '', $to_date = '') {
-        $sql = "SELECT payment.*, organization.org_name, student.*, facilitator.*
-                FROM payment
-                JOIN facilitator ON payment.facilitator_id = facilitator.facilitator_id
-                JOIN student_organization ON payment.student_org_id = student_organization.stud_org_id
-                JOIN organization ON student_organization.organization_id = organization.organization_id
-                JOIN student ON student_organization.student_id = student.student_id
-                WHERE organization.organization_id = :organization_id
-                AND payment.payment_status = 'Paid'";
-    
-        if (!empty($from_date) && !empty($to_date)) {
-            $sql .= " AND payment.date_of_payment BETWEEN :from_date AND :to_date";
+    function updatePayment($payment_id, $amount_to_pay){
+        $payment_atp = $this->paymentModal($payment_id);
+
+        $sql = "UPDATE payment SET date_of_payment = NOW(), admin_id = 1, amount_to_pay = amount_to_pay - :amount_to_pay";
+
+        if($amount_to_pay == $payment_atp['amount_to_pay']){
+            $sql .= ", payment_status = 'Paid'";
         }
-    
+
+        $sql .= " WHERE payment_id = :payment_id";
+        $query = $this->conn->prepare($sql);      
+        $query->bindParam(':payment_id', $payment_id);
+        $query->bindParam(':amount_to_pay', $amount_to_pay);
+        $query->execute();
+
+        $this->updatePendingBalance($payment_id, $amount_to_pay);
+        $this->addPaymentHistory($payment_id, $amount_to_pay);
+        
+        return true;
+    }
+
+    function updatePendingBalance($payment_id, $amount_to_pay){
+        $sql = "SELECT organization.organization_id FROM payment
+        INNER JOIN student_organization ON payment.student_org_id = student_organization.stud_org_id
+        INNER JOIN organization ON student_organization.organization_id = organization.organization_id
+        WHERE payment_id = :payment_id";
         $query = $this->conn->prepare($sql);
-        $query->bindParam(':organization_id', $organization_id);
+
+        $query->bindParam(":payment_id", $payment_id);
+        $query->execute();
+        
+        $organization_id = $query->fetchColumn();
+
+        var_dump($organization_id);
+
+        $sql_pending_balance = "UPDATE organization SET pending_balance = pending_balance - :amount_to_pay WHERE organization_id = :organization_id";
+        $query_pending_balance = $this->conn->prepare($sql_pending_balance);
+        $query_pending_balance->bindParam(":amount_to_pay", $amount_to_pay);
+        $query_pending_balance->bindParam(":organization_id", $organization_id);
+
+        $query_pending_balance->execute();
+
+        return true;
+    }
+
     
-        if (!empty($from_date) && !empty($to_date)) {
-            $query->bindParam(':from_date', $from_date);
-            $query->bindParam(':to_date', $to_date);
-        }
-    
-        if ($query->execute()) {
-            $data = $query->fetchAll();
-            return $data;
-        } else {
+
+    function addPaymentHistory($payment_id, $amount_to_pay) {
+        $sql = "INSERT INTO payment_history(payment_id, issued_by, amount_paid) VALUES(:payment_id, 'Admin', :amount_to_pay)";
+        $query = $this->conn->prepare($sql);
+
+        $query->bindParam(":payment_id", $payment_id);
+        $query->bindParam(":amount_to_pay", $amount_to_pay);
+
+        $query->execute();
+        return true;
+    }
+
+    function paymentHistory(){
+        $sql = "SELECT student.*, organization.*, course.course_code, payment.*, payment_history.*
+        FROM payment_history 
+        INNER JOIN payment ON payment_history.payment_id = payment.payment_id
+        INNER JOIN student_organization ON payment.student_org_id = student_organization.stud_org_id
+        INNER JOIN organization ON student_organization.organization_id = organization.organization_id
+        INNER JOIN student ON student_organization.student_id = student.student_id
+        INNER JOIN course ON student.course_id = course.course_id";
+        $query = $this->conn->prepare($sql);
+
+        if($query->execute()){
+            return $query->fetchAll();
+        } else{
             return null;
         }
+
     }
     
     
@@ -156,7 +206,7 @@ class Admin {
 
         $organization_id = $this->conn->lastInsertId();
 
-        $this->insertStudOrg($organization_id);
+        $this->insertStudOrg($organization_id, $required_fee);
 
         $sql_update_balance = "UPDATE organization SET pending_balance = (
             SELECT SUM(o.required_fee)
@@ -172,9 +222,11 @@ class Admin {
         $query_update_balance = $this->conn->prepare($sql_update_balance);
         $query_update_balance->bindParam(":organization_id", $organization_id);
         $query_update_balance->execute();
+
+        return true;
     }
 
-    function insertStudOrg($organization_id){
+    function insertStudOrg($organization_id, $required_fee){
         $sql_add_stud_org = "INSERT INTO student_organization (student_id, organization_id)
         SELECT student_id, :organization_id 
         FROM student 
@@ -183,10 +235,10 @@ class Admin {
         $query_add_stud_org->bindParam(':organization_id', $organization_id);
         $query_add_stud_org->execute();
         
-        $this->insertPayment($organization_id);
+        $this->insertPayment($organization_id, $required_fee);
     }
 
-    function insertPayment($organization_id){
+    function insertPayment($organization_id, $required_fee){
         $sql = "SELECT * FROM student_organization WHERE organization_id = :organization_id";
         $query = $this->conn->prepare($sql);
         $query->bindParam(":organization_id", $organization_id);
@@ -195,14 +247,16 @@ class Admin {
         $stud_org_id = $query->fetchAll();
 
         foreach($stud_org_id as $soi){
-            $sql_first_sem = "INSERT INTO payment (student_org_id, semester) VALUES(:stud_org_id, 'First Semester')";
+            $sql_first_sem = "INSERT INTO payment (student_org_id, semester, amount_to_pay) VALUES(:stud_org_id, 'First Semester', :amount_to_pay)";
             $query_first_sem = $this->conn->prepare($sql_first_sem);
             $query_first_sem->bindParam(':stud_org_id', $soi['stud_org_id']);
+            $query_first_sem->bindParam(':amount_to_pay', $required_fee);
             $query_first_sem->execute();
     
-            $sql_second_sem = "INSERT INTO payment (student_org_id, semester) VALUES(:stud_org_id, 'Second Semester')";
+            $sql_second_sem = "INSERT INTO payment (student_org_id, semester, amount_to_pay) VALUES(:stud_org_id, 'Second Semester', :amount_to_pay)";
             $query_second_sem = $this->conn->prepare($sql_second_sem);
             $query_second_sem->bindParam(':stud_org_id', $soi['stud_org_id']);
+            $query_second_sem->bindParam(':amount_to_pay', $required_fee);
             $query_second_sem->execute();
         }
     }
@@ -225,6 +279,5 @@ class Admin {
         $query->bindParam(':organization_id', $organization_id);
         $query->execute();
     }
-
 }
 ?>

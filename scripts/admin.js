@@ -28,10 +28,17 @@ $(document).ready(function () {
       e.preventDefault();
       sortCourse(this.dataset.id);
     });
-    $(".create-payment").on("click", function(e){
+    $(document).on("click", ".create-payment", function(e) {
       e.preventDefault();
       createPayment(this.dataset.id);
     });
+
+    $(document).on("click", "#enroll-student", function(e) {
+      e.preventDefault();
+      enrollStudent();
+    });
+  
+    
   //   $(document).ready(function() {
   //     $(".form-selector").on("submit", function(e) {
   //         e.preventDefault();
@@ -171,10 +178,7 @@ $(document).ready(function () {
           //   sortCourse();
           // });
 
-          $(document).on("click", "#enroll-student", function(e) {
-            e.preventDefault();
-            enrollStudent();
-          });
+
         }
       });
     }
@@ -247,6 +251,50 @@ $(document).ready(function () {
               $(`#${key}`).addClass("is-invalid");
               $(`#${key}`).next(".invalid-feedback").text(response.errors[key]).show();
             });
+          } else {
+            $("#staticBackdrop").modal("hide");
+            $("#form-enroll-student")[0].reset();
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error("AJAX error:", status, error);
+        }
+      });
+    }
+
+    function createPayment(paymentId) {
+      $.ajax({
+        type: "GET",
+        url: `../admin_views/create-payment.php?payment_id=${paymentId}`,
+        datatype: "html",
+        success: function (response){
+          $(".modal-container").html(response);
+          $("#staticBackdrop").modal('show');
+
+          $("#form-create-payment").on("submit", function (e){
+            e.preventDefault();
+            savePayment();
+          });
+          // ${"#form-create-payment"}.on("submit", function(e) {
+
+          // });
+        }
+      });
+    }
+
+    function savePayment() {
+      $.ajax({
+        type: "POST",
+        url: "../admin_views/verify_payment.php",
+        data: $("#form-create-payment").serialize(),
+        dataType: "json", // Ensure proper parsing of JSON response
+        success: function (response) {
+    
+          if (response.status === "error") {
+            Object.keys(response.errors).forEach(key => {
+              $(`#${key}`).addClass("is-invalid");
+              $(`#${key}`).next(".invalid-feedback").text(response.errors[key]).show();
+            });
             return; // Stop further execution
           }
     
@@ -259,10 +307,6 @@ $(document).ready(function () {
           console.error("AJAX error:", status, error);
         }
       });
-    }
-
-    function createPayment(paymentId) {
-      
     }
     
 

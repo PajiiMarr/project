@@ -110,12 +110,20 @@
             $organization = $this->getOrganization();
             
             foreach($organization as $org){
-                extract($org);
+                $sql_pending_balance = "UPDATE organization SET pending_balance = pending_balance + :required_fee
+                WHERE organization_id = :organization_id";
+                $query_pending_balance = $this->conn->prepare($sql_pending_balance);
+    
+                $query_pending_balance->bindParam(":organization_id", $org['organization_id']);
+                $query_pending_balance->bindParam(":required_fee", $org['required_fee']);
+    
+                $query_pending_balance->execute();
+
                 $sql_stud_org = "INSERT INTO student_organization(student_id, organization_id) VALUES(:user_id, :organization_id);";
                 $query_stud_org = $this->conn->prepare($sql_stud_org);
                 
                 $query_stud_org->bindParam(':user_id', $user_id);
-                $query_stud_org->bindParam(':organization_id', $organization_id);
+                $query_stud_org->bindParam(':organization_id', $org['organization_id']);
         
                 $query_stud_org->execute();
         
@@ -123,25 +131,28 @@
                 $sql_stud_org_pmt = "SELECT * FROM student_organization WHERE student_id = :user_id AND organization_id = :organization_id;";
                 $query_stud_org_pmt = $this->conn->prepare($sql_stud_org_pmt);
                 $query_stud_org_pmt->bindParam(':user_id', $user_id);
-                $query_stud_org_pmt->bindParam(':organization_id', $organization_id);
+                $query_stud_org_pmt->bindParam(':organization_id', $org['organization_id']);
                 $query_stud_org_pmt->execute();
         
                 $payment = $query_stud_org_pmt->fetch();
         
                 // Insert payment for first semester
-                $sql_pmt_first_sem = "INSERT INTO payment(student_org_id, semester) VALUES(:stud_org_id, 'First Semester');";
+                $sql_pmt_first_sem = "INSERT INTO payment(student_org_id, semester, amount_to_pay) VALUES(:stud_org_id, 'First Semester', :amount_to_pay);";
                 $query_pmt_first_sem = $this->conn->prepare($sql_pmt_first_sem);
                 $query_pmt_first_sem->bindParam(':stud_org_id', $payment['stud_org_id']);
+                $query_pmt_first_sem->bindParam(':amount_to_pay', $org['required_fee']);
                 $query_pmt_first_sem->execute();
         
                 // Insert payment for second semester
-                $sql_pmt_second_sem = "INSERT INTO payment(student_org_id, semester) VALUES(:stud_org_id, 'Second Semester');";
+                $sql_pmt_second_sem = "INSERT INTO payment(student_org_id, semester, amount_to_pay) VALUES(:stud_org_id, 'Second Semester', :amount_to_pay);";
                 $query_pmt_second_sem = $this->conn->prepare($sql_pmt_second_sem);
                 $query_pmt_second_sem->bindParam(':stud_org_id', $payment['stud_org_id']);
+                $query_pmt_second_sem->bindParam(':amount_to_pay', $org['required_fee']);
                 $query_pmt_second_sem->execute();
             }
+
+            return true;
         }
-        
 
         function update_user_type($is_student, $is_facilitator, $user_id){
             $sql_type = "UPDATE user SET is_student = :is_student, is_facilitator = :is_facilitator WHERE user_id = :user_id;";
@@ -223,7 +234,7 @@
         }
 
         function getOrganization() {
-            $sql = "SELECT * FROM organization;";
+            $sql = "SELECT organization_id, required_fee FROM organization;";
             $query = $this->conn->prepare($sql);
 
             if($query->execute()){
@@ -246,4 +257,8 @@
             }
         }
     }
+
+    // $signupObj = new Signup;
+    // var_dump($signupObj->getOrganization());
 ?>
+

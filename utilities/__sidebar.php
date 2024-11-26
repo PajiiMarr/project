@@ -2,6 +2,9 @@
     <i class="fa-regular fa-circle-user icon-size crimson py-3"></i>
     <h2>Admin</h2>
 </div>
+<div class="modal-container">
+
+</div>
 <div class="admin-nav d-flex flex-column justify-content-between">
     <div class="an-child h-35 w-100 d-flex flex-column">
         <nav class="h-100 w-100">
@@ -42,12 +45,12 @@
         </nav>
     </div>
     <div class="an-child h-25 w-100 p-2 d-flex flex-column justify-content-center align-items-center">
-        <a href="" class="btn w-100 h-20 my-2 py-4 bg-crimson d-flex">
+        <a id="enroll-student" class="btn w-100 h-20 my-2 py-4 bg-crimson d-flex">
             <div class="w-25 h-100 d-flex align-items-center justify-content-center">
-                <i class="fa-solid fa-money-bill fs-4"></i>
+                <i class="fa-solid fa-plus fs-4"></i>
             </div>
             <div class="w-75 h-100 d-flex align-items-center justify-content-start">
-                <p class="fs-5 mb-0">Create Payment</p>
+                <p class="fs-5 mb-0">Enroll Students</p>
             </div>
         </a>
     </div>

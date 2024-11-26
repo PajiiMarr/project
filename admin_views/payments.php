@@ -6,18 +6,8 @@ require_once '../utilities/clean.php';
 
 $objAdmin = new Admin;
 
-$allOrgs = $objAdmin->allOrgs();
+$paymentHist = $objAdmin->paymentHistory();
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['organization_id'])) {
-    $_SESSION['organization_id'] = clean_input($_POST['organization_id']);
-}
-
-$organization_id = isset($_SESSION['organization_id']) ? $_SESSION['organization_id'] : 1;
-
-$from_date = isset($_POST['from_date']) ? clean_input($_POST['from_date']) : '';
-$to_date = isset($_POST['to_date']) ? clean_input($_POST['to_date']) : '';
-
-$paymentHist = $objAdmin->paymentHistory($organization_id, $from_date, $to_date);
 ?>
 
 <section class="container-fluid w-100 h-100">
@@ -32,19 +22,12 @@ $paymentHist = $objAdmin->paymentHistory($organization_id, $from_date, $to_date)
             </div>
             <div class="container-fluid h-80 w-100 py-5 px-5">
                 <div class="h-100 w-100 shadow rounded-large overflow-scroll">
-                    <div class="w-100 d-flex justify-content-between p-2">
-                        <form method="post" action="" class="form-selector p-1 d-flex align-items-center justify-content-between w-100">
-                            <div class="w-50 justify-content-start">
-                                <?php foreach($allOrgs as $orgs): ?>
-                                    <?php $buttonClass = ($organization_id == $orgs['organization_id']) ? 'bg-light-crimson text-white' : 'bg-transparent'; ?>
-                                    <button type="submit" name="organization_id" value="<?= htmlspecialchars($orgs['organization_id']); ?>" 
-                                            class="rounded-3 p-2 ms-2 <?= $buttonClass ?>">
-                                        <?= htmlspecialchars($orgs['org_name']); ?>
-                                    </button>
-                                <?php endforeach; ?>
+                    <div class="w-100 p-2">
+                        <form method="post" action="" class="form-selector p-1 d-flex w-100">
+                            <div>
+
                             </div>
-                            
-                            <div class="w-50 d-flex justify-content-end">
+                            <div class="d-flex">
                                 <label for="from_date" class="mx-2">From:</label>
                                 <input type="date" id="from_date" name="from_date" value="<?= htmlspecialchars($from_date); ?>">
                                 
@@ -61,6 +44,9 @@ $paymentHist = $objAdmin->paymentHistory($organization_id, $from_date, $to_date)
                             <th class="fs-4 text-white p-2">No.</th>
                             <th class="fs-4 text-white p-2">Student</th>
                             <th class="fs-4 text-white p-2">Issued by</th>
+                            <th class="fs-4 text-white p-2">Organization</th>
+                            <th class="fs-4 text-white p-2">Amount Paid</th>
+                            <th class="fs-4 text-white p-2">Remaining Balance</th>
                             <th class="fs-4 text-white p-2">Date Paid</th>
                         </tr>
                         <?php if(empty($paymentHist)){ ?>
@@ -70,12 +56,17 @@ $paymentHist = $objAdmin->paymentHistory($organization_id, $from_date, $to_date)
                         <?php } else {
                             $counter = 1;
                             foreach($paymentHist as $ph):
+                                $timestamp = $ph['date_issued'];
+                                $date = new DateTime($timestamp);
                         ?>
                                 <tr>
                                     <td><?= $counter; ?></td>
                                     <td><?= $ph['last_name'] . ', ' . $ph['first_name'] . ' ' . $ph['middle_name']; ?></td>
-                                    <td><?= $counter; ?></td>
-                                    <td><?= $counter; ?></td>
+                                    <td><?= $ph['issued_by']?></td>
+                                    <td><?= $ph['org_name']?></td>
+                                    <td><?= $ph['amount_paid']?></td>
+                                    <td><?= $ph['pending_balance']?></td>
+                                    <td><?= $date->format('d F Y H:i:s')?></td>
                                 </tr>
                         <?php endforeach;
                         } ?>
