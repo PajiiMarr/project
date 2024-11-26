@@ -24,10 +24,12 @@ $(document).ready(function () {
       e.preventDefault();
       viewPayments();
     });
-    $(".form-sort-course").on("click", function(e){
+
+    $(document).on("click", ".form-sort-student", function(e) {
       e.preventDefault();
-      sortCourse(this.dataset.id);
+      sortStudent($(this).data("id"), $(this).data("organization-id"));
     });
+    
     $(document).on("click", ".create-payment", function(e) {
       e.preventDefault();
       createPayment(this.dataset.id);
@@ -183,27 +185,28 @@ $(document).ready(function () {
       });
     }
 
-    function sortCourse(course_id) {
-      $.ajax({
-          type: "GET",
-          url: `../admin_views/students-view.php?course_id=${course_id}`,
-          dataType: "html",
-          success: function (response) {
-            $(".content-page").html(response);
-            var table = $("#table-student").DataTable({
-              dom: "rtp",
-              language: {
-                emptyTable: "No data available in the table" // Custom message for empty tables
-              }
-            });
-            
-            
-            $("#search").on("keyup", function(){
-              table.search(this.value).draw();
-            });
-          }
+    
+function sortStudent(course_id, organization_id) {
+  $.ajax({
+    type: "GET",
+    url: `../admin_views/students-view.php?course_id=${course_id}&organization_id=${organization_id}`,
+    dataType: "html",
+    success: function(response) {
+      $(".content-page").html(response);
+
+      const table = $("#table-student").DataTable({
+        dom: "rtp",
+        language: {
+          emptyTable: "No data available in the table"
+        }
+      });
+
+      $("#search").on("keyup", function() {
+        table.search(this.value).draw();
       });
     }
+  });
+}
   
 
     function enrollStudent(){
@@ -234,6 +237,15 @@ $(document).ready(function () {
         datatype: "html",
         success: function (response){
           $(".content-page").html(response);
+
+          var table = $("#table-payment-history").DataTable({
+            dom: "rtp"  
+        });
+        
+        $(document).on("keyup", "#search", function () {
+          table.search(this.value).draw();
+        });
+
         }
       });
     }

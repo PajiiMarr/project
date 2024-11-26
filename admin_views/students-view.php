@@ -2,29 +2,21 @@
 require_once '../utilities/clean.php';
 require_once '../admin/admin.class.php';
 
-$viewOrgs = new Admin;
-
-$viewOrgs = new Admin;
+$viewOrgs = new Admin();
 
 $course_id = isset($_GET['course_id']) ? clean_input($_GET['course_id']) : 1;
 $organization_id = isset($_GET['organization_id']) ? clean_input($_GET['organization_id']) : 1;
 
-// Handle form submission to update session values
-if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (isset($_GET['course_id'])) {
-        $_SESSION['course_id'] = clean_input($_GET['course_id']);
-        $course_id = $_SESSION['course_id'];
+        $_SESSION['course_id'] = $course_id;
     }
     if (isset($_GET['organization_id'])) {
-        $_SESSION['organization_id'] = clean_input($_GET['organization_id']);
-        $organization_id = $_SESSION['organization_id'];
+        $_SESSION['organization_id'] = $organization_id;
     }
-    $students = $viewOrgs->viewStudents($course_id, $organization_id);
-} else {
-    $students = $viewOrgs->viewStudents($course_id, $organization_id);
 }
 
-
+$students = $viewOrgs->viewStudents($course_id, $organization_id);
 $allOrgs = $viewOrgs->allOrgs();
 ?>
 
@@ -53,9 +45,10 @@ $allOrgs = $viewOrgs->allOrgs();
             </div>
             <form class="form-selector d-flex w-50 pb-2">
                 <?php foreach ($allOrgs as $orgs): ?>
-                    <label class="radio-label rounded-3 p-2 ms-2 <?= ($organization_id == $orgs['organization_id']) ? 'selected' : '' ?>">
-                        <input type="radio" name="organization_id" value="<?= $orgs['organization_id'] ?>" <?= ($organization_id == $orgs['organization_id']) ? 'checked' : '' ?> style="display:none;">
+                    <!-- form-sort-student -->
+                    <a href="" data-id="<?= $course_id ?>" data-organization-id="<?= $orgs['organization_id'] ?>" class="form-sort-student text-decoration-none p-2 mx-2 fs-6 text-black rounded-3 <?= $orgs['organization_id'] == $organization_id ? 'bg-crimson text-white' : '' ; ?> " style="transition: 0.15s ease-in-out;">
                         <?= $orgs['org_name'] ?>
+                    </a>
                     </label>
                 <?php endforeach; ?>
             </form>
@@ -63,11 +56,12 @@ $allOrgs = $viewOrgs->allOrgs();
             <table id="table-student" class="max-h-100 w-100 table-hover position-relative">
                 <thead>
                     <tr class="bg-light-crimson">
-                        <th class="fs-4 text-white p-2 text-start">No.</th>
-                        <th class="fs-4 text-white p-2">Student</th>
-                        <th class="fs-4 text-white p-2">Organization</th>
-                        <th class="fs-4 text-white p-2">Status</th>
-                        <th class="fs-4 text-white p-2">Action</th>
+                        <th class="fs-4 text-white p-2 text-start" style="width: 10%;">No.</th>
+                        <th class="fs-4 text-white p-2" style="width: 20%;">Student</th>
+                        <th class="fs-4 text-white p-2" style="width: 10%;">Organization</th>
+                        <th class="fs-4 text-white p-2" style="width: 10%;">Status</th>
+                        <th class="fs-4 text-white p-2 text-start" style="width: 15%;">Remaining Balance</th>
+                        <th class="fs-4 text-white p-2" style="width: 35%;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -85,6 +79,7 @@ $allOrgs = $viewOrgs->allOrgs();
                                 </td>
                                 <td class="p-2"><?= clean_input($student['org_name']); ?></td>
                                 <td class="p-2"><?= clean_input($student['payment_status']); ?></td>
+                                <td class="p-2 text-start"><?= clean_input($student['amount_to_pay']); ?></td>
                                 <td class="p-2 text-nowrap">
                                     <?php if($student['payment_status'] == 'Unpaid') {?>
                                         <a href="" class="btn btn-primary create-payment" data-id="<?= clean_input($student['payment_id']);?>">Create Payment</a>

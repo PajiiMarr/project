@@ -41,6 +41,17 @@ class Admin {
         }
         return $data;
     }
+    function facilitatorList($organization_id){
+        $sql = 'SELECT * FROM facilitator WHERE organization_id = :organization_id;';
+        $query = $this->conn->prepare($sql);
+        $query->bindParam(":organization_id", $organization_id);
+        if($query->execute()){
+            $data = $query->fetch();
+        } else {
+            return false;
+        }
+        return $data;
+    }
 
     function viewStudents($course_id, $organization_id ='') {
         $sql = "SELECT student.*, organization.org_name, payment.*
@@ -115,9 +126,10 @@ class Admin {
 
         var_dump($organization_id);
 
-        $sql_pending_balance = "UPDATE organization SET pending_balance = pending_balance - :amount_to_pay WHERE organization_id = :organization_id";
+        $sql_pending_balance = "UPDATE organization SET pending_balance = pending_balance - :amount_to_pay, total_collected = total_collected + :amount_to_add WHERE organization_id = :organization_id";
         $query_pending_balance = $this->conn->prepare($sql_pending_balance);
         $query_pending_balance->bindParam(":amount_to_pay", $amount_to_pay);
+        $query_pending_balance->bindParam(":amount_to_add", $amount_to_pay);
         $query_pending_balance->bindParam(":organization_id", $organization_id);
 
         $query_pending_balance->execute();
@@ -139,7 +151,8 @@ class Admin {
     }
 
     function paymentHistory(){
-        $sql = "SELECT student.*, organization.*, course.course_code, payment.*, payment_history.*
+        $sql = "SELECT student.last_name, student.first_name, student.middle_name, organization.org_name, course.course_code,
+        payment.amount_to_pay, payment_history.amount_paid, payment_history.date_issued, payment_history.issued_by
         FROM payment_history 
         INNER JOIN payment ON payment_history.payment_id = payment.payment_id
         INNER JOIN student_organization ON payment.student_org_id = student_organization.stud_org_id
@@ -161,7 +174,7 @@ class Admin {
     function reports() {
         $sql = "SELECT COUNT(DISTINCT organization.organization_id) AS organization_count, 
                        COUNT(DISTINCT student.student_id) AS students_enrolled, 
-                       SUM(organization.total_collected) AS fees_collected 
+                       SUM(DISTINCT organization.total_collected) AS fees_collected 
                 FROM organization 
                 INNER JOIN student_organization ON organization.organization_id = student_organization.organization_id 
                 INNER JOIN student ON student_organization.student_id = student.student_id;";
@@ -279,5 +292,6 @@ class Admin {
         $query->bindParam(':organization_id', $organization_id);
         $query->execute();
     }
+
 }
 ?>

@@ -31,9 +31,9 @@
                 $query_update->execute();
                 
                 if ($user['is_facilitator'] == 1) {
-                    header('Location: facilitator.php');
+                    header('Location: facilitator/facilitator.php');
                 } else {
-                    header('Location: student.php');
+                    header('Location: student/student.php');
                 }
                 session_write_close();
                 exit;
@@ -154,16 +154,16 @@
             return true;
         }
 
-        function update_user_type($is_student, $is_facilitator, $user_id){
-            $sql_type = "UPDATE user SET is_student = :is_student, is_facilitator = :is_facilitator WHERE user_id = :user_id;";
-            $query_type = $this->conn->prepare($sql_type);
+        // function update_user_type($is_student, $is_facilitator, $user_id){
+        //     $sql_type = "UPDATE user SET is_student = :is_student, is_facilitator = :is_facilitator WHERE user_id = :user_id;";
+        //     $query_type = $this->conn->prepare($sql_type);
 
-            $query_type->bindParam(":is_student",$is_student);
-            $query_type->bindParam(":is_facilitator",$is_facilitator);
-            $query_type->bindParam(":user_id",$user_id);
+        //     $query_type->bindParam(":is_student",$is_student);
+        //     $query_type->bindParam(":is_facilitator",$is_facilitator);
+        //     $query_type->bindParam(":user_id",$user_id);
 
-            $query_type->execute();
-        }
+        //     $query_type->execute();
+        // }
 
 
         function duplicate_record_exists($table, $data) {
@@ -221,6 +221,18 @@
                 return false;
             }
         }
+
+
+        function showStudents(){
+            $sql = "SELECT user.is_facilitator, student.last_name, student.first_name, student.middle_name FROM student
+            INNER JOIN user ON student.student_id = user.user_id
+            WHERE user.is_facilitator = 0";
+            $query = $this->conn->prepare($sql);
+            $query->execute();
+            return $query->fetchAll();
+        }
+
+
 
         function getCourse(){
             $sql = "SELECT * FROM course;";

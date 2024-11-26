@@ -24,36 +24,35 @@ $paymentHist = $objAdmin->paymentHistory();
                 <div class="h-100 w-100 shadow rounded-large overflow-scroll">
                     <div class="w-100 p-2">
                         <form method="post" action="" class="form-selector p-1 d-flex w-100">
-                            <div>
-
+                            <div class="w-18 d-flex align-items-center justify-content-around">
+                                <label for="search">
+                                    <i class="fa-solid fa-magnifying-glass fs-4"></i>
+                                </label>
+                                <input class="p-2 w-75" type="text" name="search" id="search" placeholder="Search...">
                             </div>
-                            <div class="d-flex">
+                            <!-- <div class="d-flex">
                                 <label for="from_date" class="mx-2">From:</label>
-                                <input type="date" id="from_date" name="from_date" value="<?= htmlspecialchars($from_date); ?>">
+                                <input type="date" id="from_date" name="from_date" value="//htmlspecialchars($from_date);">
                                 
                                 <label for="to_date" class="mx-2">To:</label>
-                                <input type="date" id="to_date" name="to_date" class="me-2" value="<?= htmlspecialchars($to_date); ?>">
-                            </div>
-                            
-                            <button type="submit" class="btn">Apply Filter</button>
+                                <input type="date" id="to_date" name="to_date" class="me-2" value="//($to_date);">
+                            </div> -->
                         </form>
                     </div>
                     
-                    <table class="max-h-100 w-100 table-hover">
-                        <tr class="bg-light-crimson">
-                            <th class="fs-4 text-white p-2">No.</th>
-                            <th class="fs-4 text-white p-2">Student</th>
-                            <th class="fs-4 text-white p-2">Issued by</th>
-                            <th class="fs-4 text-white p-2">Organization</th>
-                            <th class="fs-4 text-white p-2">Amount Paid</th>
-                            <th class="fs-4 text-white p-2">Remaining Balance</th>
-                            <th class="fs-4 text-white p-2">Date Paid</th>
-                        </tr>
-                        <?php if(empty($paymentHist)){ ?>
-                            <tr>
-                                <td colspan="4" class="text-center fw-bold fs-5 py-2">No Payments Found.</td>
+                    <table class="max-h-100 w-100 table-hover" id="table-payment-history">
+                        <thead>
+                            <tr class="bg-light-crimson">
+                                <th class="fs-4 text-white p-2 text-start">No.</th>
+                                <th class="fs-4 text-white p-2">Student</th>
+                                <th class="fs-4 text-white p-2">Issued by</th>
+                                <th class="fs-4 text-white p-2">Organization</th>
+                                <th class="fs-4 text-white p-2 text-start">Amount Paid</th>
+                                <th class="fs-4 text-white p-2">Date Paid</th>
                             </tr>
-                        <?php } else {
+                        </thead>
+                        <tbody>
+                        <?php
                             $counter = 1;
                             foreach($paymentHist as $ph):
                                 $timestamp = $ph['date_issued'];
@@ -64,12 +63,13 @@ $paymentHist = $objAdmin->paymentHistory();
                                     <td><?= $ph['last_name'] . ', ' . $ph['first_name'] . ' ' . $ph['middle_name']; ?></td>
                                     <td><?= $ph['issued_by']?></td>
                                     <td><?= $ph['org_name']?></td>
-                                    <td><?= $ph['amount_paid']?></td>
-                                    <td><?= $ph['pending_balance']?></td>
+                                    <td class="text-start"><?= $ph['amount_paid']?></td>
                                     <td><?= $date->format('d F Y H:i:s')?></td>
                                 </tr>
-                        <?php endforeach;
-                        } ?>
+                        <?php
+                        $counter++; endforeach;
+                         ?>
+                        </tbody>
                     </table>
                 </div>
             </div>

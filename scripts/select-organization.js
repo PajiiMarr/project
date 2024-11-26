@@ -22,10 +22,39 @@ $(document).ready(function () {
                 // Initialize and show the Bootstrap modal
                 const modal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
                 modal.show();
+
+                $("#assign-facilitator").on('click', function (e){
+                    e.preventDefault();
+                    assignFacilitators();
+                });
             },
             error: function () {
                 alert("Failed to load organization details. Please try again.");
             }
         });
     }
+
+    function assignFacilitators() {
+        $.ajax({
+            type: "GET",
+            url: `../admin/assign_facilitator.php`, // Backend script to fetch details
+            dataType: "html", // Modal HTML content expected
+            success: function (response) {
+                $(".modal-assign-facilitator").html(response);
+                $("#staticBackdrop .modal-content").addClass("blur-effect");
+                // Initialize and show the Bootstrap modal
+                const modal = new bootstrap.Modal(document.getElementById('staticBackdropFacilitator'));
+                modal.show();
+
+                const assignFacilitator = document.getElementById('staticBackdropFacilitator');
+                assignFacilitator.addEventListener('hidden.bs.modal', function () {
+                    $("#staticBackdrop .modal-content").removeClass("blur-effect");
+                });
+            },
+            error: function () {
+                alert("Failed to load organization details. Please try again.");
+            }
+        });
+    }
+
 });

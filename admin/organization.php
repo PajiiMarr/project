@@ -111,6 +111,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['course_id'])){
             }
         }
 
+        #staticBackdropFacilitator {
+            z-index: 1056; /* Higher than Bootstrap's default for modals (1055) */
+        }
+
+        #staticBackdrop {
+            z-index: 1055;
+        }
     </style>
 </head>
 <body>
