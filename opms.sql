@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 25, 2024 at 09:58 AM
+-- Generation Time: Nov 26, 2024 at 01:12 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.0.28
 
@@ -95,9 +95,9 @@ CREATE TABLE `organization` (
   `org_name` varchar(100) DEFAULT NULL,
   `admin_id` int(11) DEFAULT 1,
   `org_description` varchar(255) NOT NULL,
-  `required_fee` decimal(10,2) DEFAULT NULL,
+  `required_fee` decimal(10,2) DEFAULT 0.00,
   `total_collected` decimal(10,2) DEFAULT 0.00,
-  `pending_balance` decimal(10,2) DEFAULT NULL,
+  `pending_balance` decimal(10,2) DEFAULT 0.00,
   `created_date` date NOT NULL,
   `last_updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `contact_email` varchar(100) NOT NULL,
@@ -109,10 +109,8 @@ CREATE TABLE `organization` (
 --
 
 INSERT INTO `organization` (`organization_id`, `org_name`, `admin_id`, `org_description`, `required_fee`, `total_collected`, `pending_balance`, `created_date`, `last_updated`, `contact_email`, `status`) VALUES
-(1, 'Venom Publication', 1, '', 70.00, 0.00, 280.00, '2019-10-01', '2024-11-24 14:07:48', '', 'Active'),
-(2, 'Gender Club', 1, '', 150.00, 0.00, 600.00, '2019-05-02', '2024-11-24 14:46:51', '', 'Active'),
-(9, 'PSITS', 1, 'hello', 75.00, 0.00, 300.00, '2024-11-21', '2024-11-24 14:09:39', 'hi@gmail.com', 'Active'),
-(10, 'csc', 1, 'hellpo', 200.00, 0.00, 800.00, '2024-11-21', '2024-11-24 14:09:18', 'csc@gmail.com', 'Active');
+(1, 'Venom Publication', 1, '', 70.00, 0.00, 2.00, '2019-10-01', '2024-11-26 10:51:23', '', 'Active'),
+(2, 'Gender Club', 1, '', 150.00, 0.00, 150.00, '2019-05-02', '2024-11-26 08:04:52', '', 'Active');
 
 -- --------------------------------------------------------
 
@@ -125,49 +123,43 @@ CREATE TABLE `payment` (
   `student_org_id` int(11) DEFAULT NULL,
   `facilitator_id` int(11) DEFAULT NULL,
   `admin_id` int(11) DEFAULT NULL,
-  `amount_to_pay` decimal(10,2) DEFAULT NULL,
+  `amount_to_pay` decimal(10,2) NOT NULL,
   `payment_status` enum('Paid','Unpaid') DEFAULT 'Unpaid',
   `date_of_payment` date DEFAULT NULL,
-  `semester` enum('First Semester','Second Semester') DEFAULT NULL
+  `semester` enum('First Semester','Second Semester') DEFAULT NULL,
+  `issue_pay` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `payment`
 --
 
-INSERT INTO `payment` (`payment_id`, `student_org_id`, `facilitator_id`, `admin_id`, `amount_to_pay`, `payment_status`, `date_of_payment`, `semester`) VALUES
-(155, 249, NULL, NULL, NULL, 'Unpaid', NULL, 'First Semester'),
-(156, 249, NULL, NULL, NULL, 'Unpaid', NULL, 'Second Semester'),
-(157, 250, NULL, NULL, NULL, 'Unpaid', NULL, 'First Semester'),
-(158, 250, NULL, NULL, NULL, 'Unpaid', NULL, 'Second Semester'),
-(159, 251, NULL, NULL, NULL, 'Unpaid', NULL, 'First Semester'),
-(160, 251, NULL, NULL, NULL, 'Unpaid', NULL, 'Second Semester'),
-(161, 252, NULL, NULL, NULL, 'Unpaid', NULL, 'First Semester'),
-(162, 252, NULL, NULL, NULL, 'Unpaid', NULL, 'Second Semester'),
-(163, 253, NULL, NULL, NULL, 'Unpaid', NULL, 'First Semester'),
-(164, 253, NULL, NULL, NULL, 'Unpaid', NULL, 'Second Semester'),
-(165, 254, NULL, NULL, NULL, 'Unpaid', NULL, 'First Semester'),
-(166, 254, NULL, NULL, NULL, 'Unpaid', NULL, 'Second Semester'),
-(167, 255, NULL, NULL, NULL, 'Unpaid', NULL, 'First Semester'),
-(168, 255, NULL, NULL, NULL, 'Unpaid', NULL, 'Second Semester'),
-(169, 256, NULL, NULL, NULL, 'Unpaid', NULL, 'First Semester'),
-(170, 256, NULL, NULL, NULL, 'Unpaid', NULL, 'Second Semester'),
-(171, 257, NULL, NULL, NULL, 'Unpaid', NULL, 'First Semester'),
-(172, 257, NULL, NULL, NULL, 'Unpaid', NULL, 'Second Semester'),
-(173, 258, NULL, NULL, NULL, 'Unpaid', NULL, 'First Semester'),
-(174, 258, NULL, NULL, NULL, 'Unpaid', NULL, 'Second Semester'),
-(175, 259, NULL, NULL, NULL, 'Unpaid', NULL, 'First Semester'),
-(176, 259, NULL, NULL, NULL, 'Unpaid', NULL, 'Second Semester'),
-(177, 260, NULL, NULL, NULL, 'Unpaid', NULL, 'First Semester'),
-(178, 260, NULL, NULL, NULL, 'Unpaid', NULL, 'Second Semester'),
-(179, 261, NULL, NULL, NULL, 'Unpaid', NULL, 'First Semester'),
-(180, 261, NULL, NULL, NULL, 'Unpaid', NULL, 'Second Semester'),
-(181, 262, NULL, NULL, NULL, 'Unpaid', NULL, 'First Semester'),
-(182, 262, NULL, NULL, NULL, 'Unpaid', NULL, 'Second Semester'),
-(183, 263, NULL, NULL, NULL, 'Unpaid', NULL, 'First Semester'),
-(184, 263, NULL, NULL, NULL, 'Unpaid', NULL, 'Second Semester'),
-(185, 264, NULL, NULL, NULL, 'Unpaid', NULL, 'First Semester'),
-(186, 264, NULL, NULL, NULL, 'Unpaid', NULL, 'Second Semester');
+INSERT INTO `payment` (`payment_id`, `student_org_id`, `facilitator_id`, `admin_id`, `amount_to_pay`, `payment_status`, `date_of_payment`, `semester`, `issue_pay`) VALUES
+(339, 355, NULL, 1, 2.00, 'Unpaid', '2024-11-26', 'First Semester', 0),
+(340, 355, NULL, NULL, 70.00, 'Unpaid', NULL, 'Second Semester', 0),
+(341, 356, NULL, NULL, 150.00, 'Unpaid', NULL, 'First Semester', 0),
+(342, 356, NULL, NULL, 150.00, 'Unpaid', NULL, 'Second Semester', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payment_history`
+--
+
+CREATE TABLE `payment_history` (
+  `payment_history_id` int(11) NOT NULL,
+  `payment_id` int(11) NOT NULL,
+  `issued_by` varchar(255) NOT NULL,
+  `amount_paid` decimal(10,2) NOT NULL,
+  `date_issued` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `payment_history`
+--
+
+INSERT INTO `payment_history` (`payment_history_id`, `payment_id`, `issued_by`, `amount_paid`, `date_issued`) VALUES
+(1, 339, 'Admin', 12.00, '2024-11-26 10:51:23');
 
 -- --------------------------------------------------------
 
@@ -194,14 +186,7 @@ CREATE TABLE `student` (
 --
 
 INSERT INTO `student` (`student_id`, `course_id`, `last_name`, `first_name`, `middle_name`, `phone_number`, `dob`, `age`, `course_year`, `course_section`, `status`) VALUES
-(78, 4, 'manon-og', 'marlo', 'baylen', '09531331877', '2009-11-10', 15, 'Second Year', NULL, 'Active'),
-(79, 1, 'test', 'student', '', '09523187831', '2009-11-14', 15, 'First Year', 'A', 'Active'),
-(80, 2, 'test', 'ako', 'test', '09531331877', '2009-11-19', 15, 'Third Year', 'B', 'Active'),
-(81, 3, 'test_name', 'test_pass', 'hello po', '0976182746', '2009-11-18', 15, 'Second Year', NULL, 'Active'),
-(88, 1, 'manon-og', 'marlo', 'baylen', '09531331877', '2009-11-01', 15, 'First Year', 'A', 'Active'),
-(89, 2, 'guanzon', 'maria', 'm', '09531331877', '2009-11-01', 15, 'Second Year', 'A', 'Active'),
-(90, 3, 'inin', 'inandout', 'baylen', '09263727924', '2009-11-17', 15, 'Second Year', NULL, 'Active'),
-(91, 4, 'marlo', 'amount', 'amount', '09531331877', '2009-11-01', 15, 'Second Year', NULL, 'Active');
+(115, 1, 'Manon-og', 'marlo', 'Baylen', '09531331877', '2009-11-03', 15, 'Second Year', 'C', 'Active');
 
 -- --------------------------------------------------------
 
@@ -220,22 +205,8 @@ CREATE TABLE `student_organization` (
 --
 
 INSERT INTO `student_organization` (`stud_org_id`, `student_id`, `organization_id`) VALUES
-(249, 88, 1),
-(250, 88, 2),
-(251, 88, 9),
-(252, 88, 10),
-(253, 89, 1),
-(254, 89, 2),
-(255, 89, 9),
-(256, 89, 10),
-(257, 90, 1),
-(258, 90, 2),
-(259, 90, 9),
-(260, 90, 10),
-(261, 91, 1),
-(262, 91, 2),
-(263, 91, 9),
-(264, 91, 10);
+(355, 115, 1),
+(356, 115, 2);
 
 -- --------------------------------------------------------
 
@@ -259,14 +230,7 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`user_id`, `email`, `password`, `date_created`, `date_updated`, `admin_id`, `is_student`, `is_facilitator`) VALUES
-(78, 'hz202301575@wmsu.edu.ph', '$2y$10$TSKLV7vEdMeDurUZ/l47gOIdRLQuTDbL3redBYUoESXhbEb1J0KS6', '2024-11-22', '2024-11-22 15:08:21', 1, 0, 0),
-(79, 'hello@gmail.com', '$2y$10$j1oMdhpQlnPqxDq9iMrjfOdbtMnUpGPX3BRWrrHYBxi8BAUDgs6Z.', '2024-11-23', '2024-11-23 02:18:21', 1, 1, 0),
-(80, 'hz202307564@wmsu.edu.ph', '$2y$10$MENnUtmJuIdGMi3fuNcx4eZWVDjQ1Rx6IxoLu0igz99ivc0k62wfa', '2024-11-24', '2024-11-24 10:44:13', 1, 1, 0),
-(81, 'test@gmail.com', '$2y$10$I6Dm4jSsWj3nCAp8yW.ZbOQqdfxoq7UoRSWOmCwHqlQd3ZWmt7j/q', '2024-11-24', '2024-11-24 10:45:01', 1, 1, 0),
-(88, 'hii@gmail.com', '$2y$10$E0KAkkwvqvbOyV7.MzOIj.JELokebObn.K7z6/Wb9MI9BBrX2KwdG', '2024-11-25', '2024-11-25 09:51:19', 1, 1, 0),
-(89, 'hiipo@gmail.com', '$2y$10$CzgttnfmE59rukXtx1X.weHfi0R1N2fnocT1uViNweomlF2QKH4Ku', '2024-11-25', '2024-11-25 09:52:01', 1, 1, 0),
-(90, 'hellopo@gmail.com', '$2y$10$wjP1LAGI3sRmzKf.ER62i.ODVx0aZdtj5gqpuxjxJjAS8/jXfCvHq', '2024-11-25', '2024-11-25 09:53:21', 1, 1, 0),
-(91, 'luyahan@gmail.com', '$2y$10$1eiefxjQeB1meuWQmDfKhu8zSYEAWJj9cs/5AvEJk/SD/erooBMS2', '2024-11-25', '2024-11-25 09:56:58', 1, 1, 0);
+(115, 'gumanakana@gmail.com', '$2y$10$pgguS0Yb7Bzl/KK/A31IT.2WPYE9wCQVgg5yihsB5F0wnldm7llSe', '2024-11-26', '2024-11-26 09:04:52', 1, 1, 0);
 
 --
 -- Indexes for dumped tables
@@ -307,6 +271,12 @@ ALTER TABLE `payment`
   ADD KEY `fk_payment_student_org` (`student_org_id`),
   ADD KEY `fk_payment_facilitator` (`facilitator_id`),
   ADD KEY `fk_payment_admin` (`admin_id`);
+
+--
+-- Indexes for table `payment_history`
+--
+ALTER TABLE `payment_history`
+  ADD PRIMARY KEY (`payment_history_id`);
 
 --
 -- Indexes for table `student`
@@ -350,25 +320,31 @@ ALTER TABLE `course`
 -- AUTO_INCREMENT for table `organization`
 --
 ALTER TABLE `organization`
-  MODIFY `organization_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `organization_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=187;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=343;
+
+--
+-- AUTO_INCREMENT for table `payment_history`
+--
+ALTER TABLE `payment_history`
+  MODIFY `payment_history_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `student_organization`
 --
 ALTER TABLE `student_organization`
-  MODIFY `stud_org_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=265;
+  MODIFY `stud_org_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=357;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=92;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=116;
 
 --
 -- Constraints for dumped tables
