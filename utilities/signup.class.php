@@ -31,9 +31,9 @@
                 $query_update->execute();
                 
                 if ($user['is_facilitator'] == 1) {
-                    header('Location: facilitator/facilitator.php');
+                    header('Location: /facilitator/facilitator.php');
                 } else {
-                    header('Location: student/student.php');
+                    header('Location: /student/dashboard.php');
                 }
                 session_write_close();
                 exit;
