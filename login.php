@@ -4,21 +4,20 @@ session_start();
 require_once 'utilities/signup.class.php';
 require_once 'utilities/clean.php';
 
-
 if (isset($_SESSION['user'])) {
-    if ($_SESSION['user']['facilitator_id'] == 1) {
-        header('Location: facilitator.php');
-    } else {
-        header('Location: student.php');
+    if ($_SESSION['user']['is_facilitator'] == 1) {
+        header('Location: switch_role.php'); // Redirect to switch role page for facilitators
+        exit;
+    } elseif ($_SESSION['user']['is_student'] == 1) {
+        header('Location: student/student.php'); // Redirect to student dashboard
+        exit;
     }
-    session_write_close();
+}
+
+if (isset($_SESSION['admin_id'])) {
+    header('location: admin/dashboard.php');
     exit;
 }
-
-if(isset($_SESSION['admin_id'])){
-    header('location: admin/dashboard.php');
-}
-
 
 $objLogin = new Signup;
 
@@ -26,28 +25,27 @@ $email = $password = "";
 $emailErr = $passwordErr = $incorrect_credentials = $show_ic = "";
 $allinputsfield = true;
 
-$email = $password = '';
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $email = isset($_POST['email']) ? clean_input($_POST['email']) : "";
+    $password = isset($_POST['password']) ? clean_input($_POST['password']) : "";
 
-if($_SERVER['REQUEST_METHOD'] == 'POST'){
-    $email = isset($_POST['email']) ? clean_input($_POST['email']) : "" ;
-    $password = isset($_POST['password']) ? clean_input($_POST['password']) : "" ;
-
-    if(empty($email)){
+    if (empty($email)) {
         $emailErr = " Email is required!";
         $allinputsfield = false;
     }
-    if(empty($password)){
+    if (empty($password)) {
         $passwordErr = " Password is required!";
         $allinputsfield = false;
     }
-    
-    if($allinputsfield){
+
+    if ($allinputsfield) {
         $objLogin->login($email, $password);
-        $incorrect_credentials = $_SESSION['incorrect_credentials'];
+        $incorrect_credentials = $_SESSION['incorrect_credentials'] ?? '';
         $show_ic = true;
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,7 +60,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
         <form action="" method="post">
             <h1>Log in</h1>
             <div>
-                Email <span class="required">* <?= $emailErr  ?></span><br>
+                Email <span class="required">* <?= $emailErr ?></span><br>
                 <input type="email" name="email" id="" value="<?= $email ?>">
             </div>
             <div>
@@ -72,13 +70,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
                     <i class="fas fa-eye" id="togglePassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;"></i>
                 </div>
             </div>
-            <?php
-            if($show_ic){
-            ?>
-            <span class="required"><?= $incorrect_credentials; ?></span>
-            <?php
-            }
-            ?>
+            <?php if ($show_ic): ?>
+                <span class="required"><?= $incorrect_credentials; ?></span>
+            <?php endif; ?>
             <button type="submit">Submit</button>
         </form>
     </section>
@@ -92,6 +86,5 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
             this.classList.toggle('fa-eye-slash');
         });
     </script>
-
 </body>
 </html>
