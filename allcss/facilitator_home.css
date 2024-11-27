@@ -126,3 +126,7 @@ input:focus, select:focus {
     transform: translateY(-5px); /* Slight lift effect */
     transition: 0.2s ease-in-out;
 }
+
+.rounded-large {
+    border-radius: 15px;
+}
