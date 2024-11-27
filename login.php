@@ -7,9 +7,9 @@ require_once 'utilities/clean.php';
 
 if (isset($_SESSION['user'])) {
     if ($_SESSION['user']['facilitator_id'] == 1) {
-        header('Location: facilitator.php');
+        header('Location: facilitator/dashboard.php');
     } else {
-        header('Location: student.php');
+        header('Location: student/dashboard.php');
     }
     session_write_close();
     exit;
