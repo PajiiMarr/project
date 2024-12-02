@@ -162,11 +162,6 @@
                 $query_pmt_first_sem->execute();
         
                 // Insert payment for second semester
-                $sql_pmt_second_sem = "INSERT INTO payment(student_org_id, semester, amount_to_pay) VALUES(:stud_org_id, 'Second Semester', :amount_to_pay);";
-                $query_pmt_second_sem = $this->conn->prepare($sql_pmt_second_sem);
-                $query_pmt_second_sem->bindParam(':stud_org_id', $payment['stud_org_id']);
-                $query_pmt_second_sem->bindParam(':amount_to_pay', $org['required_fee']);
-                $query_pmt_second_sem->execute();
             }
 
             return true;
@@ -201,44 +196,7 @@
         }
         
 
-        function set_facilitator($user_id, $organization_id, $course_id, $last_name, $first_name, $middle_name, $phone_number, $dob, $age, $course_year, $course_section){
-            $sql = "INSERT INTO facilitator VALUES (:user_id, :organization_id, :course_id, :last_name, :first_name, :middle_name, :phone_number, :dob, :age, :course_year, :course_section);";
-            $query = $this->conn->prepare($sql);
 
-            // if($this->duplicate_record_exists('facilitator', [
-            //     'facilitator_id' => $user_id,
-            //     'organization_id' => $organization_id,
-            //     'course_id' => $course_id,
-            //     'course_year' => $course_year,
-            //     'last_name' => $last_name,
-            //     'first_name' => $first_name,
-            //     'middle_name' => $middle_name,
-            //     'phone_number' => $phone_number,
-            //     'dob' => $dob,
-            //     'age' => $age,
-            //     'course_section' => $course_section
-            // ])){
-            //     return false; // Duplicate record found
-            // }
-
-            $query->bindParam(":user_id", $user_id);
-            $query->bindParam(":organization_id", $organization_id);
-            $query->bindParam(":course_id", $course_id);
-            $query->bindParam(":last_name", $last_name);
-            $query->bindParam(":first_name", $first_name);
-            $query->bindParam(":middle_name", $middle_name);
-            $query->bindParam(":phone_number", $phone_number);
-            $query->bindParam(":dob", $dob);
-            $query->bindParam(":age", $age);
-            $query->bindParam(":course_year", $course_year);
-            $query->bindParam(":course_section", $course_section);
-
-            if($query->execute()){
-                return true;
-            } else {
-                return false;
-            }
-        }
 
 
         function showStudents(){

@@ -154,7 +154,7 @@ main {
     width: 18%;
 }
 
-input,select {
+input {
     transition: 0.1s ease-in-out;
     border-bottom: 2px solid black;
     outline: none;

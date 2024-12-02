@@ -25,34 +25,11 @@ $(document).ready(function () {
       viewPayments();
     });
 
-    $(document).on("click", ".form-sort-student", function(e) {
-      e.preventDefault();
-      sortStudent($(this).data("id"), $(this).data("organization-id"));
-    });
-    
-    $(document).on("click", ".create-payment", function(e) {
-      e.preventDefault();
-      createPayment(this.dataset.id);
-    });
 
     $(document).on("click", "#enroll-student", function(e) {
       e.preventDefault();
       enrollStudent();
     });
-  
-    
-  //   $(document).ready(function() {
-  //     $(".form-selector").on("submit", function(e) {
-  //         e.preventDefault();
-  //     });
-  
-  //     $("#search").on("keypress", function(event) {
-  //         if (event.key === "Enter") {
-  //             event.preventDefault();
-  //         }
-  //     });
-  // });
-  
 
     let url = window.location.href;
     if (url.endsWith("dashboard.php")) {
@@ -65,6 +42,18 @@ $(document).ready(function () {
       $("#payment-link").trigger("click"); // Trigger the products click event
     } else {
       $("#dashboard-link").trigger("click");
+    }
+
+    function viewDashboard(){
+      $.ajax({
+          type: "GET",
+          url: "../admin_views/dashboard.php",
+          datatype: "html",
+          success: function (response) {
+              $(".content-page").html(response);
+          
+          }
+      });
     }
 
 
@@ -124,7 +113,6 @@ $(document).ready(function () {
             $("#staticBackdrop").modal("hide");
             $("#form-add-organization")[0].reset();
     
-            // Optionally reload the organization list
             viewOrganization();
           }
           else if (response.status === "error") {
@@ -144,19 +132,7 @@ $(document).ready(function () {
         },
       });
     }
-    
 
-    function viewDashboard(){
-      $.ajax({
-          type: "GET",
-          url: "../admin_views/dashboard.php",
-          datatype: "html",
-          success: function (response) {
-              $(".content-page").html(response);
-          
-          }
-      });
-    }
 
     function viewStudent(){
       $.ajax({
@@ -170,44 +146,222 @@ $(document).ready(function () {
             dom: "rtp"
           });
           
-          
           $("#search").on("keyup", function(){
             table.search(this.value).draw();
           });
 
-          // $("#form-sort-course").on("submit", function(e){
-          //   e.preventDefault();
-          //   sortCourse();
-          // });
+          $("#course").on("change", function(){
+            if (this.value !== "choose-course") {
+              table.column(3).search(this.value).draw();
+            }
+          });
 
+          $(".assign-head").off("click").on("click", function(e){
+            e.preventDefault();
+            assignOrganizationHead(this.dataset.id);
+          });
 
+          $(".resign-head").off("click").on("click", function(e){
+            e.preventDefault();
+            resignOrganizationHead(this.dataset.id);
+          });
+          $(".edit-student").off("click").on("click", function(e){
+            e.preventDefault();
+            editStudent(this.dataset.id);
+          });
+
+          $(".remove-student").off("click").on("click", function(e){
+            e.preventDefault();
+            removeStudent(this.dataset.id);
+          });
+          $(".enroll-undefined-student").off("click").on("click", function(e){
+            e.preventDefault();
+            enrollUndefinedStudent(this.dataset.id);
+          });
+        }
+      });
+    }
+
+    function enrollUndefinedStudent(studentId){
+      $.ajax({
+        type: 'GET',
+        url: `../admin_views/enroll_undefined_student_form.php?student-id=${studentId}` ,
+        datatype: "html",
+        success: function (view) {
+          $(".modal-container").empty().html(view);
+          $("#enrollUndefinedStudent").modal('show');
+
+          $("#form-enroll-undefined-student").on("submit", function(e) {
+            e.preventDefault();
+            saveUndefinedStudent();
+          });
+        }
+      });
+    }
+
+    function saveUndefinedStudent(){
+      $.ajax({
+        type: 'POST',
+        url: `../admin_views/enroll_undefined_student.php`,
+        data: $(`#form-enroll-undefined-student`).serialize(),
+        dataType: "json",
+        success: function (response) {
+          $("#enrollUndefinedStudent").modal("hide");
+          $("#form-enroll-undefined-student")[0].reset();
+          viewStudent();
         }
       });
     }
 
     
-function sortStudent(course_id, organization_id) {
-  $.ajax({
-    type: "GET",
-    url: `../admin_views/students-view.php?course_id=${course_id}&organization_id=${organization_id}`,
-    dataType: "html",
-    success: function(response) {
-      $(".content-page").html(response);
 
-      const table = $("#table-student").DataTable({
-        dom: "rtp",
-        language: {
-          emptyTable: "No data available in the table"
+    function removeStudent(studentId){
+      $.ajax({
+        type: 'GET',
+        url: `../admin_views/remove_student_confirmation.php?student-id=${studentId}` ,
+        datatype: "html",
+        success: function (view) {
+          $(".modal-container").empty().html(view);
+          $("#removeStudent").modal('show');
+
+          $("#form-remove-student").on("submit", function(e) {
+            e.preventDefault();
+            saveRemovedStudent();
+          });
         }
       });
+    }
 
-      $("#search").on("keyup", function() {
-        table.search(this.value).draw();
+    function saveRemovedStudent(){
+      $.ajax({
+        type: 'POST',
+        url: `../admin_views/remove_student.php`,
+        data: $(`#form-remove-student`).serialize(),
+        dataType: "json",
+        success: function (response) {
+          if (response.status === "error") {
+            if (response.errors) {
+              $("#reason").addClass("is-invalid"); // Add invalid class
+              $("#reason").siblings(".invalid-feedback") // Correctly reference invalid-feedback
+                .text(response.errors)
+                .show(); // Show error message
+            }
+          } else {
+            $("#reason").removeClass("is-invalid"); // Clear invalid class
+            $("#reason").siblings(".invalid-feedback").hide(); // Hide error message
+
+          $("#removeStudent").modal("hide");
+          $("#form-remove-student")[0].reset();
+          viewStudent();
+          }
+        }
       });
     }
-  });
-}
-  
+
+    function editStudent(studentId){
+      $.ajax({
+        type: 'GET',
+        url: `../admin_views/edit_student_form.php?student-id=${studentId}` ,
+        datatype: "html",
+        success: function (view) {
+          $(".modal-container").empty().html(view);
+          $("#editStudent").modal('show');
+
+          $("#form-edit-head").on("submit", function(e) {
+            e.preventDefault();
+            saveOrganizationHead();
+          });
+        }
+      });
+    }
+
+    
+    function assignOrganizationHead(studentId) {
+      $.ajax({
+        type: 'GET',
+        url: `../admin_views/assign_head_form.php?student-id=${studentId}` ,
+        datatype: "html",
+        success: function (view) {
+          $(".modal-container").empty().html(view);
+          $("#assignHead").modal('show');
+
+          $("#form-assign-head").on("submit", function(e) {
+            e.preventDefault();
+            saveOrganizationHead();
+          });
+        }
+      });
+    }
+    
+    function saveOrganizationHead(){
+      $.ajax({
+        type: 'POST',
+        url: `../admin_views/assign_head.php`,
+        data: $(`#form-assign-head`).serialize(),
+        dataType: "json",
+        success: function (response) {
+          if (response.status === "error") {
+            if (response.errors) {
+              $("#organization_id").addClass("is-invalid"); // Add invalid class
+              $("#organization_id").siblings(".invalid-feedback") // Correctly reference invalid-feedback
+                .text(response.errors)
+                .show(); // Show error message
+            }
+          } else {
+            $("#organization_id").removeClass("is-invalid"); // Clear invalid class
+            $("#organization_id").siblings(".invalid-feedback").hide(); // Hide error message
+
+          $("#assignHead").modal("hide");
+          $("#form-assign-head")[0].reset();
+          viewStudent();
+          }
+        }
+      });
+    }
+
+    function resignOrganizationHead(studentId) {
+      $.ajax({
+        type: 'GET',
+        url: `../admin_views/resign_head_modal.php?student-id=${studentId}` ,
+        datatype: "html",
+        success: function (view) {
+          $(".modal-container").empty().html(view);
+          $("#resignHead").modal('show');
+
+          $("#form-resign-head").on("submit", function(e) {
+            e.preventDefault();
+            saveResignOrganizationHead();
+          });
+        }
+      });
+    }
+    
+    function saveResignOrganizationHead(){
+      $.ajax({
+        type: 'POST',
+        url: `../admin_views/resign_head.php`,
+        data: $(`#form-resign-head`).serialize(),
+        dataType: "json",
+        success: function (response) {
+          if (response.status === "error") {
+            if (response.errors) {
+              $("#reason").addClass("is-invalid"); // Add invalid class
+              $("#reason").siblings(".invalid-feedback") // Correctly reference invalid-feedback
+                .text(response.errors)
+                .show(); // Show error message
+            }
+          } else {
+            $("#reason").removeClass("is-invalid"); // Clear invalid class
+            $("#reason").siblings(".invalid-feedback").hide(); // Hide error message
+
+          $("#resignHead").modal("hide");
+          $("#form-resign-head")[0].reset();
+          viewStudent();
+          }
+        }
+      });
+    }
+    
 
     function enrollStudent(){
       $.ajax({
@@ -221,6 +375,10 @@ function sortStudent(course_id, organization_id) {
           $(".modal-container").empty().html(view); // Load the modal view
           $("#staticBackdrop").modal("show"); // Show the modal
   
+          $(".close").on("click", function(e){
+            $("#staticBackdrop").modal("hide");
+            $("#form-enroll-student")[0].reset();
+          });
 
           $("#form-enroll-student").on("submit", function (e){
             e.preventDefault();
@@ -273,54 +431,4 @@ function sortStudent(course_id, organization_id) {
         }
       });
     }
-
-    function createPayment(paymentId) {
-      $.ajax({
-        type: "GET",
-        url: `../admin_views/create-payment.php?payment_id=${paymentId}`,
-        datatype: "html",
-        success: function (response){
-          $(".modal-container").html(response);
-          $("#staticBackdrop").modal('show');
-
-          $("#form-create-payment").on("submit", function (e){
-            e.preventDefault();
-            savePayment();
-          });
-          // ${"#form-create-payment"}.on("submit", function(e) {
-
-          // });
-        }
-      });
-    }
-
-    function savePayment() {
-      $.ajax({
-        type: "POST",
-        url: "../admin_views/verify_payment.php",
-        data: $("#form-create-payment").serialize(),
-        dataType: "json", // Ensure proper parsing of JSON response
-        success: function (response) {
-    
-          if (response.status === "error") {
-            Object.keys(response.errors).forEach(key => {
-              $(`#${key}`).addClass("is-invalid");
-              $(`#${key}`).next(".invalid-feedback").text(response.errors[key]).show();
-            });
-            return; // Stop further execution
-          }
-    
-          // Reset modal and form on success
-          $("#staticBackdrop").modal("hide");
-          $("#form-enroll-student")[0].reset();
-          viewStudent();
-        },
-        error: function (xhr, status, error) {
-          console.error("AJAX error:", status, error);
-        }
-      });
-    }
-    
-
-
 });

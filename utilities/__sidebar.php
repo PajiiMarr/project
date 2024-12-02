@@ -1,7 +1,3 @@
-<?php
-$organization_id = isset($_GET['organization_id']) ? clean_input($_GET['organization_id']) : 1;
-?>
-
 <div class="admin-icon  d-flex flex-column justify-content-center align-items-center">
     <i class="fa-regular fa-circle-user icon-size crimson py-3"></i>
     <h2>Admin</h2>
@@ -31,12 +27,6 @@ $organization_id = isset($_GET['organization_id']) ? clean_input($_GET['organiza
                         <p class="w-75 fs-5 pt-3">Students</p>
                     </a>
 
-                    <div  class="subheader-list list-unstyled position-absolute w-100 text-center">
-                        <a href="student.php" name="course_id" data-id="1" data-organization-id="<?=$organization_id;?>" class="text-white text-decoration-none d-block p-2 w-100 border-none form-sort-student">BSIT</a>
-                        <a href="student.php" name="course_id" data-id="2" data-organization-id="<?=$organization_id;?>" class="text-white text-decoration-none d-block p-2 w-100 border-none form-sort-student">BSCS</a>
-                        <a href="student.php" name="course_id" data-id="3" data-organization-id="<?=$organization_id;?>" class="text-white text-decoration-none d-block p-2 w-100 border-none form-sort-student">ACT AD</a>
-                        <a href="student.php" name="course_id" data-id="4" data-organization-id="<?=$organization_id;?>" class="text-white text-decoration-none d-block p-2 w-100 border-none form-sort-student">ACT NT</a>
-                    </div>
                 </li>
                 <li class="header-list w-100 h-25 li-unselected px-2">
                     <a href="payments.php" id="payment-link" class="anchor-tag d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none crimson px-3">

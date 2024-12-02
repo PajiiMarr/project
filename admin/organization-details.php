@@ -23,7 +23,6 @@ if (isset($_GET['organization_id'])) {
                 right: 0;
                 margin: 0;
                 width: 100vw; /* Adjust width as needed */
-                height: 100vh; /* Full viewport height */
         }
 
         .blur-effect {
@@ -32,9 +31,6 @@ if (isset($_GET['organization_id'])) {
         }
 
         </style>
-        <div class="modal-assign-facilitator">
-
-        </div>
         <div class="modal fade bd-example-modal-lg" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-side-right modal-lg h-100">
                 <div class="modal-content">
@@ -74,30 +70,52 @@ if (isset($_GET['organization_id'])) {
 
                         <div class="lh-sm text-black mt-2">
                             <div class="lh-sm text-black d-flex  justify-content-between w-50">
-                                <p class="fs-5">Facilitators: </p>
-                                <div>
-                                    <a href="" id="assign-facilitator" class="fs-6 crimson">
-                                    <i class="fas fa-plus crimson me-2"></i>
-                                    Assign Facilitator</a>
-                                </div>
+                                <p class="fs-5">Officers: </p>
                             </div>
                             <div>
-                                <?php if(empty($facilitator_list)){ ?>
-                                    No facilitators assigned.
-                                    <?php } ?>
-                            </div>
-                        </div>
+                                <table class="w-50">
+                                    <thead>
+                                        <tr>
+                                            <th class="fs-6 fw-6">Name</th>
+                                            <th class="fs-6 fw-6">Role</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php if(empty($facilitator_list)){ ?>
+                                        <tr>
+                                           <td class="p-1" colspan="2">
+                                                No Officers assigned.
+                                           </td> 
+                                        </tr>
+                                    <?php } else {
+                                        foreach($facilitator_list as $fl):
+                                        ?>
+                                        <td class="p-1 "><?= $fl['last_name'] . ', ' . $fl['first_name'] . ' ' . $fl['middle_name'] ?></td>
+                                        <td class="p-1 ">
+                                            <?php
+                                                if(!empty('is_head')){
+                                                    echo 'Head';
+                                                } else if (!empty('is_assistant_head')) {
+                                                    echo 'Assistant Head';
+                                                } else if (!empty('is_collector')) {
+                                                    echo 'Fee Collector';
+                                                }
+                                            ?>
+                                        </td>
+                                        <?php
+                                        endforeach;
+                                        } ?>
+                                    </tbody>
+                                </table>
 
-                        <div class="lh-sm text-black">
-                            
+                            </div>
                         </div>
 
 
                         <!-- Add more organization details here -->
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary brand-bg-color">Save Organization</button>
+                        <button type="submit" class="btn btn-primary brand-bg-color">Edit Organization</button>
                     </div>
                 </div>
             </div>

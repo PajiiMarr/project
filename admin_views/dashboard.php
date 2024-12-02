@@ -6,6 +6,7 @@ require_once '../admin/admin.class.php';
 $reportObj = new Admin;
 
 $reports = $reportObj->reports();
+$total_collected = $reportObj->all_orgs_total_collected();
 
 ?>
 <section class="container-fluid w-100 h-100">
@@ -46,8 +47,26 @@ $reports = $reportObj->reports();
                     <i class="fa-solid fa-user-graduate fs-1 text-crimson"></i>
                     <p class="fs-5 text-center mt-2">Students Enrolled</p>
                     <h4 class="text-crimson"><?= $reports['students_enrolled'] ?? '0'; ?></h4>
-<!-- >>>>>>> c52fa09b71c65c8e803d1d84a0c10f3da484e43c -->
                 </div>
+            </div>
+            <div class="h-50 w-100">
+                <h5 class="p-3">Organizations</h5>
+                <table class="w-100">
+                    <thead>
+                        <tr class="border-top border-bottom">
+                            <th class="p-3 w-50">Organization</th>
+                            <th class="p-3 w-50">Total Collected</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($total_collected as $total){ ?>
+                            <tr class="border-bottom">
+                                <td class="p-3"><?= $total['org_name'] ?></td>
+                                <td class="p-3"><?= $total['all_collected'] ?></td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

@@ -42,37 +42,188 @@ class Admin {
         return $data;
     }
     function facilitatorList($organization_id){
-        $sql = 'SELECT * FROM facilitator WHERE organization_id = :organization_id;';
+        $sql = 'SELECT * FROM facilitator WHERE organization_id = :organization_id';
         $query = $this->conn->prepare($sql);
         $query->bindParam(":organization_id", $organization_id);
         if($query->execute()){
-            $data = $query->fetch();
+            $data = $query->fetchAll();
         } else {
             return false;
         }
         return $data;
     }
 
-    function viewStudents($course_id, $organization_id ='') {
-        $sql = "SELECT student.*, organization.org_name, payment.*
-                FROM payment 
-                JOIN student_organization ON payment.student_org_id = student_organization.stud_org_id 
-                JOIN student ON student_organization.student_id = student.student_id 
-                JOIN organization ON student_organization.organization_id = organization.organization_id
-                WHERE student.course_id = :course_id AND organization.organization_id = :organization_id AND semester = 'First Semester'";
-    
+
+
+    function viewStudents($student_id = '') {
+        $sql = "SELECT student.*, course.course_code, facilitator.is_head, facilitator.organization_id, organization.org_name, facilitator.is_assistant_head, facilitator.is_collector
+                FROM student 
+                INNER JOIN course ON student.course_id = course.course_id
+                INNER JOIN user ON student.student_id = user.user_id
+                LEFT JOIN facilitator ON user.user_id = facilitator.facilitator_id
+                LEFT JOIN organization ON facilitator.organization_id = organization.organization_id
+                ";
+        if(!empty($student_id)){
+            $sql .= " AND student.student_id = :student_id";
+        }
+
+        $sql .= " GROUP BY student.status, course.course_code
+                ORDER BY student.status, student.last_name, student.course_section, student.course_section ASC
+                ";
         $query = $this->conn->prepare($sql);
-        $query->bindParam(':course_id', $course_id);
-        $query->bindParam(':organization_id', $organization_id);
-        
-        if ($query->execute()) {
-            $students = $query->fetchAll();
-            return $students;
-        } else {
-            $errorInfo = $query->errorInfo();
-            echo "Query failed: " . $errorInfo[2];
+
+        if(!empty($student_id)){
+            $query->bindParam(":student_id", $student_id);
         }
         
+        $query->execute();
+
+        if(!empty($student_id)){
+            $students = $query->fetch();
+        } else {
+        $students = $query->fetchAll();
+        }
+        return $students;
+    }
+
+    function view_edit_student($student_id){
+        $sql = "SELECT * FROM student WHERE student_id = :student_id";
+        $query = $this->conn->prepare($sql);
+        $query->bindParam(":student_id", $student_id);
+        $query->execute();
+        return $query->fetch();
+    }
+
+    function viewCourse(){
+        $sql = "SELECT course_id, course_code FROM course";
+        $query = $this->conn->prepare($sql);
+        $query->execute();
+        return $query->fetchAll();
+    }
+
+    function head_count(){
+        $sql = "SELECT 
+                SUM(is_head = 1) AS head_count,
+                organization_id 
+            FROM facilitator 
+            GROUP BY organization_id 
+            ";
+                
+        $query = $this->conn->prepare($sql);
+
+        $query->execute();
+
+        return $query->fetchAll();
+    }
+
+
+
+    function fetch_student_details($user_id){
+        $sql = "SELECT * FROM student WHERE student_id = :user_id";
+        $query = $this->conn->prepare($sql);
+
+        $query->bindParam(":user_id", $user_id);
+        $query->execute();
+        return $query->fetch();
+    }
+
+    function assign_head($user_id, $organization_id){
+        $sql = "UPDATE user SET is_facilitator = 1 WHERE user_id = :user_id";
+        $query = $this->conn->prepare($sql);
+
+        $query->bindParam(":user_id", $user_id);
+        $query->execute();
+
+        $student_details = $this->fetch_student_details($user_id);
+        $this->set_facilitator($student_details['student_id'], $organization_id, $student_details['course_id'], $student_details['last_name'], $student_details['first_name'], $student_details['middle_name'], $student_details['phone_number'], $student_details['dob'], $student_details['age'], $student_details['course_year'], $student_details['course_section']);
+    }
+
+    function set_facilitator($user_id, $organization_id, $course_id, $last_name, $first_name, $middle_name, $phone_number, $dob, $age, $course_year, $course_section){
+        $sql = "INSERT INTO facilitator (facilitator_id, organization_id, course_id, last_name, first_name, middle_name, phone_number, dob, age, course_year, course_section, is_head) VALUES (:user_id, :organization_id, :course_id, :last_name, :first_name, :middle_name, :phone_number, :dob, :age, :course_year, :course_section, 1);";
+        $query = $this->conn->prepare($sql);
+
+        $query->bindParam(":user_id", $user_id);
+        $query->bindParam(":organization_id", $organization_id);
+        $query->bindParam(":course_id", $course_id);
+        $query->bindParam(":last_name", $last_name);
+        $query->bindParam(":first_name", $first_name);
+        $query->bindParam(":middle_name", $middle_name);
+        $query->bindParam(":phone_number", $phone_number);
+        $query->bindParam(":dob", $dob);
+        $query->bindParam(":age", $age);
+        $query->bindParam(":course_year", $course_year);
+        $query->bindParam(":course_section", $course_section);
+
+        if($query->execute()){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function resign_head_modal($facilitator_id){
+        $sql = "SELECT o.org_name, f.* FROM facilitator f
+                LEFT JOIN organization o ON o.organization_id = f.organization_id
+                WHERE f.facilitator_id = :facilitator_id";
+        $query = $this->conn->prepare($sql);
+        $query->bindParam(":facilitator_id", $facilitator_id);
+        $query->execute();
+        return $query->fetch();
+    }
+
+    function resign($facilitator_id, $reason){
+        $sql = "DELETE FROM facilitator WHERE facilitator_id = :facilitator_id";
+        $query = $this->conn->prepare($sql);
+        $query->bindParam(":facilitator_id", $facilitator_id);
+        $query->execute();
+        
+        $sql_remove_is_facilitator = "UPDATE user SET is_facilitator = 0 WHERE user_id = :facilitator_id";
+        $query_remove_is_facilitator =$this->conn->prepare($sql_remove_is_facilitator);
+        $query_remove_is_facilitator->bindParam(":facilitator_id", $facilitator_id);
+        $query_remove_is_facilitator->execute();
+
+        if($reason == "dropped"){
+            $sql_set_status_dropped = "UPDATE student SET status = 'dropped' WHERE student_id = :facilitator_id";
+            $query_set_status_dropped = $this->conn->prepare($sql_set_status_dropped);
+            $query_set_status_dropped->bindParam(":facilitator_id", $facilitator_id);
+            $query_set_status_dropped->execute();
+        } else if($reason == 'graduated'){
+            $sql_set_status_dropped = "UPDATE student SET status = 'graduated' WHERE student_id = :facilitator_id";
+            $query_set_status_dropped = $this->conn->prepare($sql_set_status_dropped);
+            $query_set_status_dropped->bindParam(":facilitator_id", $facilitator_id);
+            $query_set_status_dropped->execute();
+        } else if($reason == 'other'){
+            $sql_set_status_dropped = "UPDATE student SET status = 'Undefined' WHERE student_id = :facilitator_id";
+            $query_set_status_dropped = $this->conn->prepare($sql_set_status_dropped);
+            $query_set_status_dropped->bindParam(":facilitator_id", $facilitator_id);
+            $query_set_status_dropped->execute();
+        }
+    }
+
+    function remove($facilitator_id, $reason){
+        if($reason == "dropped"){
+            $sql_set_status_dropped = "UPDATE student SET status = 'dropped' WHERE student_id = :facilitator_id";
+            $query_set_status_dropped = $this->conn->prepare($sql_set_status_dropped);
+            $query_set_status_dropped->bindParam(":facilitator_id", $facilitator_id);
+            $query_set_status_dropped->execute();
+        } else if($reason == 'graduated'){
+            $sql_set_status_dropped = "UPDATE student SET status = 'graduated' WHERE student_id = :facilitator_id";
+            $query_set_status_dropped = $this->conn->prepare($sql_set_status_dropped);
+            $query_set_status_dropped->bindParam(":facilitator_id", $facilitator_id);
+            $query_set_status_dropped->execute();
+        } else if($reason == 'other'){
+            $sql_set_status_dropped = "UPDATE student SET status = 'Undefined' WHERE student_id = :facilitator_id";
+            $query_set_status_dropped = $this->conn->prepare($sql_set_status_dropped);
+            $query_set_status_dropped->bindParam(":facilitator_id", $facilitator_id);
+            $query_set_status_dropped->execute();
+        }
+    }
+
+    function enrollUndefinedStudent($student_id){
+        $sql = "UPDATE student SET status = 'Enrolled' WHERE student_id = :student_id";
+        $query = $this->conn->prepare($sql);
+        $query->bindParam(":student_id", $student_id);
+        $query->execute();
     }
 
     function paymentModal($payment_id) {
@@ -158,7 +309,8 @@ class Admin {
         INNER JOIN student_organization ON payment.student_org_id = student_organization.stud_org_id
         INNER JOIN organization ON student_organization.organization_id = organization.organization_id
         INNER JOIN student ON student_organization.student_id = student.student_id
-        INNER JOIN course ON student.course_id = course.course_id";
+        INNER JOIN course ON student.course_id = course.course_id
+        ORDER BY date_issued DESC";
         $query = $this->conn->prepare($sql);
 
         if($query->execute()){
@@ -174,7 +326,7 @@ class Admin {
     function reports() {
         $sql = "SELECT COUNT(DISTINCT organization.organization_id) AS organization_count, 
                        COUNT(DISTINCT student.student_id) AS students_enrolled, 
-                       SUM(DISTINCT organization.total_collected) AS fees_collected 
+                       SUM(DISTINCT organization.total_collected + organization.total_optional_collected) AS fees_collected
                 FROM organization 
                 INNER JOIN student_organization ON organization.organization_id = student_organization.organization_id 
                 INNER JOIN student ON student_organization.student_id = student.student_id;";
@@ -194,6 +346,13 @@ class Admin {
         }
     
         return $reportData;
+    }
+
+    function all_orgs_total_collected(){
+        $sql = "SELECT *, SUM(total_collected + total_optional_collected) AS all_collected FROM organization GROUP BY organization_id";
+        $query = $this->conn->prepare($sql);
+        $query->execute();
+        return $query->fetchAll();
     }
     
 
@@ -282,6 +441,14 @@ class Admin {
         if($query->execute()){
             return $query->fetchAll();
         }
+    }
+
+    function allOrgsHeadAssigned(){
+        $sql = "SELECT f.is_head, o.* FROM organization o 
+        LEFT JOIN facilitator f ON o.organization_id = f.organization_id";
+        $query = $this->conn->prepare($sql);
+        $query->execute();
+        return $query->fetchAll();
     }
 
     function removeOrganization($organization_id){

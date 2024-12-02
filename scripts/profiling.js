@@ -1,12 +1,10 @@
-document.getElementById('course_year').disabled = true;
-
 document.getElementById('course_id').addEventListener('change', function() {
     const selectedCourseId = this.value;
     const courseYear = document.getElementById('course_year');
     const upperYears = document.querySelectorAll('.upper-year');
     const section = document.getElementById('course_section');
 
-    if(selectedCourseId){
+    if (selectedCourseId) {
         courseYear.disabled = false;
     } else {
         courseYear.disabled = true;
@@ -22,6 +20,7 @@ document.getElementById('course_id').addEventListener('change', function() {
     }
 });
 
+// Set min and max dates for DOB
 const today = new Date();
 const maxDate = new Date(today.getFullYear() - 15, today.getMonth(), today.getDate());
 const minDate = new Date(1960, 0, 1);
@@ -33,51 +32,24 @@ function formatDate(date) {
     return `${year}-${month}-${day}`;
 }
 
-document.getElementById('dob').setAttribute('min', formatDate(minDate));
-document.getElementById('dob').setAttribute('max', formatDate(maxDate));
+const dobInput = document.getElementById('dob');
+dobInput.setAttribute('min', formatDate(minDate));
+dobInput.setAttribute('max', formatDate(maxDate));
 
-document.getElementById('dob').addEventListener('change', function() {
+dobInput.addEventListener('change', function () {
     const dob = new Date(this.value);
     const ageInput = document.getElementById('age');
     const ageHiddenInput = document.getElementById('hidden_age');
-    
+
     if (dob) {
         let age = today.getFullYear() - dob.getFullYear();
         const monthDifference = today.getMonth() - dob.getMonth();
-        
+
         if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < dob.getDate())) {
             age--;
         }
-        
+
         ageInput.value = age;
         ageHiddenInput.value = age;
     }
 });
-
-
-function toggleCheckbox(div) {
-    const checkbox = div.querySelector('input[type="checkbox"]');
-    
-    checkbox.checked = !checkbox.checked;
-    
-    if (checkbox.id === 'facilitatorCheckbox') {
-        const studentCheckbox = document.getElementById('studentCheckbox');
-        const studentDiv = studentCheckbox.closest('.input');
-        
-        if (checkbox.checked) {
-            studentCheckbox.checked = true;
-            studentDiv.classList.add('checked');
-            studentDiv.style.pointerEvents = 'none'; // Disable interaction with the Student checkbox
-        } else {
-            studentCheckbox.checked = false;
-            studentDiv.classList.remove('checked');
-            studentDiv.style.pointerEvents = 'auto'; // Enable interaction
-        }
-    }
-    
-    if (checkbox.id === 'studentCheckbox' && document.getElementById('facilitatorCheckbox').checked) {
-        checkbox.checked = true; // Force Student checkbox to remain checked
-    }
-
-    div.classList.toggle('checked', checkbox.checked);
-}
