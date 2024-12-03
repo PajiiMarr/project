@@ -21,9 +21,7 @@ header {
     box-shadow: 2px 5px 10px 5px rgba(200, 200, 200, 0.8);
 }
 
-header > div {
-    border-bottom: 1.5px solid #9C1F1D;
-}
+
 
 .custom-border-bottom {
     border-bottom: 1px solid #9C1F1D;
@@ -52,7 +50,7 @@ header > div {
     width: 100%;
 }
 
-.sign-out {
+.enroll-student-button {
     height: 15%;
     width: 100%;
 }

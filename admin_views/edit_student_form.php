@@ -93,24 +93,28 @@ $getCourse = $objForm->viewCourse();
     </div>
   </div>
   <script>
-    let selectedCourseId = document.getElementById('course_id');
-    let courseYear = document.getElementById('course_year');
-    let upperYears = document.querySelectorAll('.upper-year');
-    var section = document.getElementById('course_section');
+      (function(){
 
-    if (selectedCourseId) {
-        courseYear.disabled = false;
-    } else {
-        courseYear.disabled = true;
-    }
-
-    if (selectedCourseId == 1 || selectedCourseId == 2) {
-        upperYears.forEach(option => option.style.display = 'block');
-        section.style.display = "block";
-    } else {
-        upperYears.forEach(option => option.style.display = 'none');
-        courseYear.value = "";
-        section.style.display = "none";
-    }
+          let selectedCourseId = document.getElementById('course_id');
+          let courseYear = document.getElementById('course_year');
+          let upperYears = document.querySelectorAll('.upper-year');
+          var section = document.getElementById('course_section');
+          
+          if (selectedCourseId) {
+              courseYear.disabled = false;
+          } else {
+              courseYear.disabled = true;
+          }
+          
+          if (selectedCourseId == 1 || selectedCourseId == 2) {
+              upperYears.forEach(option => option.style.display = 'block');
+              section.style.display = "block";
+          } else {
+              upperYears.forEach(option => option.style.display = 'none');
+              courseYear.value = "";
+              section.style.display = "none";
+          }
+              
+    })()
   </script>
   <script src="../scripts/profiling.js"></script>

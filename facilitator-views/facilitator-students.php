@@ -1,12 +1,15 @@
 <?php
+session_start();
 require_once '../utilities/clean.php';
-require_once '../admin/admin.class.php';
+require_once '../facilitator/facilitator.class.php';
 
-$viewOrgs = new Admin();
+$faciObj = new Facilitator;
 
-$students = $viewOrgs->viewStudents();
-$courses = $viewOrgs->viewCourse();
-$organizations = $viewOrgs->allOrgsHeadAssigned();
+$facilitator_details = $faciObj->facilitator_details($_SESSION['user']['user_id']);
+
+$students = $faciObj->viewStudents($facilitator_details['organization_id']);
+$courses = $faciObj->viewCourse();
+// $organizations = $viewOrgs->allOrgsHeadAssigned();
 
 
 ?>
@@ -21,7 +24,7 @@ $organizations = $viewOrgs->allOrgsHeadAssigned();
                     <i class="fa-regular fa-circle-user fs-4 crimson"></i>
                     </a>
                     <ul class="dropdown-menu text-small">
-                        <?php session_start(); if(isset($_SESSION['user']['is_facilitator'])){ ?>
+                        <?php if(isset($_SESSION['user']['is_facilitator'])){ ?>
                         <li><a class="dropdown-item" href="#">Switch as Student</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -82,16 +85,6 @@ $organizations = $viewOrgs->allOrgsHeadAssigned();
                     <?php else: ?>
                         <?php $counter = 1; ?>
                         <?php foreach ($students as $student): ?>
-                            <?php
-                            $has_no_heads = false;
-                            foreach ($organizations as $org) {
-                                if ($org['is_head'] == null) {
-                                    $has_no_heads = true;
-                                    break;
-                                }
-                            }
-
-                            ?>
                             <tr class="border-bottom shadow-hover">
                                 <td class="p-2 text-center"><?= $counter; ?></td>
                                 <td class="p-2">
@@ -117,20 +110,8 @@ $organizations = $viewOrgs->allOrgsHeadAssigned();
                                 </td>
                                 <td class="p-2"><?= clean_input($student['course_year']); ?></td>
                                 <td class="p-2 text-nowrap" style="height: 8vh;">
-                                    <?php if($student['status'] == 'Enrolled'){ if (!empty($student['is_head'])){ ?>
-                                        <a class="text-success text-decoration-none pt-3">Already Assigned</a>
-                                        <a href="" data-id="<?= clean_input($student['student_id']); ?>" class="btn btn-warning resign-head" style="height: 3.6vh">Resign</a>
-                                    <?php } else {?>
-                                    <?php if ($has_no_heads){ ?>
-                                        <a data-id="<?= $student['student_id'] ?>" class="btn btn-success assign-head">Assign as Head</a>
-                                    <?php }} ?>
                                     <a data-id="<?= $student['student_id'] ?>" class="btn btn-primary edit-student">Edit</a>
                                     <a data-id="<?= $student['student_id'] ?>" class="btn btn-danger remove-student">Remove</a>
-                                    <?php } else if ($student['status'] == 'Undefined') { ?>
-                                        <a data-id="<?= $student['student_id'] ?>" class="btn btn-primary enroll-undefined-student">Enroll</a>
-                                    <?php } else { ?>
-                                    <p class="text-danger pt-3">Unable to do actions (<?= $student['status'] ?>). </p>
-                                    <?php } ?> 
                                 </td>
                             </tr>
                             <?php $counter++; ?>

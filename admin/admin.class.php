@@ -55,34 +55,23 @@ class Admin {
 
 
 
-    function viewStudents($student_id = '') {
+    function viewStudents() {
         $sql = "SELECT student.*, course.course_code, facilitator.is_head, facilitator.organization_id, organization.org_name, facilitator.is_assistant_head, facilitator.is_collector
                 FROM student 
                 INNER JOIN course ON student.course_id = course.course_id
                 INNER JOIN user ON student.student_id = user.user_id
                 LEFT JOIN facilitator ON user.user_id = facilitator.facilitator_id
                 LEFT JOIN organization ON facilitator.organization_id = organization.organization_id
-                ";
-        if(!empty($student_id)){
-            $sql .= " AND student.student_id = :student_id";
-        }
-
-        $sql .= " GROUP BY student.status, course.course_code
+                GROUP BY student.status, course.course_code
                 ORDER BY student.status, student.last_name, student.course_section, student.course_section ASC
                 ";
-        $query = $this->conn->prepare($sql);
 
-        if(!empty($student_id)){
-            $query->bindParam(":student_id", $student_id);
-        }
+
+        $query = $this->conn->prepare($sql);
         
         $query->execute();
 
-        if(!empty($student_id)){
-            $students = $query->fetch();
-        } else {
         $students = $query->fetchAll();
-        }
         return $students;
     }
 

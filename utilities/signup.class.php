@@ -33,7 +33,6 @@
                 
                 // Redirect based on user role
                 if ($user['is_facilitator'] == 1) {
-                    header('Location: facilitator/dashboard.php');
                     // Redirect to switch role modal for facilitators
                     header('Location: switch_role.php');
                 } else {

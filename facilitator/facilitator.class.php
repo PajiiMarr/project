@@ -54,4 +54,35 @@ class Facilitator {
 
         return $data;
     }
+
+    function facilitator_details($facilitator_id){
+        $sql = "SELECT * FROM facilitator WHERE facilitator_id = :facilitator_id";
+        $query = $this->conn->prepare($sql);
+        $query->bindParam(":facilitator_id", $facilitator_id);
+        $query->execute();
+        return $query->fetch();
+    }
+
+    function viewStudents($organization_id) {
+        $sql = "SELECT student.*, course.course_code, payment.*, student_organization.*, organization.organization_id, organization.org_name FROM payment
+                INNER JOIN student_organization ON payment.student_org_id = student_organization.stud_org_id
+                INNER JOIN organization ON student_organization.organization_id = organization.organization_id
+                INNER JOIN student ON student_organization.student_id = student.student_id
+                INNER JOIN course ON student.course_id = course.course_id
+                WHERE organization.organization_id = :organization_id
+                AND student.status = 'Enrolled'";
+        $query = $this->conn->prepare($sql);
+        $query->bindParam(":organization_id", $organization_id);
+        $query->execute();
+
+        $students = $query->fetchAll();
+        return $students;
+    }
+
+    function viewCourse(){
+        $sql = "SELECT * FROM course;";
+        $query = $this->conn->prepare($sql);
+        $query->execute();
+        return $query->fetchAll();
+    }
 }

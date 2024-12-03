@@ -38,7 +38,10 @@
             </ul>
         </nav>
     </div>
-    <div class="an-child h-25 w-100 p-2 d-flex flex-column justify-content-center align-items-center">
+
+</div>
+<div class=".enroll-student-button d-flex justify-content-end align-items-center">
+<div class="an-child h-25 w-100 p-2 d-flex flex-column justify-content-center align-items-center">
         <a id="enroll-student" class="btn w-100 h-20 my-2 py-4 bg-crimson d-flex">
             <div class="w-25 h-100 d-flex align-items-center justify-content-center">
                 <i class="fa-solid fa-plus fs-4"></i>
@@ -48,13 +51,4 @@
             </div>
         </a>
     </div>
-</div>
-<div class="sign-out d-flex justify-content-end align-items-center">
-    <a href="admin_logout.php" class="w-50 crimson text-decoration-none d-flex">
-        <i class="fa-solid fa-arrow-right-from-bracket w-25 fs-5 mt-1"></i>
-        <div class="w-75 h-100 d-flex align-items-center">
-            <p class="fs-5">Sign Out</p>
-        </div>
-        
-    </a>
 </div>
