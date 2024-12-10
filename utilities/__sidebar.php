@@ -1,3 +1,6 @@
+<?php
+if($_SESSION['user']['is_admin'] == 1){
+     ?>
 <div class="admin-icon  d-flex flex-column justify-content-center align-items-center">
     <i class="fa-regular fa-circle-user icon-size crimson py-3"></i>
     <h2>Admin</h2>
@@ -52,3 +55,91 @@
         </a>
     </div>
 </div>
+
+
+<?php
+} else if($_SESSION['user']['is_facilitator'] == 1){
+    require_once '../classes/facilitator.class.php';
+    $faci_details = new Facilitator;
+
+    $facilitator = $faci_details->facilitator_details($_SESSION['user']['user_id']);
+    ?>
+    <div class="facilitator-icon d-flex flex-column justify-content-center align-items-start pt-5 ps-3">
+        <h2 class="text-black">Facilitator</h2>
+    </div>
+    <div class="facilitator-nav d-flex flex-column justify-content-between">
+        <div class="an-child h-75 w-100 d-flex flex-column">
+            <nav class="h-100 w-100">
+                <ul class="list-unstyled h-100 w-100 d-flex flex-column justify-content-center align-items-center mt-2">
+                    <li class="header-list w-100 h-25 li-unselected px-2">
+                        <a href="dashboard.php" id="facilitator-dashboard-link" class="anchor-tag d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none crimson px-3">
+                            <i class="fas fa-tachometer-alt w-25 fs-4"></i>
+                            <p class="w-75 fs-5 pt-3">Dashboard</p>
+                        </a>
+                    </li>
+
+                    <?php if($facilitator['is_head'] != 0 || $facilitator['is_assistant_head'] != 0){ ?>
+                    <li class="header-list w-100 h-25 px-2 li-unselected li-student">
+                        <a href="assign.php" id="facilitator-assign-officer" class="anchor-tag student-anchor d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none crimson px-3">
+                            <i class="fas fa-user-tie w-25 mt-1 fs-4"></i>
+                            <p class="w-75 fs-5 pt-3">Assign Officer</p>
+                        </a>
+                    </li>
+
+                    <?php } ?>
+                    <li class="header-list w-100 h-25 px-2 li-unselected li-student">
+                        <a href="student.php" id="facilitator-student-link" class="anchor-tag student-anchor d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none crimson px-3">
+                            <i class="fa-solid fa-users w-25 mt-1 fs-4"></i>
+                            <p class="w-75 fs-5 pt-3">Students</p>
+                        </a>
+                    </li>
+
+                    <li class="header-list w-100 h-25 li-unselected px-2">
+                        <a href="request.php" id="facilitator-request-link" class="anchor-tag d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none crimson px-3">
+                            <i class="fa-solid fa-money-check w-25 fs-4"></i>
+                            <p class="w-75 fs-5 pt-3">Request</p>
+                        </a>
+                    </li>
+
+                    <li class="header-list w-100 h-25 li-unselected px-2">
+                        <a href="payments.php" id="facilitator-payment-link" class="anchor-tag d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none crimson px-3">
+                            <i class="fa-solid fa-money-check w-25 fs-4"></i>
+                            <p class="w-75 fs-5 pt-3">Payments</p>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+    </div>
+    <?php if($facilitator['is_head'] == 1 || $facilitator['is_assistant_head']){ ?>
+    <div class="d-flex justify-content-center align-items-end w-100 pb-4" >
+        <a class="btn bg-crimson fs-5 d-flex justify-content-center align-items-center w-75" id="request-payment"> <i class="fas fa-plus me-2 fs-5"></i> Request Payment</a>
+    </div>
+
+    <?php } 
+} if ($_SESSION['user']['is_facilitator'] == 1 || $_SESSION['user']['is_student'] == 1){?>
+    <div class="d-flex flex-column justify-content-start align-items-start pt-2 ps-3 border-top">
+        <h2 class="text-black">Student</h2>
+    </div>
+    <div class="facilitator-nav d-flex flex-column justify-content-between">
+        <div class="an-child h-75 w-100 d-flex flex-column">
+            <nav class="h-100 w-100">
+                <ul class="list-unstyled h-100 w-100 d-flex flex-column justify-content-center align-items-center mt-2">
+                    <li class="header-list w-100 h-25 li-unselected px-2">
+                        <a href="dashboard.php" id="student-dashboard-link" class="anchor-tag d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none crimson px-3">
+                            <i class="fas fa-tachometer-alt w-25 fs-4"></i>
+                            <p class="w-75 fs-5 pt-3">Dashboard</p>
+                        </a>
+                    </li>
+                    <li class="header-list w-100 h-25 li-unselected px-2">
+                        <a href="payments.php" id="student-payment-link" class="anchor-tag d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none crimson px-3">
+                            <i class="fa-solid fa-money-check w-25 fs-4"></i>
+                            <p class="w-75 fs-5 pt-3">Payments</p>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+    </div><?php } ?>

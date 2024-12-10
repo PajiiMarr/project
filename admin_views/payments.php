@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-require_once '../admin/admin.class.php';
-require_once '../utilities/clean.php';
+require_once '../classes/admin.class.php';
+require_once '../tools/clean.php';
 
 $objAdmin = new Admin;
 
@@ -19,14 +19,7 @@ $paymentHist = $objAdmin->paymentHistory();
                     <i class="fa-regular fa-circle-user fs-4 crimson"></i>
                     </a>
                     <ul class="dropdown-menu text-small">
-                        <?php if(isset($_SESSION['user']['is_facilitator'])){ ?>
-                        <li><a class="dropdown-item" href="#">Switch as Student</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <?php } ?>
-
-                        <li><a class="dropdown-item" href="<?= isset($_SESSION['user']['is_facilitator']) || isset($_SESSION['user']['is_facilitator']) ? '../log_out.php' : '../admin/admin_logout.php'; ?>">Sign out</a></li>
+<li><a class="dropdown-item" href="<?= isset($_SESSION['user']['is_facilitator']) || isset($_SESSION['user']['is_facilitator']) ? '../log_out.php' : '../admin/admin_logout.php'; ?>">Sign out</a></li>
                     </ul>
             </div>
         </div>

@@ -1,22 +1,11 @@
 <?php
 session_start();
 
-require_once 'utilities/signup.class.php';
-require_once 'utilities/clean.php';
+require_once 'utilities/../classes/signup.class.php';
+require_once 'tools/clean.php';
 
 if (isset($_SESSION['user'])) {
-    if ($_SESSION['user']['is_facilitator'] == 1) {
-        header('Location: switch_role.php'); // Redirect to switch role page for facilitators
-        exit;
-    } elseif ($_SESSION['user']['is_student'] == 1) {
-        header('Location: student/student.php'); // Redirect to student dashboard
-        exit;
-    }
-}
-
-if (isset($_SESSION['admin_id'])) {
-    header('location: admin/dashboard.php');
-    exit;
+    header('location: user/dashboard.php');
 }
 
 $objLogin = new Signup;
@@ -61,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <h1>Log in</h1>
             <div>
                 Email <span class="required">* <?= $emailErr ?></span><br>
-                <input type="email" name="email" id="" value="<?= $email ?>">
+                <input type="text" name="email" id="" value="<?= $email ?>">
             </div>
             <div>
                 Password <span class="required">* <?= $passwordErr; ?></span><br>

@@ -11,7 +11,7 @@
 
         // Login function with check for facilitator
         function login($email, $password) {
-            $sql = "SELECT user_id, password, is_facilitator, is_student FROM user WHERE email = :email LIMIT 1;";
+            $sql = "SELECT user_id, password, is_facilitator, is_student, is_admin FROM user WHERE email = :email LIMIT 1;";
             $query = $this->conn->prepare($sql);
             $query->bindParam(':email', $email);
             $query->execute();
@@ -22,7 +22,8 @@
                 $_SESSION['user'] = [
                     'user_id' => $user['user_id'],
                     'is_facilitator' => $user['is_facilitator'],
-                    'is_student' => $user['is_student']
+                    'is_student' => $user['is_student'],
+                    'is_admin' => $user['is_admin']
                 ];
                 $date = date('Y-m-d H:i:s');
                 $sql_update = "UPDATE user SET date_updated = :date_updated WHERE user_id = :user_id;";
@@ -31,32 +32,33 @@
                 $query_update->bindParam(':date_updated', $date);
                 $query_update->execute();
                 
-                // Redirect based on user role
-                if ($user['is_facilitator'] == 1) {
-                    // Redirect to switch role modal for facilitators
-                    header('Location: switch_role.php');
-                } else {
-                    header('Location: /student/student.php'); // Default redirect for students
-
-                    header('Location: student/dashboard.php');
-                }
-                session_write_close();
-                exit;
+                header('location: user/dashboard.php');
             } else {
                 $_SESSION['incorrect_credentials'] = 'Incorrect Credentials';
             }
         }
 
         // New function to check if the user is a facilitator (helper for switch role modal)
-        function isFacilitator($user_id) {
-            $sql = "SELECT is_facilitator FROM user WHERE user_id = :user_id;";
-            $query = $this->conn->prepare($sql);
-            $query->bindParam(':user_id', $user_id);
-            $query->execute();
+        // function isFacilitator($user_id) {
+        //     $sql = "SELECT is_facilitator FROM user WHERE user_id = :user_id;";
+        //     $query = $this->conn->prepare($sql);
+        //     $query->bindParam(':user_id', $user_id);
+        //     $query->execute();
 
-            $user = $query->fetch();
-            return $user['is_facilitator'] == 1;
-        }
+        //     $user = $query->fetch();
+        //     return $user['is_facilitator'] == 1;
+        // }
+
+        // function create_admin($email, $password){
+        //     $sql = "INSERT INTO user(email, password, date_created, is_student) 
+        //             VALUES(:email, :password, NOW(), 0);";
+        //     $query = $this->conn->prepare($sql);
+        //     $query->bindParam(":email", $email);
+        //     $query->bindParam(":password", $password);
+        //     $query->execute();
+        //     return true;
+        // }
+
 
 
         function sign_up_and_set_profile($email, $password, $course_id, $course_year, $last_name, $first_name, $middle_name, $phone_number, $dob, $age, $course_section) {
@@ -76,9 +78,7 @@
             if ($query->execute()) {
                 $user_id = $this->conn->lastInsertId();
                 $_SESSION['user_id'] = $user_id;
-                // session_write_close();
         
-                // Check if profile is duplicated
                 if ($this->duplicate_record_exists('student', ['student_id' => $user_id])) {
                     return ['error' => 'Duplicate profile exists'];
                 } 
@@ -124,46 +124,41 @@
             $query_date_updated->execute();
         
             // Insert user into student_organization
-            $organization = $this->getOrganization();
+            $collection_fee = $this->get_collection_fee();
             
-            foreach($organization as $org){
-                $sql_pending_balance = "UPDATE organization SET pending_balance = pending_balance + :required_fee
-                WHERE organization_id = :organization_id";
+            foreach($collection_fee as $org){
+                $sql_pending_balance = "UPDATE collection_fees SET pending_balance = pending_balance + :amount
+                WHERE collection_id = :collection_id AND purpose = 'Clearance'";
                 $query_pending_balance = $this->conn->prepare($sql_pending_balance);
     
-                $query_pending_balance->bindParam(":organization_id", $org['organization_id']);
-                $query_pending_balance->bindParam(":required_fee", $org['required_fee']);
+                $query_pending_balance->bindParam(":collection_id", $org['collection_id']);
+                $query_pending_balance->bindParam(":amount", $org['amount']);
     
                 $query_pending_balance->execute();
 
-                $sql_stud_org = "INSERT INTO student_organization(student_id, organization_id) VALUES(:user_id, :organization_id);";
+                $sql_stud_org = "INSERT INTO payment(student_id, collection_id, semester, amount_to_pay) VALUES(:student_id, :collection_id, 'First Semester', :amount_to_pay);";
                 $query_stud_org = $this->conn->prepare($sql_stud_org);
                 
-                $query_stud_org->bindParam(':user_id', $user_id);
-                $query_stud_org->bindParam(':organization_id', $org['organization_id']);
+                $query_stud_org->bindParam(':student_id', $user_id);
+                $query_stud_org->bindParam(':collection_id', $org['collection_id']);
+                $query_stud_org->bindParam(':amount_to_pay', $org['amount']);
         
                 $query_stud_org->execute();
-        
-                // Insert payments for the student
-                $sql_stud_org_pmt = "SELECT * FROM student_organization WHERE student_id = :user_id AND organization_id = :organization_id;";
-                $query_stud_org_pmt = $this->conn->prepare($sql_stud_org_pmt);
-                $query_stud_org_pmt->bindParam(':user_id', $user_id);
-                $query_stud_org_pmt->bindParam(':organization_id', $org['organization_id']);
-                $query_stud_org_pmt->execute();
-        
-                $payment = $query_stud_org_pmt->fetch();
-        
-                // Insert payment for first semester
-                $sql_pmt_first_sem = "INSERT INTO payment(student_org_id, semester, amount_to_pay) VALUES(:stud_org_id, 'First Semester', :amount_to_pay);";
-                $query_pmt_first_sem = $this->conn->prepare($sql_pmt_first_sem);
-                $query_pmt_first_sem->bindParam(':stud_org_id', $payment['stud_org_id']);
-                $query_pmt_first_sem->bindParam(':amount_to_pay', $org['required_fee']);
-                $query_pmt_first_sem->execute();
-        
-                // Insert payment for second semester
             }
 
             return true;
+        }
+
+
+        function get_collection_fee() {
+            $sql = "SELECT collection_id, amount FROM collection_fees;";
+            $query = $this->conn->prepare($sql);
+
+            if($query->execute()){
+                return $query->fetchAll();
+            } else {
+                return false;
+            }
         }
 
         // function update_user_type($is_student, $is_facilitator, $user_id){
@@ -193,21 +188,6 @@
             $count = $query->fetchColumn();
             return $count > 0;
         }
-        
-
-
-
-
-        function showStudents(){
-            $sql = "SELECT user.is_facilitator, student.last_name, student.first_name, student.middle_name FROM student
-            INNER JOIN user ON student.student_id = user.user_id
-            WHERE user.is_facilitator = 0";
-            $query = $this->conn->prepare($sql);
-            $query->execute();
-            return $query->fetchAll();
-        }
-
-
 
         function getCourse(){
             $sql = "SELECT * FROM course;";
@@ -220,29 +200,19 @@
             }
         }
 
-        function getOrganization() {
-            $sql = "SELECT organization_id, required_fee FROM organization;";
-            $query = $this->conn->prepare($sql);
 
-            if($query->execute()){
-                return $query->fetchAll();
-            } else {
-                return false;
-            }
-        }
+        // function getUser($user_id) {
+        //     $sql = 'SELECT user_id, user_type FROM user WHERE user_id = :user_id';
+        //     $query = $this->conn->prepare($sql);
 
-        function getUser($user_id) {
-            $sql = 'SELECT user_id, user_type FROM user WHERE user_id = :user_id';
-            $query = $this->conn->prepare($sql);
+        //     $query->bindParam(':user_id', $user_id);
 
-            $query->bindParam(':user_id', $user_id);
-
-            if($query->execute()){
-                return $query->fetch();
-            } else {
-                return false;
-            }
-        }
+        //     if($query->execute()){
+        //         return $query->fetch();
+        //     } else {
+        //         return false;
+        //     }
+        // }
     }
 
     // $signupObj = new Signup;

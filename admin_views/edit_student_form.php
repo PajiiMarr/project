@@ -1,5 +1,5 @@
 <?php
-require_once '../admin/admin.class.php';
+require_once '../classes/admin.class.php';
 $objForm = new Admin;
 $edit_student = $objForm->view_edit_student($_GET['student-id']);
 $getCourse = $objForm->viewCourse();

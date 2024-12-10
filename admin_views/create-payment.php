@@ -1,7 +1,7 @@
 <?php 
 session_start();
-require_once '../admin/admin.class.php';
-require_once '../utilities/clean.php';
+require_once '../classes/admin.class.php';
+require_once '../tools/clean.php';
 
 $paymentObj = new Admin;
 

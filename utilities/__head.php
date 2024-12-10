@@ -1,30 +1,19 @@
-<?php
-session_start();
-if (empty($_SESSION['user']['is_facilitator'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | Admin</title>
+    <title><?= $page_title ?></title>
     <?php require_once '../utilities/__link.php'; ?>
     <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="../node_modules/datatables/css/dataTables.min.css">
-    <link rel="stylesheet" href="../allcss/facilitator_home.css">
+    <?php if($_SESSION['user']['is_admin'] == 1){ ?>
+    <link rel="stylesheet" href="../allcss/admin_home.css">
+    <?php } else if($_SESSION['user']['is_facilitator'] == 1){ ?>
+        <link rel="stylesheet" href="../allcss/facilitator_home.css">
+    <?php } ?>
     <style>
-        .bg-gray {
-            transition: 0.1s ease-in-out;
-        }
 
-        .bg-gray:hover {
-            background-color: #E8E8E8;
-        }
 
         .li-student {
             position: relative;
@@ -102,16 +91,12 @@ if (empty($_SESSION['user']['is_facilitator'])) {
             }
         }
 
+        #staticBackdropFacilitator {
+            z-index: 1056; /* Higher than Bootstrap's default for modals (1055) */
+        }
+
+        #staticBackdrop {
+            z-index: 1055;
+        }
     </style>
 </head>
-<body>
-    <header>
-        <?php require_once 'facilitator_sidebar.php' ?>
-    </header>
-    <main class="content-page">
-
-    </main>
-
-    <?php require_once '../utilities/__facilitator_scripts.php'; ?>
-</body>
-</html>

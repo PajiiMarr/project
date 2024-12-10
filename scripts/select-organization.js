@@ -12,7 +12,7 @@ $(document).ready(function () {
     function organizationDetails(orgId) {
         $.ajax({
             type: "GET",
-            url: `../admin/organization-details.php`, // Backend script to fetch details
+            url: `../admin_views/organization-details.php`, // Backend script to fetch details
             data: { organization_id: orgId },
             dataType: "html", // Modal HTML content expected
             success: function (response) {
@@ -23,9 +23,14 @@ $(document).ready(function () {
                 const modal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
                 modal.show();
 
-                $("#assign-facilitator").on('click', function (e){
+                $(".approve-request").on('click', function (e){
                     e.preventDefault();
-                    assignFacilitators();
+                    approveRequest(this.dataset.id);
+                });
+                $(".decline-request").on('click', function (e){
+                    e.preventDefault();
+
+                    declineRequest(this.dataset.id);
                 });
             },
             error: function () {
@@ -34,27 +39,49 @@ $(document).ready(function () {
         });
     }
 
-    function assignFacilitators() {
+    function approveRequest(collectionId) {
         $.ajax({
             type: "GET",
-            url: `../admin/assign_facilitator.php`, // Backend script to fetch details
-            dataType: "html", // Modal HTML content expected
-            success: function (response) {
-                $(".modal-assign-facilitator").html(response);
-                $("#staticBackdrop .modal-content").addClass("blur-effect");
-                // Initialize and show the Bootstrap modal
-                const modal = new bootstrap.Modal(document.getElementById('staticBackdropFacilitator'));
-                modal.show();
+            url: `../admin_views/approve-modal.php?collection_id=${collectionId}`,
+            dataType: "html",
+            success: function (e) {
+                $(".request-container").html(e);
+                
+                // Add blur effect to the background
+                $("#staticBackdrop").addClass("blur-effect");
 
-                const assignFacilitator = document.getElementById('staticBackdropFacilitator');
-                assignFacilitator.addEventListener('hidden.bs.modal', function () {
-                    $("#staticBackdrop .modal-content").removeClass("blur-effect");
+                // Show the modal
+                $("#approveFee").modal("show");
+
+                // Remove blur effect when modal is closed
+                $("#approveFee").on("hidden.bs.modal", function () {
+                    $("#staticBackdrop").removeClass("blur-effect");
                 });
-            },
-            error: function () {
-                alert("Failed to load organization details. Please try again.");
             }
         });
-    }
+    }  
+
+    // function assignFacilitators() {
+    //     $.ajax({
+    //         type: "GET",
+    //         url: `../admin/assign_facilitator.php`, // Backend script to fetch details
+    //         dataType: "html", // Modal HTML content expected
+    //         success: function (response) {
+    //             $(".modal-assign-facilitator").html(response);
+    //             $("#staticBackdrop .modal-content").addClass("blur-effect");
+    //             // Initialize and show the Bootstrap modal
+    //             const modal = new bootstrap.Modal(document.getElementById('staticBackdropFacilitator'));
+    //             modal.show();
+
+    //             const assignFacilitator = document.getElementById('staticBackdropFacilitator');
+    //             assignFacilitator.addEventListener('hidden.bs.modal', function () {
+    //                 $("#staticBackdrop .modal-content").removeClass("blur-effect");
+    //             });
+    //         },
+    //         error: function () {
+    //             alert("Failed to load organization details. Please try again.");
+    //         }
+    //     });
+    // }
 
 });

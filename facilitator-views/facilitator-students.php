@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once '../utilities/clean.php';
-require_once '../facilitator/facilitator.class.php';
+require_once '../tools/clean.php';
+require_once '../classes/facilitator.class.php';
 
 $faciObj = new Facilitator;
 
@@ -24,14 +24,7 @@ $courses = $faciObj->viewCourse();
                     <i class="fa-regular fa-circle-user fs-4 crimson"></i>
                     </a>
                     <ul class="dropdown-menu text-small">
-                        <?php if(isset($_SESSION['user']['is_facilitator'])){ ?>
-                        <li><a class="dropdown-item" href="#">Switch as Student</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <?php } ?>
-
-                        <li><a class="dropdown-item" href="<?= isset($_SESSION['user']['is_facilitator']) || isset($_SESSION['user']['is_facilitator']) ? '../log_out.php' : '../admin/admin_logout.php'; ?>">Sign out</a></li>
+<li><a class="dropdown-item" href="<?= isset($_SESSION['user']['is_facilitator']) || isset($_SESSION['user']['is_facilitator']) ? '../log_out.php' : '../admin/admin_logout.php'; ?>">Sign out</a></li>
                     </ul>
             </div>
         </div>
@@ -68,13 +61,15 @@ $courses = $faciObj->viewCourse();
                     <tr class="bg-light-crimson">
                         <th class="fs-4 text-white p-2 text-start" style="width: 5%;">No.</th>
                         <th class="fs-4 text-white p-2" style="width: 20%;">Student</th>
-                        <th class="fs-4 text-white p-2" style="width: 8%;">Status</th>
                         <th class="fs-4 text-white p-2" style="width: 7%;">Course</th>
                         
                         <th class="fs-4 text-white p-2" style="width: 10%;">Section</th>
-                        <th class="fs-4 text-white p-2" style="width: 15%;">Role</th>
                         <th class="fs-4 text-white p-2" style="width: 10%;">Year</th>
-                        <th class="fs-4 text-white p-2" style="width: 45%;">Action</th>
+                        <th class="fs-4 text-white p-2" style="width: 10%;">Purpose</th>
+                        <th class="fs-4 text-white p-2" style="width: 7%;">Role</th>
+                        <th class="fs-4 text-white p-2" style="width: 7%;">Status</th>
+                        <th class="fs-4 text-white p-2 text-start" style="width: 7%;">Balance</th>
+                        <th class="fs-4 text-white p-2" style="width: 50%;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -90,9 +85,10 @@ $courses = $faciObj->viewCourse();
                                 <td class="p-2">
                                     <?= clean_input($student['last_name']) . ', ' . clean_input($student['first_name']) . ' ' . clean_input($student['middle_name']); ?>
                                 </td>
-                                <td class="p-2"><?= clean_input($student['status']); ?></td>
                                 <td class="p-2"><?= clean_input($student['course_code']); ?></td>
                                 <td class="p-2"><?= clean_input($student['course_section']); ?></td>
+                                <td class="p-2"><?= clean_input($student['course_year']); ?></td>
+                                <td class="p-2"><?= clean_input($student['purpose']); ?></td>
                                 <td class="p-2">
                                     <?php 
                                     if(isset($student['is_head'])) {
@@ -106,10 +102,14 @@ $courses = $faciObj->viewCourse();
                                     } else {
                                         echo 'None';
                                     }
-                                     ?>
+                                    ?>
                                 </td>
-                                <td class="p-2"><?= clean_input($student['course_year']); ?></td>
+                                <td class="p-2"><?= clean_input($student['payment_status']); ?></td>
+                                <td class="p-2 text-start"><?= clean_input($student['amount_to_pay']); ?></td>
                                 <td class="p-2 text-nowrap" style="height: 8vh;">
+                                    <?php if($student['payment_status'] == 'Unpaid'){ ?>
+                                        <a data-id="<?= $student['payment_id'] ?>" class="btn btn-success create-payment">Create Payment</a>
+                                    <?php } ?>
                                     <a data-id="<?= $student['student_id'] ?>" class="btn btn-primary edit-student">Edit</a>
                                     <a data-id="<?= $student['student_id'] ?>" class="btn btn-danger remove-student">Remove</a>
                                 </td>

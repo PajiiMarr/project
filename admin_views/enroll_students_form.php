@@ -1,5 +1,5 @@
 <?php
-require_once '../utilities/signup.class.php';
+require_once '../utilities/../classes/signup.class.php';
 $objForm = new Signup;
 
 $getCourse = $objForm->getCourse();

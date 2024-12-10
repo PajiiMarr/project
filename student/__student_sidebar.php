@@ -1,5 +1,4 @@
 <div class="admin-icon  d-flex flex-column justify-content-center align-items-center">
-    <i class="fa-regular fa-circle-user icon-size crimson py-3"></i>
     <h2>Student</h2>
 </div>
 <div class="admin-nav d-flex flex-column justify-content-between">
@@ -21,12 +20,3 @@
             </ul>
         </nav>
     </div>
-<div class="sign-out d-flex justify-content-end align-items-center">
-    <a href="../log_out.php" class="w-50 crimson text-decoration-none d-flex">
-        <i class="fa-solid fa-arrow-right-from-bracket w-25 fs-5 mt-1"></i>
-        <div class="w-75 h-100 d-flex align-items-center">
-            <p class="fs-5">Sign Out</p>
-        </div>
-        
-    </a>
-</div>

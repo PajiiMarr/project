@@ -1,11 +1,12 @@
 <?php
-require_once 'admin.class.php';
-require_once '../utilities/clean.php';
+require_once '../classes/admin.class.php';
+require_once '../tools/clean.php';
 
 if (isset($_GET['organization_id'])) {
     $objAdmin = new Admin;
     $organization_details = $objAdmin->orgDetails($_GET['organization_id']);
     $facilitator_list = $objAdmin->facilitatorList($_GET['organization_id']);
+    $collection_fees = $objAdmin->collection_fees($_GET['organization_id']);
     if ($organization_details) {
         ?>
         <style>
@@ -25,12 +26,19 @@ if (isset($_GET['organization_id'])) {
                 width: 100vw; /* Adjust width as needed */
         }
 
-        .blur-effect {
-            filter: blur(5px); /* Adjust blur intensity */
-            pointer-events: none; /* Prevent interactions with the blurred modal */
+
+
+        #approveFee.modal {
+            z-index: 1060; /* Higher than default modal z-index */
         }
 
+        #approveFee .modal-backdrop {
+            z-index: 1055; /* Keep backdrop below the modal */
+        }
+
+
         </style>
+        <div class="request-container"></div>
         <div class="modal fade bd-example-modal-lg" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-side-right modal-lg h-100">
                 <div class="modal-content">
@@ -53,19 +61,31 @@ if (isset($_GET['organization_id'])) {
                             <p><?= clean_input($organization_details['status']) ?></p>
                         </div>
 
-                        <div class="lh-sm text-black d-flex border-bottom mt-2 pb-2">
-                            <div class="w-25">
-                                <p class="fs-5">Total Collected:</p>
-                                <p><?= clean_input($organization_details['total_collected']) ?></p>
-                            </div>
-                            <div class="w-25">
-                                <p class="fs-5">Required Fee:</p>
-                                <p><?= clean_input($organization_details['required_fee']) ?></p>
-                            </div>
-                            <div class="w-25">
-                                <p class="fs-5">Pending Balance:</p>
-                                <p><?= clean_input($organization_details['pending_balance']) ?></p>
-                            </div>
+                        <div class="lh-sm text-black border-bottom mt-2 pb-2">
+                            <h5>Collection Fees</h5>
+                            <table class="w-50 pb-3">
+                                <thead>
+                                    <tr class="border-bottom">
+                                        <th class="p-1 fs-6 fw-6 w-25">Amount</th>
+                                        <th class="p-1 fs-6 fw-6 w-25">Purpose</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach($collection_fees as $cof){ ?>
+                                        <tr class="border-bottom">
+                                            <td class="p-1 fs-6 fw-6 "><?= $cof['amount'] ?></td>
+                                            <td class="p-1 fs-6 fw-6 text-nowrap">
+                                                <?= $cof['purpose'] ?>
+                                                <?php if($cof['request_status'] == 'Pending'){  ?>
+                                                    <a href="" data-id="<?= $cof['collection_id'] ?>" class="btn btn-success ms-3 approve-request">Approve</a>
+                                                    <a href="" data-id="<?= $cof['collection_id'] ?>" class="btn btn-danger decline-request">Decline</a>
+                                                <?php } ?>
+                                            </td>
+                                        </tr>
+                                    <?php } ?>
+                                </tbody>
+                            </table>
+
                         </div>
 
                         <div class="lh-sm text-black mt-2">
@@ -90,18 +110,20 @@ if (isset($_GET['organization_id'])) {
                                     <?php } else {
                                         foreach($facilitator_list as $fl):
                                         ?>
-                                        <td class="p-1 "><?= $fl['last_name'] . ', ' . $fl['first_name'] . ' ' . $fl['middle_name'] ?></td>
-                                        <td class="p-1 ">
-                                            <?php
-                                                if(!empty('is_head')){
-                                                    echo 'Head';
-                                                } else if (!empty('is_assistant_head')) {
-                                                    echo 'Assistant Head';
-                                                } else if (!empty('is_collector')) {
-                                                    echo 'Fee Collector';
-                                                }
-                                            ?>
-                                        </td>
+                                        <tr>
+                                            <td class="p-1 "><?= $fl['last_name'] . ', ' . $fl['first_name'] . ' ' . $fl['middle_name'] ?></td>
+                                            <td class="p-1 ">
+                                                <?php
+                                                    if(!empty('is_head')){
+                                                        echo 'Head';
+                                                    } else if (!empty('is_assistant_head')) {
+                                                        echo 'Assistant Head';
+                                                    } else if (!empty('is_collector')) {
+                                                        echo 'Fee Collector';
+                                                    }
+                                                ?>
+                                            </td>
+                                        </tr>
                                         <?php
                                         endforeach;
                                         } ?>
@@ -120,7 +142,7 @@ if (isset($_GET['organization_id'])) {
                 </div>
             </div>
         </div>
-        >
+        
         <?php
     } else {
         echo "<p>Organization details not found.</p>";

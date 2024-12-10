@@ -189,3 +189,12 @@ select:focus {
 h5, h6, label {
     color: black;
 }
+
+.blur-effect {
+    filter: blur(4px); /* Adjust the blur intensity */
+    transition: filter 0.2s ease; /* Smooth transition */
+}
+
+#approveFee {
+    filter: none !important; /* Ensure modal is not blurred */
+}

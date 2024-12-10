@@ -1,5 +1,5 @@
 <?php
-require_once '../admin/admin.class.php';
+require_once '../classes/admin.class.php';
 
 $studentObj = new Admin;
 

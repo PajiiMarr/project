@@ -1,13 +1,13 @@
 <?php
+session_start();
 require_once '../tools/clean.php';
-require_once '../classes/admin.class.php';
+require_once '../classes/facilitator.class.php';
 
-$viewOrgs = new Admin();
+$viewOrgs = new Facilitator();
 
-$students = $viewOrgs->viewStudents();
+$facilitator_details = $viewOrgs->facilitator_details($_SESSION['user']['user_id']);
+$students = $viewOrgs->assignStudent();
 $courses = $viewOrgs->viewCourse();
-$organizations = $viewOrgs->allOrgsHeadAssigned();
-
 
 ?>
 
@@ -21,20 +21,13 @@ $organizations = $viewOrgs->allOrgsHeadAssigned();
                     <i class="fa-regular fa-circle-user fs-4 crimson"></i>
                     </a>
                     <ul class="dropdown-menu text-small">
-                        <?php session_start(); if(isset($_SESSION['user']['is_facilitator'])){ ?>
-                        <li><a class="dropdown-item" href="#">Switch as Student</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <?php } ?>
-
-                        <li><a class="dropdown-item" href="<?= isset($_SESSION['user']['is_facilitator']) || isset($_SESSION['user']['is_facilitator']) ? '../log_out.php' : '../admin/admin_logout.php'; ?>">Sign out</a></li>
+<li><a class="dropdown-item" href="<?= isset($_SESSION['user']['is_facilitator']) || isset($_SESSION['user']['is_facilitator']) ? '../log_out.php' : '../admin/admin_logout.php'; ?>">Sign out</a></li>
                     </ul>
             </div>
         </div>
         <div class="h-50 w-100 custom-border-bottom container-fluid lh-1 py-3 px-5">
-            <p class="text-secondary fs-5 m-0">Student/Overview</p>
-            <h2 class="m-0">Student</h2>
+            <p class="text-secondary fs-5 m-0">Assign Student/Overview</p>
+            <h2 class="m-0">Assign Student</h2>
         </div>
     </div>
     <div class="container-fluid h-80 w-100 py-5 px-5">
@@ -82,16 +75,6 @@ $organizations = $viewOrgs->allOrgsHeadAssigned();
                     <?php else: ?>
                         <?php $counter = 1; ?>
                         <?php foreach ($students as $student): ?>
-                            <?php
-                            $has_no_heads = false;
-                            foreach ($organizations as $org) {
-                                if ($org['is_head'] == null) {
-                                    $has_no_heads = true;
-                                    break;
-                                }
-                            }
-
-                            ?>
                             <tr class="border-bottom shadow-hover">
                                 <td class="p-2 text-center"><?= $counter; ?></td>
                                 <td class="p-2">
@@ -102,13 +85,13 @@ $organizations = $viewOrgs->allOrgsHeadAssigned();
                                 <td class="p-2"><?= clean_input($student['course_section']); ?></td>
                                 <td class="p-2">
                                     <?php 
-                                    if($student['is_head'] == 1) {
+                                    if($student['is_head'] != 0) {
                                         echo  "Head at " . $student['org_name']; 
                                     }
-                                    else if($student['is_assistant_head'] == 1) {
+                                    else if($student['is_assistant_head'] != 0) {
                                         echo  "Assistant Head at " . $student['org_name']; 
                                     }
-                                    else if($student['is_collector'] == 1) {
+                                    else if($student['is_collector'] != 0) {
                                         echo  "Fee Collector at " . $student['org_name']; 
                                     } else {
                                         echo 'None';
@@ -117,20 +100,18 @@ $organizations = $viewOrgs->allOrgsHeadAssigned();
                                 </td>
                                 <td class="p-2"><?= clean_input($student['course_year']); ?></td>
                                 <td class="p-2 text-nowrap" style="height: 8vh;">
-                                    <?php if($student['status'] == 'Enrolled'){ if ($student['is_head'] == 1 || $student['is_assistant_head'] == 1 || $student['is_collector'] == 1 ){ ?>
+                                    <?php if($student['status'] == 'Enrolled'){ if (!empty($student['is_head']) || !empty($student['is_assistant_head']) || !empty($student['is_collector'])){ ?>
                                         <a class="text-success text-decoration-none pt-3">Already Assigned</a>
+                                        <?php
+                                        if(!empty($student['is_assistant_head']) || !empty($student['is_collector'])){
+                                            if($facilitator_details['is_head'] != 0 || ($facilitator_details['is_head'] != 0 && $student['is_collector'])){ ?>
                                         <a href="" data-id="<?= clean_input($student['student_id']); ?>" class="btn btn-warning resign-head" style="height: 3.6vh">Resign</a>
+                                        <?php } } ?>
                                     <?php } else {?>
-                                    <?php if ($has_no_heads){ ?>
-                                        <a data-id="<?= $student['student_id'] ?>" class="btn btn-success assign-head">Assign as Head</a>
-                                    <?php }} ?>
-                                    <a data-id="<?= $student['student_id'] ?>" class="btn btn-primary edit-student">Edit</a>
-                                    <a data-id="<?= $student['student_id'] ?>" class="btn btn-danger remove-student">Remove</a>
-                                    <?php } else if ($student['status'] == 'Undefined') { ?>
-                                        <a data-id="<?= $student['student_id'] ?>" class="btn btn-primary enroll-undefined-student">Enroll</a>
-                                    <?php } else { ?>
-                                    <p class="text-danger pt-3">Unable to do actions (<?= $student['status'] ?>). </p>
-                                    <?php } ?> 
+                                    <?php ?>
+                                        <a data-id="<?= $student['student_id'] ?>" class="btn btn-success assign-officer">Assign</a>
+                                    <?php } ?>
+                                    <?php } ?>
                                 </td>
                             </tr>
                             <?php $counter++; ?>
@@ -138,8 +119,6 @@ $organizations = $viewOrgs->allOrgsHeadAssigned();
                     <?php endif; ?>
                 </tbody>
             </table>
-
-
         </div>
     </div>
 </section>

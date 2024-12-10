@@ -1,6 +1,6 @@
 <?php
-require_once '../admin/admin.class.php';
-require_once '../utilities/clean.php';
+require_once '../classes/admin.class.php';
+require_once '../tools/clean.php';
 session_start();
 $orgObj = new Admin;
 $allOrganizations = $orgObj->allOrgs();
@@ -16,14 +16,7 @@ $allOrganizations = $orgObj->allOrgs();
                     <i class="fa-regular fa-circle-user fs-4 crimson"></i>
                     </a>
                     <ul class="dropdown-menu text-small">
-                        <?php if(isset($_SESSION['user']['is_facilitator'])){ ?>
-                        <li><a class="dropdown-item" href="#">Switch as Student</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <?php } ?>
-
-                        <li><a class="dropdown-item" href="<?= isset($_SESSION['user']['is_facilitator']) || isset($_SESSION['user']['is_facilitator']) ? '../log_out.php' : '../admin/admin_logout.php'; ?>">Sign out</a></li>
+<li><a class="dropdown-item" href="<?= isset($_SESSION['user']['is_facilitator']) || isset($_SESSION['user']['is_facilitator']) ? '../log_out.php' : '../admin/admin_logout.php'; ?>">Sign out</a></li>
                     </ul>
             </div>
         </div>
@@ -44,7 +37,7 @@ $allOrganizations = $orgObj->allOrgs();
                     </div>
                 </form>
             </div>
-            <table id="table-organization" class="max-h-100 w-100 table-hover">
+            <table id="table-organization" class="max-h-100 w-100 table-hover ">
                 <thead>
                     <tr class="bg-light-crimson">
                         <th class="fs-4 text-white p-2 text-start">No.</th>
@@ -58,8 +51,8 @@ $allOrganizations = $orgObj->allOrgs();
                     $counter = 1;
                     foreach ($allOrganizations as $allorgs) {
                     ?>
-                        <tr class="border-bottom shadow-hover" data-org-id="<?= $allorgs['organization_id'] ?>" style="cursor: pointer;">
-                            <td class="p-2 text-start"><?= $counter; ?></td>
+                        <tr class="border-bottom shadow-hover" data-org-id="<?= $allorgs['organization_id'] ?>">
+                            <td class="p-2 text-center"><?= $counter; ?></td>
                             <td class="p-2"><?= $allorgs['org_name']; ?></td>
                             <td class="p-2"><?= $allorgs['status']; ?></td>
                             <td class="p-2 text-black">
@@ -85,3 +78,19 @@ $allOrganizations = $orgObj->allOrgs();
     </div>
 </section>
 <script src="../scripts/select-organization.js"></script>
+
+<script>
+    function addNotification(row) {
+  row.classList.add("notification");
+}
+
+function removeNotification(row) {
+  row.classList.remove("notification");
+}
+
+// Example Usage
+const row = document.querySelector("tr:nth-child(1)");
+addNotification(row); // Adds the notification
+removeNotification(row); // Removes the notification
+
+</script>
