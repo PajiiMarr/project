@@ -16,12 +16,7 @@
                     <i class="fa-regular fa-circle-user fs-4 crimson"></i>
                 </a>
                 <ul class="dropdown-menu text-small">
-                    <?php if(isset($_SESSION['user']['is_facilitator'])){ ?>
-                    <li><a class="dropdown-item" href="#">Switch as Student</a></li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    <?php } ?>
+                    
                     <li><a class="dropdown-item" href="<?= isset($_SESSION['user']['is_facilitator']) || isset($_SESSION['user']['is_facilitator']) ? '../log_out.php' : '../admin/admin_logout.php'; ?>">Sign out</a></li>
                 </ul>
             </div>
@@ -47,13 +42,14 @@
                         <th class="fs-4 text-white p-2 text-start ">Amount</th>
                         <th class="fs-4 text-white p-2 text-start ">Purpose</th>
                         <th class="fs-4 text-white p-2 text-start ">Collection Start Date</th>
+                        <th class="fs-4 text-white p-2 text-start ">Collection Date Due</th>
                         <th class="fs-4 text-white p-2 text-start ">Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($requests)) { ?>
                         <tr>
-                            <td colspan="4" class="text-center fw-bold fs-5 py-2">No Requested Payments Found.</td>
+                            <td colspan="5" class="text-center fw-bold fs-5 py-2">No Requested Payments Found.</td>
                         </tr>
                     <?php } else {
                         $counter = 1;
@@ -63,6 +59,7 @@
                                 <td class="p-3 text-start "><?= $req['amount'] ?></td>
                                 <td class="p-3 text-start "><?= $req['purpose']; ?></td>
                                 <td class="p-3 text-start "><?= $req['start_date'] == '0000-00-00' ? 'None' : $req['start_date'] ; ?></td>
+                                <td class="p-3 text-start "><?= empty($req['date_due']) ? 'TBA' : $req['date_due'] ; ?></td>
                                 <td
                                 class="p-3 text-start <?php
                                 if($req['request_status'] == 'Approved'){

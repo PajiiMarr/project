@@ -128,7 +128,7 @@
             
             foreach($collection_fee as $org){
                 $sql_pending_balance = "UPDATE collection_fees SET pending_balance = pending_balance + :amount
-                WHERE collection_id = :collection_id AND purpose = 'Clearance'";
+                WHERE collection_id = :collection_id AND label = 'required'";
                 $query_pending_balance = $this->conn->prepare($sql_pending_balance);
     
                 $query_pending_balance->bindParam(":collection_id", $org['collection_id']);
@@ -151,7 +151,7 @@
 
 
         function get_collection_fee() {
-            $sql = "SELECT collection_id, amount FROM collection_fees;";
+            $sql = "SELECT collection_id, amount FROM collection_fees WHERE request_status = 'Approved';";
             $query = $this->conn->prepare($sql);
 
             if($query->execute()){

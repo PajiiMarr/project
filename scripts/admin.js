@@ -26,7 +26,7 @@ $(document).ready(function () {
     });
 
 
-    $(document).on("click", "#enroll-student", function(e) {
+    $("#enroll-student").on("click", function(e) {
       e.preventDefault();
       enrollStudent();
     });
@@ -77,9 +77,143 @@ $(document).ready(function () {
                 e.preventDefault();
                 addOrganization();
               });
+
+              $('#table-organization').on('click', 'tr', function () {
+                const orgId = $(this).data('org-id'); // Get organization ID
+        
+                if (orgId) {
+                    // Fetch and display organization details
+                    organizationDetails(orgId);
+                }
+              });
           }
       });
     }
+
+    function organizationDetails(orgId) {
+      $.ajax({
+          type: "GET",
+          url: `../admin_views/organization-details.php`, // Backend script to fetch details
+          data: { organization_id: orgId },
+          dataType: "html", // Modal HTML content expected
+          success: function (response) {
+              // Insert response into modal container
+              $(".modal-container").html(response);
+
+              // Initialize and show the Bootstrap modal
+              const modal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
+              modal.show();
+
+              $(".approve-request").on('click', function (e){
+                  e.preventDefault();
+                  approveRequest(this.dataset.id, orgId);
+              });
+              $(".decline-request").on('click', function (e){
+                  e.preventDefault();
+                  declineRequest(this.dataset.id, orgId);
+              });
+          },
+          error: function () {
+              alert("Failed to load organization details. Please try again.");
+          }
+      });
+    }
+
+    function approveRequest(collectionId, orgId) {
+        $.ajax({
+            type: "GET",
+            url: `../admin_views/approve-modal.php?collection_id=${collectionId}`,
+            dataType: "html",
+            success: function (e) {
+                $(".request-container").html(e);
+                
+                // Add blur effect to the background
+                $("#staticBackdrop").addClass("blur-effect");
+
+                // Show the modal
+                $("#approveFee").modal("show");
+
+                $("#form-approve-request").on("submit", function(e){
+                  e.preventDefault();
+                  saveApprove(orgId);
+                });
+
+                // Remove blur effect when modal is closed
+                $("#approveFee").on("hidden.bs.modal", function () {
+                    $("#staticBackdrop").removeClass("blur-effect");
+                });
+            }
+        });
+    }  
+
+    function saveApprove(orgId) {
+      $.ajax({
+        type: "POST", // Use POST request
+        url: "../admin_views/approve.php", // URL for saving organization
+        data: $("#form-approve-request").serialize(), // Serialize the form data for submission
+        dataType: "json", // Expect JSON response
+        success: function (response) {
+          if(response.status == 'success'){
+            $("#approveFee").modal("hide");
+            $("#form-approve-request")[0].reset();
+            $("#staticBackdrop").removeClass("blur-effect");
+            $("#staticBackdrop").modal("hide");
+            organizationDetails(orgId);
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error("AJAX error:", status, error);
+        },
+      });
+    }
+
+    function saveDecline(orgId) {
+      $.ajax({
+        type: "POST", // Use POST request
+        url: "../admin_views/decline.php", // URL for saving organization
+        data: $("#form-decline-request").serialize(), // Serialize the form data for submission
+        dataType: "json", // Expect JSON response
+        success: function (response) {
+          if(response.status == 'success'){
+            $("#declineFee").modal("hide");
+            $("#form-decline-request")[0].reset();
+            $("#staticBackdrop").removeClass("blur-effect");
+            $("#staticBackdrop").modal("hide");
+            organizationDetails(orgId);
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error("AJAX error:", status, error);
+        },
+      });
+    }
+
+    function declineRequest(collectionId, orgId) {
+        $.ajax({
+            type: "GET",
+            url: `../admin_views/decline-modal.php?collection_id=${collectionId}`,
+            dataType: "html",
+            success: function (e) {
+                $(".request-container").html(e);
+                
+                // Add blur effect to the background
+                $("#staticBackdrop").addClass("blur-effect");
+
+                // Show the modal
+                $("#declineFee").modal("show");
+
+                $("#form-decline-request").on("submit", function(e){
+                  e.preventDefault();
+                  saveDecline(orgId);
+                });
+
+                // Remove blur effect when modal is closed
+                $("#declineFee").on("hidden.bs.modal", function () {
+                    $("#staticBackdrop").removeClass("blur-effect");
+                });
+            }
+        });
+    }  
 
     function addOrganization() {
       $.ajax({
@@ -424,6 +558,7 @@ $(document).ready(function () {
           } else {
             $("#staticBackdrop").modal("hide");
             $("#form-enroll-student")[0].reset();
+            $("#student-link").trigger("click"); // Trigger the products click event
           }
         },
         error: function (xhr, status, error) {

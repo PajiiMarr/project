@@ -78,7 +78,14 @@ if($_SESSION['user']['is_admin'] == 1){
                         </a>
                     </li>
 
-                    <?php if($facilitator['is_head'] != 0 || $facilitator['is_assistant_head'] != 0){ ?>
+                    <li class="header-list w-100 h-25 li-unselected px-2">
+                        <a href="organization.php" id="facilitator-organization-link" class="anchor-tag d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none crimson px-3">
+                            <i class="fa-solid fa-people-group w-25 fs-4"></i>
+                            <p class="w-75 fs-5 pt-3">Organization</p>
+                        </a>
+                    </li>
+
+                    <?php if($facilitator['is_collector'] == 0){ ?>
                     <li class="header-list w-100 h-25 px-2 li-unselected li-student">
                         <a href="assign.php" id="facilitator-assign-officer" class="anchor-tag student-anchor d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none crimson px-3">
                             <i class="fas fa-user-tie w-25 mt-1 fs-4"></i>
@@ -90,16 +97,18 @@ if($_SESSION['user']['is_admin'] == 1){
                     <li class="header-list w-100 h-25 px-2 li-unselected li-student">
                         <a href="student.php" id="facilitator-student-link" class="anchor-tag student-anchor d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none crimson px-3">
                             <i class="fa-solid fa-users w-25 mt-1 fs-4"></i>
-                            <p class="w-75 fs-5 pt-3">Students</p>
+                            <p class="w-75 fs-5 pt-3">Issue Payment</p>
                         </a>
                     </li>
 
+                    <?php if($facilitator['is_collector'] == 0){ ?>
                     <li class="header-list w-100 h-25 li-unselected px-2">
                         <a href="request.php" id="facilitator-request-link" class="anchor-tag d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none crimson px-3">
-                            <i class="fa-solid fa-money-check w-25 fs-4"></i>
-                            <p class="w-75 fs-5 pt-3">Request</p>
+                            <i class="fas fa-clipboard w-25 fs-4"></i>
+                            <p class="w-75 fs-5 pt-3">Requests</p>
                         </a>
                     </li>
+                    <?php } ?>
 
                     <li class="header-list w-100 h-25 li-unselected px-2">
                         <a href="payments.php" id="facilitator-payment-link" class="anchor-tag d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none crimson px-3">
@@ -112,9 +121,9 @@ if($_SESSION['user']['is_admin'] == 1){
         </div>
 
     </div>
-    <?php if($facilitator['is_head'] == 1 || $facilitator['is_assistant_head']){ ?>
+    <?php if($facilitator['is_collector'] == 0){ ?>
     <div class="d-flex justify-content-center align-items-end w-100 pb-4" >
-        <a class="btn bg-crimson fs-5 d-flex justify-content-center align-items-center w-75" id="request-payment"> <i class="fas fa-plus me-2 fs-5"></i> Request Payment</a>
+        <a class="btn bg-crimson fs-5 d-flex justify-content-center align-items-center w-75" id="request-payment"> <i class="fas fa-plus me-2 fs-5"></i> Propose Organization Fee</a>
     </div>
 
     <?php } 

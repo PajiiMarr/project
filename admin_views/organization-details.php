@@ -28,11 +28,13 @@ if (isset($_GET['organization_id'])) {
 
 
 
-        #approveFee.modal {
+        #approveFee.modal,
+        #declineFee.modal {
             z-index: 1060; /* Higher than default modal z-index */
         }
 
-        #approveFee .modal-backdrop {
+        #approveFee .modal-backdrop,
+        #declineFee .modal-backdrop {
             z-index: 1055; /* Keep backdrop below the modal */
         }
 
@@ -63,19 +65,29 @@ if (isset($_GET['organization_id'])) {
 
                         <div class="lh-sm text-black border-bottom mt-2 pb-2">
                             <h5>Collection Fees</h5>
-                            <table class="w-50 pb-3">
+                            <table class="w-100 pb-3">
                                 <thead>
                                     <tr class="border-bottom">
-                                        <th class="p-1 fs-6 fw-6 w-25">Amount</th>
-                                        <th class="p-1 fs-6 fw-6 w-25">Purpose</th>
+                                        <th class="p-1 fs-6 fw-6" style="width: 15%;">Amount</th>
+                                        <th class="p-1 fs-6 fw-6" style="width: 15%">Purpose</th>
+                                        <th class="p-1 fs-6 fw-6" style="width: 15%;">Status</th>
+                                        <th class="p-1 fs-6 fw-6" style="width: 15%;">Start Date</th>
+                                        <th class="p-1 fs-6 fw-6" style="width: 15%;">End Date</th>
+                                        <th class="p-1 fs-6 fw-6" style="width: 15%;">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php foreach($collection_fees as $cof){ ?>
-                                        <tr class="border-bottom">
-                                            <td class="p-1 fs-6 fw-6 "><?= $cof['amount'] ?></td>
-                                            <td class="p-1 fs-6 fw-6 text-nowrap">
+                                        <tr>
+                                            <td class="p-1 fs-6 fw-6"><?= $cof['amount'] ?></td>
+                                            <td class="p-1 fs-6 fw-6 text-nowrap w-25">
                                                 <?= $cof['purpose'] ?>
+                                                
+                                            </td>
+                                            <td class="p-1 fs-6 fw-6"><?= $cof['request_status'] ?></td>
+                                            <td class="p-1 fs-6 fw-6"><?= $cof['start_date'] ?></td>
+                                            <td class="p-1 fs-6 fw-6"><?= empty($cof['date_due']) ? 'TBA' : $cof['date_due'] ; ?></td>
+                                            <td class="p-1 fs-6 fw-6 text-nowrap">
                                                 <?php if($cof['request_status'] == 'Pending'){  ?>
                                                     <a href="" data-id="<?= $cof['collection_id'] ?>" class="btn btn-success ms-3 approve-request">Approve</a>
                                                     <a href="" data-id="<?= $cof['collection_id'] ?>" class="btn btn-danger decline-request">Decline</a>

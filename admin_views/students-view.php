@@ -22,7 +22,7 @@ $organizations = $viewOrgs->allOrgsHeadAssigned();
                     </a>
                     <ul class="dropdown-menu text-small">
                         <?php session_start(); if(isset($_SESSION['user']['is_facilitator'])){ ?>
-                        <li><a class="dropdown-item" href="#">Switch as Student</a></li>
+                        <li><a class="dropdown-item" href="#"></a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -77,7 +77,7 @@ $organizations = $viewOrgs->allOrgsHeadAssigned();
                 <tbody>
                     <?php if (empty($students)): ?>
                         <tr>
-                            <td colspan="6" class="text-center py-2 fw-bold fs-5">No students found.</td>
+                            <td colspan="8" class="text-center py-2 fw-bold fs-5">No students found.</td>
                         </tr>
                     <?php else: ?>
                         <?php $counter = 1; ?>

@@ -24,6 +24,10 @@
       e.preventDefault();
       viewPayments();
     });
+    $("#facilitator-organization-link").on("click", function(e){
+      e.preventDefault();
+      viewOrganization();
+    });
     $("#facilitator-request-link").on("click", function(e){
       e.preventDefault();
       requests();
@@ -44,7 +48,10 @@
       $("#facilitator-request-link").trigger("click"); // Trigger the products click event
     } else if (url.endsWith("assign.php")) {
       $("#facilitator-assign-officer").trigger("click"); // Trigger the products click event
-    } else {
+    } else if (url.endsWith("organization.php")) {
+      $("#facilitator-organization-link").trigger("click"); // Trigger the products click event
+    }
+     else {
       $("#facilitator-dashboard-link").trigger("click");
     }
 
@@ -67,6 +74,37 @@
     });
     }
 
+
+    function viewOrganization(){
+      $.ajax({
+          type: "GET",
+          url: "../facilitator-views/facilitator-organization.php",
+          datatype: "html",
+          success: function (response) {
+              $(".content-page").html(response);
+
+              $("#see_more").on("click", function(e){
+                e.preventDefault();
+                $("#facilitator-request-link").trigger("click");
+              });
+
+              $("#edit-organization").on("click", function(e){
+                e.preventDefault();
+                editOrganization(this.dataset.id);
+              })
+
+              $('#table-organization').on('click', 'tr', function () {
+                const orgId = $(this).data('org-id'); // Get organization ID
+        
+                if (orgId) {
+                    // Fetch and display organization details
+                    organizationDetails(orgId);
+                }
+            });
+          }
+      });
+    }
+
     function viewDashboard(){
       $.ajax({
           type: "GET",
@@ -79,8 +117,56 @@
                 e.preventDefault();
                 $("#facilitator-payment-link").trigger("click");
               })
+
+
           
           }
+      });
+    }
+
+    function editOrganization(organizationId){
+      $.ajax({
+          type: "GET",
+          url: `../facilitator-views/edit-organization-form.php?organization_id=${organizationId}`,
+          datatype: "html",
+          success: function (response) {
+              $(".modal-container").empty().html(response);
+              $("#editOrganization").modal('show');
+              
+              $("#form-edit-organization").on("submit", function(e){
+                e.preventDefault();
+                saveOrganization();
+              });
+          }
+      });
+    }
+
+    function saveOrganization() {
+      $.ajax({
+        type: "POST", // Use POST request
+        url: "../facilitator-views/edit-organization.php", // URL for saving organization
+        data: $("#form-edit-organization").serialize(), // Serialize the form data for submission
+        dataType: "json", // Expect JSON response
+        success: function(response) {
+          // Clear any previous error messages
+          $(".invalid-feedback").text("").hide();
+          $(".form-control").removeClass("is-invalid");
+          
+          if (response.status === "error") {
+            Object.keys(response.errors).forEach(key => {
+              $(`#${key}`).addClass("is-invalid");
+              $(`#${key}`).next(".invalid-feedback").text(response.errors[key]).show();
+            });
+            return; // Stop further execution
+          } else if (response.status === "success") {
+              $("#editOrganization").modal('hide');
+              alert("Organization editted successfully!");
+              viewOrganization();
+          }
+      },
+        error: function (xhr, status, error) {
+          console.error("AJAX error:", status, error);
+        },
       });
     }
 
@@ -93,10 +179,39 @@
           $(".modal-container").empty().html(response);
           $("#add-payment-modal").modal('show');
 
+          const today = new Date();
+          const formattedToday = today.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+        
+          // Set the minimum date for the start_date to tomorrow
+          $("#start_date").attr("min", formattedToday);
+        
+          // Initially disable date_due
+          $("#date_due").attr("disabled", true);
+        
+          // Enable date_due and set its minimum value when start_date is selected
+          $("#start_date").on("change", function () {
+            const selectedStartDate = $(this).val();
+        
+            if (selectedStartDate) {
+              // Enable the date_due input
+              $("#date_due").removeAttr("disabled");
+        
+              // Set the minimum due date based on start_date
+              $("#date_due").attr("min", selectedStartDate);
+            } else {
+              // Disable date_due if start_date is cleared
+              $("#date_due").attr("disabled", true).val("");
+            }
+          });
+
           $("#form-request-payment").on("submit", function(e){
             e.preventDefault(e);
             savePendingPayment();
+
+            
           });
+
+          
 
 
         }
@@ -123,6 +238,7 @@
               } else if (response.status === "success") {
                   $("#add-payment-modal").modal('hide');
                   alert("Payment request submitted successfully!");
+                  $("#facilitator-request-link").trigger("click"); // Trigger the products click event
               }
           }
       });
@@ -152,7 +268,7 @@
 
           $("#course").on("change", function(){
             if (this.value !== "choose-course") {
-              table.column(3).search(this.value).draw();
+              table.column(2).search(this.value).draw();
             }
           });
 

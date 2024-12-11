@@ -11,16 +11,10 @@ $errors = [];
 if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $org_name = isset($_POST['org_name']) ? clean_input($_POST['org_name']) : '';
     $org_description = isset($_POST['org_description']) ? clean_input($_POST['org_description']) : '';
-    $contact_email = isset($_POST['contact_email']) ? clean_input($_POST['contact_email']) : '';
 
     if(empty($org_name)){
         $errors["org_name"] = 'Organization Name is required.';
     }
-
-    if(empty($contact_email)){
-        $errors["contact_email"] = 'Email is required.';
-    }
-
 
     if (count(array_keys($errors))) {
         echo json_encode([
@@ -31,7 +25,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     }
 
 
-    if ($objOrg->addOrganization($org_name, $org_description, $contact_email)) {
+    if ($objOrg->addOrganization($org_name, $org_description)) {
         echo json_encode([
             "status" => "success"
         ]);

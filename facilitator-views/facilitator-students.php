@@ -75,19 +75,19 @@ $courses = $faciObj->viewCourse();
                 <tbody>
                     <?php if (empty($students)): ?>
                         <tr>
-                            <td colspan="6" class="text-center py-2 fw-bold fs-5">No students found.</td>
+                            <td colspan="10" class="text-center py-2 fw-bold fs-5">No students found.</td>
                         </tr>
                     <?php else: ?>
-                        <?php $counter = 1; ?>
+                        <?php $previous_student_id = null; $counter = 1; ?>
                         <?php foreach ($students as $student): ?>
                             <tr class="border-bottom shadow-hover">
-                                <td class="p-2 text-center"><?= $counter; ?></td>
+                                <td class="p-2 text-center"><?= $counter ?></td>
                                 <td class="p-2">
-                                    <?= clean_input($student['last_name']) . ', ' . clean_input($student['first_name']) . ' ' . clean_input($student['middle_name']); ?>
+                                    <?= $student['student_id'] !== $previous_student_id ? clean_input($student['last_name']) . ', ' . clean_input($student['first_name']) . ' ' . clean_input($student['middle_name']) : '' ; ?>
                                 </td>
-                                <td class="p-2"><?= clean_input($student['course_code']); ?></td>
-                                <td class="p-2"><?= clean_input($student['course_section']); ?></td>
-                                <td class="p-2"><?= clean_input($student['course_year']); ?></td>
+                                <td class="p-2"><?= $student['student_id'] !== $previous_student_id ? clean_input($student['course_code']) :''  ?></td>
+                                <td class="p-2"><?= $student['student_id'] !== $previous_student_id ? clean_input($student['course_section']) : '' ?></td>
+                                <td class="p-2"><?= $student['student_id'] !== $previous_student_id ? clean_input($student['course_year']) :''  ?></td>
                                 <td class="p-2"><?= clean_input($student['purpose']); ?></td>
                                 <td class="p-2">
                                     <?php 
@@ -114,8 +114,12 @@ $courses = $faciObj->viewCourse();
                                     <a data-id="<?= $student['student_id'] ?>" class="btn btn-danger remove-student">Remove</a>
                                 </td>
                             </tr>
-                            <?php $counter++; ?>
+                            <?php if ($student['student_id'] != $previous_student_id): ?>
+                                <?php $counter++; ?>
+                                <?php $previous_student_id = $student['student_id']; ?>
+                            <?php endif; ?>
                         <?php endforeach; ?>
+
                     <?php endif; ?>
                 </tbody>
             </table>

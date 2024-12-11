@@ -226,6 +226,14 @@ class Facilitator {
         $this->set_facilitator($student_details['student_id'], $organization_id, $student_details['course_id'], $student_details['last_name'], $student_details['first_name'], $student_details['middle_name'], $student_details['phone_number'], $student_details['dob'], $student_details['age'], $student_details['course_year'], $student_details['course_section'], $position);
     }
 
+    function get_officers($organization_id){
+        $sql = "SELECT * FROM facilitator WHERE organization_id = :organization_id";
+        $query = $this->conn->prepare($sql);
+        $query->bindParam(":organization_id", $organization_id);
+        $query->execute();
+        return $query->fetchAll();
+    }
+
     function set_facilitator($user_id, $organization_id, $course_id, $last_name, $first_name, $middle_name, $phone_number, $dob, $age, $course_year, $course_section, $position){
         if($position == 'assistant_head'){
             $sql = "INSERT INTO facilitator (facilitator_id, organization_id, course_id, last_name, first_name, middle_name, phone_number, dob, age, course_year, course_section, is_assistant_head) VALUES (:user_id, :organization_id, :course_id, :last_name, :first_name, :middle_name, :phone_number, :dob, :age, :course_year, :course_section, 1);";
@@ -262,13 +270,18 @@ class Facilitator {
         return $query->fetch();
     }
 
-    function request_fee($organization_id, $amount, $purpose){
-        $sql_add_stud_org = "INSERT INTO collection_fees(organization_id,amount, purpose)
-                             VALUES (:organization_id, :clearance_fee, :purpose)";
+    function request_fee($organization_id, $amount, $purpose, $description, $start_date, $date_due, $label){
+        $sql_add_stud_org = "INSERT INTO collection_fees(organization_id,amount, purpose, description, start_date, date_due, label)
+                             VALUES (:organization_id, :clearance_fee, :purpose, :description, :start_date, :date_due, :label)";
         $query_add_stud_org = $this->conn->prepare($sql_add_stud_org);
         $query_add_stud_org->bindParam(':organization_id', $organization_id);
         $query_add_stud_org->bindParam(':clearance_fee', $amount);
         $query_add_stud_org->bindParam(':purpose', $purpose);
+        $query_add_stud_org->bindParam(':description', $description);
+        $query_add_stud_org->bindParam(':start_date', $start_date);
+        $query_add_stud_org->bindParam(':date_due', $date_due);
+        $query_add_stud_org->bindParam(':label', $label);
+        
         $query_add_stud_org->execute();
     }
 
@@ -281,6 +294,28 @@ class Facilitator {
 
         $query->execute();
         return $query->fetchAll();
+    }
 
+    function org_all_fees($organization_id){
+        $sql = "SELECT * FROM collection_fees WHERE organization_id = :organization_id LIMIT 5";
+        $query = $this->conn->prepare($sql);
+        
+        $query->bindParam(":organization_id", $organization_id);
+
+        $query->execute();
+        return $query->fetchAll();
+    }
+
+    function editOrganization($organization_id, $org_name, $org_description, $contact_email){
+        $sql = "UPDATE organization SET org_name = :org_name, org_description = :org_description, contact_email = :contact_email
+        WHERE organization_id = :organization_id";
+        $query = $this->conn->prepare($sql);
+
+        $query->bindParam(':org_name', $org_name);
+        $query->bindParam(':org_description', $org_description);
+        $query->bindParam(':contact_email', $contact_email);
+        $query->bindParam(':organization_id', $organization_id);
+
+        $query->execute();
     }
 }

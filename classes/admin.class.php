@@ -44,7 +44,8 @@ class Admin {
     }
 
     function collection_fees($organization_id){
-        $sql = "SELECT *, SUM(total_collected) AS all_fees_collected FROM collection_fees WHERE organization_id = :organization_id";
+        $sql = "SELECT *, SUM(DISTINCT total_collected) AS total_collection FROM collection_fees WHERE organization_id = :organization_id
+        GROUP BY collection_id";
         $query = $this->conn->prepare($sql);
 
         $query->bindParam(":organization_id", $organization_id);
@@ -361,26 +362,24 @@ class Admin {
     }
     
 
-    // function allStudents(){
-    //     $sql = 'SELECT * FROM students';
-    //     $query = $this->conn->prepare($sql);
-    //     if($query->execute()){
-    //         return $query->fetchAll();
-    //     } else {
-    //         return null;
-    //     }
-    // }
+    function allStudents(){
+        $sql = 'SELECT student_id FROM student';
+        $query = $this->conn->prepare($sql);
+        if($query->execute()){
+            return $query->fetchAll();
+        } else {
+            return null;
+        }
+    }
 
-    function addOrganization($org_name, $org_description, $contact_email){
-        $sql = "INSERT INTO organization (org_name, contact_email, org_description, created_date)
-        VALUES (:org_name, :contact_email, :org_description, NOW())";
+    function addOrganization($org_name, $org_description){
+        $sql = "INSERT INTO organization (org_name, org_description, created_date)
+        VALUES (:org_name, :org_description, NOW())";
         $query = $this->conn->prepare($sql);
         $query->bindParam(':org_name', $org_name);
         $query->bindParam(':org_description', $org_description);
-        $query->bindParam(':contact_email', $contact_email);
         $query->execute();
 
-        $organization_id = $this->conn->lastInsertId();
 
         return true;
     }
@@ -394,26 +393,35 @@ class Admin {
         $query_add_stud_org->execute();
     }
 
-    function insertPayment($organization_id){
-        $sql = "SELECT student.student_id, collection_fees.organization_id ,collection_fees.collection_id, collection_fees.amount FROM collection_fees
-                INNER JOIN payment ON collection_fees.collection_id = collection_fees.collection_id
-                INNER JOIN student ON payment.student_id = student.student_id
-                WHERE organization_id = :organization_id";
+    function insertPayment($collection_id) {
+        // Fetching collection fees related to the given organization
+        $sql = "SELECT collection_fees.collection_id, collection_fees.organization_id, collection_fees.amount
+                FROM collection_fees
+                WHERE collection_fees.collection_id = :collection_id";
         $query = $this->conn->prepare($sql);
-        $query->bindParam(":organization_id", $organization_id);
+        $query->bindParam(":collection_id", $collection_id);
         $query->execute();
-
-        $stud_org_id = $query->fetchAll();
-
-        foreach($stud_org_id as $soi){
-            $sql_first_sem = "INSERT INTO payment (student_id, collection_id, semester, amount_to_pay) VALUES(:student_id, :collection_id, 'First Semester', :amount_to_pay)";
-            $query_first_sem = $this->conn->prepare($sql_first_sem);
-            $query_first_sem->bindParam(':student_id', $soi['student_id']);
-            $query_first_sem->bindParam(':collection_id', $soi['collection_id']);
-            $query_first_sem->bindParam(':amount_to_pay', $soi['amount']);
-            $query_first_sem->execute();
+    
+        $collectionFees = $query->fetchAll();
+        $students = $this->allStudents(); // Fetch all student IDs
+    
+        // Iterate over collection fees and insert payments
+        foreach ($collectionFees as $fee) {
+            foreach ($students as $student) {
+                // Insert payment records
+                $sql_insert_payment = "INSERT INTO payment (student_id, collection_id, amount_to_pay)
+                                       VALUES (:student_id, :collection_id, :amount_to_pay)";
+                $query_insert_payment = $this->conn->prepare($sql_insert_payment);
+                $query_insert_payment->bindParam(":student_id", $student['student_id']);
+                $query_insert_payment->bindParam(":collection_id", $fee['collection_id']);
+                $query_insert_payment->bindParam(":amount_to_pay", $fee['amount']);
+                $query_insert_payment->execute();
+            }
         }
+    
+        return true;
     }
+    
 
     
 
@@ -452,6 +460,27 @@ class Admin {
 
         $query->execute();
         return $query->fetch();
+    }
+
+    function approve_request($collection_id){
+        $sql = "UPDATE collection_fees SET request_status = 'Approved' WHERE collection_id = :collection_id";
+        $query = $this->conn->prepare($sql);
+        
+        $query->bindParam(':collection_id', $collection_id);
+
+        $query->execute();
+
+        $this->insertPayment($collection_id);
+    }
+
+    function decline_request($collection_id){
+        $sql = "UPDATE collection_fees SET request_status = 'Declined' WHERE collection_id = :collection_id";
+        $query = $this->conn->prepare($sql);
+        
+        $query->bindParam(':collection_id', $collection_id);
+
+        $query->execute();
+
     }
     
 
