@@ -29,12 +29,14 @@ if (isset($_GET['organization_id'])) {
 
 
         #approveFee.modal,
-        #declineFee.modal {
+        #declineFee.modal,
+        #editOrganization.modal {
             z-index: 1060; /* Higher than default modal z-index */
         }
 
         #approveFee .modal-backdrop,
-        #declineFee .modal-backdrop {
+        #declineFee .modal-backdrop,
+        #editOrganization .modal-backdrop {
             z-index: 1055; /* Keep backdrop below the modal */
         }
 
@@ -45,7 +47,14 @@ if (isset($_GET['organization_id'])) {
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-side-right modal-lg h-100">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title fs-4" id="staticBackdropLabel"><?= htmlspecialchars($organization_details['org_name']) ?></h5>
+                        <div class="d-flex justify-content-between w-100 pt-3 pe-3">
+                            <h5 class="modal-title fs-4" id="staticBackdropLabel"><?= htmlspecialchars($organization_details['org_name']) ?></h5>
+                            <?php if($organization_details['org_status'] == 'Activ'){  ?>
+                            <a href="" id="edit-organization" class="text-decoration-none" data-id="<?= $_GET['organization_id'] ?>">
+                                <i class="fas fa-pen"></i> Edit Organization
+                            </a>
+                            <?php } ?>
+                        </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -60,7 +69,7 @@ if (isset($_GET['organization_id'])) {
 
                         <div class="lh-sm text-black border-bottom mt-2 pb-2">
                             <p class="fs-5">Status:</p>
-                            <p><?= clean_input($organization_details['status']) ?></p>
+                            <p><?= clean_input($organization_details['org_status']) ?></p>
                         </div>
 
                         <div class="lh-sm text-black border-bottom mt-2 pb-2">
@@ -148,9 +157,7 @@ if (isset($_GET['organization_id'])) {
 
                         <!-- Add more organization details here -->
                     </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary brand-bg-color">Edit Organization</button>
-                    </div>
+                    
                 </div>
             </div>
         </div>

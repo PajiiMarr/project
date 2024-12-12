@@ -11,7 +11,6 @@ $students = $faciObj->viewStudents($facilitator_details['organization_id']);
 $courses = $faciObj->viewCourse();
 // $organizations = $viewOrgs->allOrgsHeadAssigned();
 
-
 ?>
 
 <section class="container-fluid w-100 h-100">
@@ -66,6 +65,7 @@ $courses = $faciObj->viewCourse();
                         <th class="fs-4 text-white p-2" style="width: 10%;">Section</th>
                         <th class="fs-4 text-white p-2" style="width: 10%;">Year</th>
                         <th class="fs-4 text-white p-2" style="width: 10%;">Purpose</th>
+                        <th class="fs-4 text-white p-2" style="width: 10%;">Date Due</th>
                         <th class="fs-4 text-white p-2" style="width: 7%;">Role</th>
                         <th class="fs-4 text-white p-2" style="width: 7%;">Status</th>
                         <th class="fs-4 text-white p-2 text-start" style="width: 7%;">Balance</th>
@@ -89,6 +89,7 @@ $courses = $faciObj->viewCourse();
                                 <td class="p-2"><?= $student['student_id'] !== $previous_student_id ? clean_input($student['course_section']) : '' ?></td>
                                 <td class="p-2"><?= $student['student_id'] !== $previous_student_id ? clean_input($student['course_year']) :''  ?></td>
                                 <td class="p-2"><?= clean_input($student['purpose']); ?></td>
+                                <td class="p-2"><?= empty($student['date_due']) ? 'TBA' :   clean_input($student['date_due']); ?></td>
                                 <td class="p-2">
                                     <?php 
                                     if(isset($student['is_head'])) {
@@ -110,8 +111,7 @@ $courses = $faciObj->viewCourse();
                                     <?php if($student['payment_status'] == 'Unpaid'){ ?>
                                         <a data-id="<?= $student['payment_id'] ?>" class="btn btn-success create-payment">Create Payment</a>
                                     <?php } ?>
-                                    <a data-id="<?= $student['student_id'] ?>" class="btn btn-primary edit-student">Edit</a>
-                                    <a data-id="<?= $student['student_id'] ?>" class="btn btn-danger remove-student">Remove</a>
+                                    
                                 </td>
                             </tr>
                             <?php if ($student['student_id'] != $previous_student_id): ?>

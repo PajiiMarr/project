@@ -53,7 +53,9 @@ class Facilitator {
     }
 
     function facilitator_details($facilitator_id){
-        $sql = "SELECT * FROM facilitator WHERE facilitator_id = :facilitator_id";
+        $sql = "SELECT organization.org_status, facilitator.* FROM facilitator
+        INNER JOIN organization ON organization.organization_id = facilitator.organization_id
+        WHERE facilitator_id = :facilitator_id";
         $query = $this->conn->prepare($sql);
         $query->bindParam(":facilitator_id", $facilitator_id);
         $query->execute();
@@ -61,14 +63,17 @@ class Facilitator {
     }
 
     function viewStudents($organization_id) {
-        $sql = "SELECT student.*, course.course_code, payment.*, collection_fees.purpose ,organization.organization_id, organization.org_name FROM payment
+        $sql = "SELECT student.*, course.course_code, payment.*, collection_fees.purpose ,organization.organization_id, organization.org_name, collection_fees.start_date, collection_fees.date_due FROM payment
                 INNER JOIN collection_fees ON payment.collection_id = collection_fees.collection_id
                 INNER JOIN organization ON collection_fees.organization_id = organization.organization_id
                 INNER JOIN student ON payment.student_id = student.student_id
                 INNER JOIN course ON student.course_id = course.course_id
                 WHERE organization.organization_id = :organization_id
                 AND student.status = 'Enrolled'
+                AND collection_fees.start_date <= CURDATE()
                 ORDER BY student.last_name ASC";
+    
+        
         $query = $this->conn->prepare($sql);
         $query->bindParam(":organization_id", $organization_id);
         $query->execute();
@@ -85,7 +90,7 @@ class Facilitator {
     }
 
     function paymentModal($payment_id) {
-        $sql = "SELECT student.*, organization.org_name, collection_fees.amount, collection_fees.purpose, course.course_code, payment.amount_to_pay
+        $sql = "SELECT student.*, organization.org_name, collection_fees.amount, collection_fees.purpose, course.course_code, payment.amount_to_pay, payment.balance
             FROM payment
             INNER JOIN collection_fees ON payment.collection_id = collection_fees.collection_id
             INNER JOIN organization ON collection_fees.organization_id = organization.organization_id
@@ -102,16 +107,16 @@ class Facilitator {
     function updatePayment($payment_id, $amount_to_pay, $facilitator_id){
         $payment_atp = $this->paymentModal($payment_id);
 
-        $sql = "UPDATE payment SET date_of_payment = NOW(), amount_to_pay = amount_to_pay - :amount_to_pay";
+        $sql = "UPDATE payment SET date_of_payment = NOW(), balance = balance - :balance";
 
-        if($amount_to_pay == $payment_atp['amount_to_pay']){
+        if($amount_to_pay == $payment_atp['balance']){
             $sql .= ", payment_status = 'Paid'";
         }
 
         $sql .= " WHERE payment_id = :payment_id";
         $query = $this->conn->prepare($sql);      
         $query->bindParam(':payment_id', $payment_id);
-        $query->bindParam(':amount_to_pay', $amount_to_pay);
+        $query->bindParam(':balance', $amount_to_pay);
         $query->execute();
 
         $this->updatePendingBalance($payment_id, $amount_to_pay);
@@ -119,6 +124,54 @@ class Facilitator {
         
         return true;
     }
+
+    function payment_student($payment_id){
+        $sql = "SELECT student.student_id FROM payment
+        INNER JOIN student ON payment.student_id = student.student_id
+        WHERE payment_id = :payment_id";
+        $query = $this->conn->prepare($sql);
+
+        $query->bindParam(":payment_id", $payment_id);
+
+        $query->execute();
+
+        $student_id = $query->fetchColumn();
+
+        $enroll_payment = $this->enroll_payment($student_id);
+        $all_paid = true;
+        foreach($enroll_payment as $ep){
+            if($ep['payment_status'] == 'Unpaid'){
+                $all_paid = false;
+                break;
+            }
+        }
+
+        if($all_paid){
+            $this->set_enroll($student_id);
+        }
+    }
+
+    function set_enroll($student_id){
+        $sql = "UPDATE student SET status = 'Enrolled' WHERE student_id = :student_id";
+        $query = $this->conn->prepare($sql);
+
+        $query->bindParam(":student_id", $student_id);
+
+        $query->execute();
+    }
+
+    function enroll_payment($student_id){
+        $sql = "SELECT collection_fees.label, payment.payment_status, student.student_id FROM payment
+        INNER JOIN collection_fees ON payment.collection_id = collection_fees.collection_id
+        INNER JOIN student ON payment.student_id = student.student_id
+        WHERE student_id = :student_id
+        AND label = 'Required'";
+        $query = $this->conn->prepare($sql);
+        $query->bindParam(":student_id",$student_id);
+        return $query->fetchAll();
+    }
+
+
 
     function updatePendingBalance($payment_id, $amount_to_pay){
         $sql = "SELECT organization.organization_id FROM payment
@@ -144,17 +197,13 @@ class Facilitator {
         return true;
     }
 
-    
-
-    function addPaymentHistory($payment_id, $amount_to_pay,$facilitator_id) {
-        $facilitator_id = $this->facilitator_details($facilitator_id);
-        $facilitator_name = $facilitator_id['last_name'] . ', ' . $facilitator_id['first_name'] . ' ' . $facilitator_id['middle_name'];
-        $sql = "INSERT INTO payment_history(payment_id, issued_by, amount_paid) VALUES(:payment_id, :issued_by, :amount_to_pay)";
+    function addPaymentHistory($payment_id, $amount_to_pay, $facilitator_id) {
+        $sql = "INSERT INTO payment_history(payment_id, facilitator_id, amount_paid) VALUES(:payment_id, :facilitator_id, :amount_to_pay)";
         $query = $this->conn->prepare($sql);
 
         $query->bindParam(":payment_id", $payment_id);
+        $query->bindParam(":facilitator_id", $facilitator_id);
         $query->bindParam(":amount_to_pay", $amount_to_pay);
-        $query->bindParam(":issued_by", $facilitator_name);
 
         $query->execute();
         return true;

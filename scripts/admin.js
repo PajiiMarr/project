@@ -51,7 +51,6 @@ $(document).ready(function () {
           datatype: "html",
           success: function (response) {
               $(".content-page").html(response);
-          
           }
       });
     }
@@ -78,16 +77,80 @@ $(document).ready(function () {
                 addOrganization();
               });
 
-              $('#table-organization').on('click', 'tr', function () {
-                const orgId = $(this).data('org-id'); // Get organization ID
-        
-                if (orgId) {
-                    // Fetch and display organization details
-                    organizationDetails(orgId);
-                }
+              $(".view").on("click", function(e){
+                e.preventDefault();
+                organizationDetails(this.dataset.id);
+              });
+              $(".remove").on("click", function(e){
+                e.preventDefault();
+                deactivateOrganization(this.dataset.id);
+              });
+              $(".activate").on("click", function(e){
+                e.preventDefault();
+                activateOrganization(this.dataset.id);
               });
           }
       });
+    }
+
+    function activateOrganization(organizationId){
+      $.ajax({
+        type: "GET",
+        url: `../admin_views/activate_form.php?organization_id=${organizationId}`, // Backend script to fetch details
+        dataType: "html", // Modal HTML content expected
+        success: function(response){
+          $(".modal-container").empty().html(response);
+          $("#activateOrg").modal("show");
+
+          $("#form-activate-org").on("submit", function(e){
+            e.preventDefault();
+            updateActive();
+          })
+        }
+    });
+  }
+
+    function deactivateOrganization(organizationId){
+      $.ajax({
+        type: "GET",
+        url: `../admin_views/deactivate_form.php?organization_id=${organizationId}`, // Backend script to fetch details
+        dataType: "html", // Modal HTML content expected
+        success: function(response){
+          $(".modal-container").empty().html(response);
+          $("#deactivateOrg").modal("show");
+
+          $("#form-deactivate-org").on("submit", function(e){
+            e.preventDefault();
+            updateDeactivate();
+          })
+        }
+    });
+    }
+
+    function updateActive(){
+      $.ajax({
+        type: "POST",
+        url: `../admin_views/activate.php`,
+        data: $("#form-activate-org").serialize(), // Modal HTML content expected
+        dataType: "html", // Modal HTML content expected
+        success: function(){
+          $("#activateOrg").modal("hide");
+          viewOrganization();
+        }
+    });
+    }
+    
+    function updateDeactivate(){
+      $.ajax({
+        type: "POST",
+        url: `../admin_views/deactivate.php`,
+        data: $("#form-deactivate-org").serialize(), // Modal HTML content expected
+        dataType: "html", // Modal HTML content expected
+        success: function(){
+          $("#deactivateOrg").modal("hide");
+          viewOrganization();
+        }
+    });
     }
 
     function organizationDetails(orgId) {
@@ -111,6 +174,10 @@ $(document).ready(function () {
               $(".decline-request").on('click', function (e){
                   e.preventDefault();
                   declineRequest(this.dataset.id, orgId);
+              });
+              $("#edit-organization").on('click', function (e){
+                  e.preventDefault();
+                  editOrganization(this.dataset.id)
               });
           },
           error: function () {
@@ -564,6 +631,59 @@ $(document).ready(function () {
         error: function (xhr, status, error) {
           console.error("AJAX error:", status, error);
         }
+      });
+    }
+
+    function editOrganization(organizationId){
+      $.ajax({
+          type: "GET",
+          url: `../admin_views/edit_organization_form.php?organization_id=${organizationId}`,
+          datatype: "html",
+          success: function (response) {
+              $(".request-container").empty().html(response);
+              $("#staticBackdrop").addClass("blur-effect");
+              $("#editOrganization").modal('show');
+              
+              $("#form-edit-organization").on("submit", function(e){
+                e.preventDefault();
+                updateOrganization(organizationId);
+              });
+
+              $("#editOrganization").on("hidden.bs.modal", function () {
+                $("#staticBackdrop").removeClass("blur-effect");
+            });
+          }
+      });
+    }
+
+    function updateOrganization(organizationId) {
+      $.ajax({
+        type: "POST", // Use POST request
+        url: "../admin_views/edit_organization.php", // URL for saving organization
+        data: $("#form-edit-organization").serialize(), // Serialize the form data for submission
+        dataType: "json", // Expect JSON response
+        success: function(response) {
+          // Clear any previous error messages
+          $(".invalid-feedback").text("").hide();
+          $(".form-control").removeClass("is-invalid");
+          
+          if (response.status === "error") {
+            Object.keys(response.errors).forEach(key => {
+              $(`#${key}`).addClass("is-invalid");
+              $(`#${key}`).next(".invalid-feedback").text(response.errors[key]).show();
+            });
+            return; // Stop further execution
+          } else if (response.status === "success") {
+              $("#editOrganization").modal('hide');
+              alert("Organization editted successfully!");
+              $("#staticBackdrop").removeClass("blur-effect");
+              $("#staticBackdrop").modal("hide");
+              organizationDetails(organizationId);
+          }
+      },
+        error: function (xhr, status, error) {
+          console.error("AJAX error:", status, error);
+        },
       });
     }
 });

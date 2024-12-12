@@ -203,6 +203,27 @@ class Admin {
         }
     }
 
+    function facilitator_details($facilitator_id){
+        $sql = "SELECT * FROM facilitator WHERE facilitator_id = :facilitator_id";
+        $query = $this->conn->prepare($sql);
+        $query->bindParam(":facilitator_id", $facilitator_id);
+        $query->execute();
+        return $query->fetch();
+    }
+
+    function editOrganization($organization_id, $org_name, $org_description, $contact_email){
+        $sql = "UPDATE organization SET org_name = :org_name, org_description = :org_description, contact_email = :contact_email
+        WHERE organization_id = :organization_id";
+        $query = $this->conn->prepare($sql);
+
+        $query->bindParam(':org_name', $org_name);
+        $query->bindParam(':org_description', $org_description);
+        $query->bindParam(':contact_email', $contact_email);
+        $query->bindParam(':organization_id', $organization_id);
+
+        $query->execute();
+    }
+
     function remove($facilitator_id, $reason){
         if($reason == "dropped"){
             $sql_set_status_dropped = "UPDATE student SET status = 'dropped' WHERE student_id = :facilitator_id";
@@ -409,17 +430,43 @@ class Admin {
         foreach ($collectionFees as $fee) {
             foreach ($students as $student) {
                 // Insert payment records
-                $sql_insert_payment = "INSERT INTO payment (student_id, collection_id, amount_to_pay)
-                                       VALUES (:student_id, :collection_id, :amount_to_pay)";
+                $sql_insert_payment = "INSERT INTO payment (student_id, collection_id, amount_to_pay, balance)
+                                       VALUES (:student_id, :collection_id, :amount_to_pay, :balance)";
                 $query_insert_payment = $this->conn->prepare($sql_insert_payment);
                 $query_insert_payment->bindParam(":student_id", $student['student_id']);
                 $query_insert_payment->bindParam(":collection_id", $fee['collection_id']);
                 $query_insert_payment->bindParam(":amount_to_pay", $fee['amount']);
+                $query_insert_payment->bindParam(":balance", $fee['amount']);
+
                 $query_insert_payment->execute();
             }
         }
     
         return true;
+    }
+
+    function deactivateOrg($organization_id){
+        $sql = "UPDATE organization SET org_status = 'Deactivated' WHERE organization_id = :organization_id";
+        $query = $this->conn->prepare($sql);
+        $query->bindParam(":organization_id", $organization_id);
+        $query->execute();
+    }
+
+    function activateOrg($organization_id){
+        $sql = "UPDATE organization SET org_status = 'Active' WHERE organization_id = :organization_id";
+        $query = $this->conn->prepare($sql);
+        $query->bindParam(":organization_id", $organization_id);
+        $query->execute();
+    }
+
+
+    function get_org($organization_id){
+        $sql = "SELECT * FROM organization WHERE organization_id = :organization_id";
+        $query = $this->conn->prepare($sql);
+
+        $query->bindParam(":organization_id", $organization_id);
+        $query->execute();
+        return $query->fetch();
     }
     
 
@@ -439,15 +486,6 @@ class Admin {
         $query = $this->conn->prepare($sql);
         $query->execute();
         return $query->fetchAll();
-    }
-
-    function removeOrganization($organization_id){
-        $sql = "UPDATE organization
-                SET status = 'Inactive'
-                WHERE organization_id = :organization_id";
-        $query = $this->conn->prepare($sql);
-        $query->bindParam(':organization_id', $organization_id);
-        $query->execute();
     }
 
     function collection_fee_details($collection_id){
@@ -480,7 +518,6 @@ class Admin {
         $query->bindParam(':collection_id', $collection_id);
 
         $query->execute();
-
     }
     
 

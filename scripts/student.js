@@ -8,38 +8,40 @@ $(document).ready(function () {
         window.history.pushState({ path: url }, "", url); // Update the browser's URL without reloading
       });
   
-      $("#dashboard-link").on("click", function(e){
+      $("#student-dashboard-link").on("click", function(e){
         e.preventDefault();
         viewDashboard();
       });
-      $("#org-overview-link").on("click", function(e){
-        e.preventDefault();
-        viewOrganization();
-      });
-      $("#student-link").on("click", function(e){
-        e.preventDefault();
-        viewStudent();
-      });
-      $("#payment-link").on("click", function(e){
+      $("#student-payment-link").on("click", function(e){
         e.preventDefault();
         viewPayments();
       });
-      $(".form-sort-course").on("click", function(e){
+      $("#student-organization-link").on("click", function(e){
         e.preventDefault();
-        sortCourse(this.dataset.id);
+        viewOrganization();
       });
   
       let url = window.location.href;
       if (url.endsWith("dashboard.php")) {
-        $("#dashboard-link").trigger("click"); // Trigger the dashboard click event
-      } else if (url.endsWith("organization.php")) {
-        $("#org-overview-link").trigger("click"); // Trigger the products click event
-      } else if (url.endsWith("student.php")) {
-        $("#student-link").trigger("click"); // Trigger the products click event
+        $("#student-dashboard-link").trigger("click"); // Trigger the dashboard click event
       } else if (url.endsWith("payments.php")) {
-        $("#payment-link").trigger("click"); // Trigger the products click event
+        $("#student-payment-link").trigger("click"); // Trigger the products click event
+      } else if (url.endsWith("organization.php")) {
+        $("#student-organization-link").trigger("click"); // Trigger the products click event
       } else {
-        $("#dashboard-link").trigger("click");
+        $("#student-dashboard-link").trigger("click");
+      }
+
+      function viewOrganization(){
+        $.ajax({
+            type: "GET",
+            url: "../student_views/organization.php",
+            datatype: "html",
+            success: function (response) {
+                $(".content-page").html(response);
+            
+            }
+        });
       }
 
       function viewDashboard(){

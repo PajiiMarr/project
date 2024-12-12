@@ -126,8 +126,10 @@ $organizations = $viewOrgs->allOrgsHeadAssigned();
                                     <?php }} ?>
                                     <a data-id="<?= $student['student_id'] ?>" class="btn btn-primary edit-student">Edit</a>
                                     <a data-id="<?= $student['student_id'] ?>" class="btn btn-danger remove-student">Remove</a>
-                                    <?php } else if ($student['status'] == 'Undefined') { ?>
-                                        <a data-id="<?= $student['student_id'] ?>" class="btn btn-primary enroll-undefined-student">Enroll</a>
+                                    <?php } else if ($student['status'] == 'Undefined' && $student['status'] == 'Dropped') { ?>
+                                        <a data-id="<?= $student['student_id'] ?>" class="btn btn-danger enroll-undefined-student">Enroll</a>
+                                    <?php } else if ($student['status'] == 'Unenrolled') { ?>
+                                        <p class="text-danger pt-3">Required payments not paid.</p>
                                     <?php } else { ?>
                                     <p class="text-danger pt-3">Unable to do actions (<?= $student['status'] ?>). </p>
                                     <?php } ?> 

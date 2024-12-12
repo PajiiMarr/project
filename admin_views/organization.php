@@ -51,12 +51,17 @@ $allOrganizations = $orgObj->allOrgs();
                     $counter = 1;
                     foreach ($allOrganizations as $allorgs) {
                     ?>
-                        <tr class="border-bottom shadow-hover" data-org-id="<?= $allorgs['organization_id'] ?>">
+                        <tr class="border-bottom shadow-hover">
                             <td class="p-2 text-center"><?= $counter; ?></td>
                             <td class="p-2"><?= $allorgs['org_name']; ?></td>
-                            <td class="p-2"><?= $allorgs['status']; ?></td>
+                            <td class="p-2"><?= $allorgs['org_status']; ?></td>
                             <td class="p-2 text-black">
-                                <a href="#" class="mx-5 text-decoration-none text-black">Remove</a>
+                                <a class="text-decoration-none btn btn-primary view" data-id="<?= $allorgs['organization_id'] ?>">View</a>
+                                <?php if($allorgs['org_status'] == 'Active') { ?>
+                                    <a class="text-decoration-none btn btn-danger remove" data-id="<?= $allorgs['organization_id'] ?>">Remove</a>
+                                <?php } else {?>
+                                    <a class="btn btn-success activate" data-id="<?= $allorgs['organization_id'] ?>">Activate</a>
+                                <?php }?>
                             </td>
                         </tr>
                         <?php
@@ -77,20 +82,3 @@ $allOrganizations = $orgObj->allOrgs();
         </div>
     </div>
 </section>
-<script src="../scripts/select-organization.js"></script>
-
-<script>
-    function addNotification(row) {
-  row.classList.add("notification");
-}
-
-function removeNotification(row) {
-  row.classList.remove("notification");
-}
-
-// Example Usage
-const row = document.querySelector("tr:nth-child(1)");
-addNotification(row); // Adds the notification
-removeNotification(row); // Removes the notification
-
-</script>

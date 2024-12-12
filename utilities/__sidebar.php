@@ -63,6 +63,7 @@ if($_SESSION['user']['is_admin'] == 1){
     $faci_details = new Facilitator;
 
     $facilitator = $faci_details->facilitator_details($_SESSION['user']['user_id']);
+    if($facilitator['org_status'] == 'Active'){
     ?>
     <div class="facilitator-icon d-flex flex-column justify-content-center align-items-start pt-5 ps-3">
         <h2 class="text-black">Facilitator</h2>
@@ -127,6 +128,7 @@ if($_SESSION['user']['is_admin'] == 1){
     </div>
 
     <?php } 
+}
 } if ($_SESSION['user']['is_facilitator'] == 1 || $_SESSION['user']['is_student'] == 1){?>
     <div class="d-flex flex-column justify-content-start align-items-start pt-2 ps-3 border-top">
         <h2 class="text-black">Student</h2>
@@ -139,6 +141,12 @@ if($_SESSION['user']['is_admin'] == 1){
                         <a href="dashboard.php" id="student-dashboard-link" class="anchor-tag d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none crimson px-3">
                             <i class="fas fa-tachometer-alt w-25 fs-4"></i>
                             <p class="w-75 fs-5 pt-3">Dashboard</p>
+                        </a>
+                    </li>
+                    <li class="header-list w-100 h-25 li-unselected px-2">
+                        <a href="organization.php" id="student-organization-link" class="anchor-tag d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none crimson px-3">
+                            <i class="fas fa-people-group w-25 fs-4"></i>
+                            <p class="w-75 fs-5 pt-3">Organization</p>
                         </a>
                     </li>
                     <li class="header-list w-100 h-25 li-unselected px-2">
