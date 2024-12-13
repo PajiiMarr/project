@@ -37,19 +37,41 @@
       addPayment();
     });
 
+
+    $("#student-dashboard-link").on("click", function(e){
+      e.preventDefault();
+      viewStudentDashboard();
+    });
+    $("#student-payment-link").on("click", function(e){
+      e.preventDefault();
+      viewStudentPayment();
+    });
+    $("#student-organization-link").on("click", function(e){
+      e.preventDefault();
+      viewStudentPayment();
+    });
+
     let url = window.location.href;
     if (url.endsWith("dashboard.php")) {
       $("#facilitator-dashboard-link").trigger("click"); // Trigger the dashboard click event
-    } else if (url.endsWith("student.php")) {
+    } else if (url.endsWith("user/student.php")) {
       $("#facilitator-student-link").trigger("click"); // Trigger the products click event
-    } else if (url.endsWith("payments.php")) {
+    } else if (url.endsWith("user/payments.php")) {
       $("#facilitator-payment-link").trigger("click"); // Trigger the products click event
-    } else if (url.endsWith("request.php")) {
+    } else if (url.endsWith("user/request.php")) {
       $("#facilitator-request-link").trigger("click"); // Trigger the products click event
-    } else if (url.endsWith("assign.php")) {
+    } else if (url.endsWith("user/assign.php")) {
       $("#facilitator-assign-officer").trigger("click"); // Trigger the products click event
-    } else if (url.endsWith("organization.php")) {
+    } else if (url.endsWith("user/organization.php")) {
       $("#facilitator-organization-link").trigger("click"); // Trigger the products click event
+    }
+    
+    else if (url.endsWith("student/dashboard.php")) {
+      $("#student-dashboard-link").trigger("click"); // Trigger the products click event
+    } else if (url.endsWith("student/organization.php")) {
+      $("#student-organization-link").trigger("click"); // Trigger the products click event
+    } else if (url.endsWith("student/payments.php")) {
+      $("#student-payment-link").trigger("click"); // Trigger the products click event
     }
      else {
       $("#facilitator-dashboard-link").trigger("click");
@@ -74,6 +96,39 @@
     });
     }
 
+
+    function viewStudentDashboard(){
+      $.ajax({
+          type: "GET",
+          url: "../user/student/dashboard.php",
+          datatype: "html",
+          success: function (response) {
+              $(".content-page").html(response);
+          }
+      });
+    }
+
+    function viewStudentOrganization(){
+      $.ajax({
+          type: "GET",
+          url: "../user/student/organization.php",
+          datatype: "html",
+          success: function (response) {
+              $(".content-page").html(response);
+          }
+      });
+    }
+
+    function viewStudentPayment(){
+      $.ajax({
+          type: "GET",
+          url: "../user/student/organization.php",
+          datatype: "html",
+          success: function (response) {
+              $(".content-page").html(response);
+          }
+      });
+    }
 
     function viewOrganization(){
       $.ajax({

@@ -64,14 +64,14 @@ $organizations = $viewOrgs->allOrgsHeadAssigned();
                 <thead>
                     <tr class="bg-light-crimson">
                         <th class="fs-4 text-white p-2 text-start" style="width: 5%;">No.</th>
-                        <th class="fs-4 text-white p-2" style="width: 20%;">Student</th>
+                        <th class="fs-4 text-white p-2" style="width: 15%;">Student</th>
                         <th class="fs-4 text-white p-2" style="width: 8%;">Status</th>
                         <th class="fs-4 text-white p-2" style="width: 7%;">Course</th>
                         
                         <th class="fs-4 text-white p-2" style="width: 10%;">Section</th>
                         <th class="fs-4 text-white p-2" style="width: 15%;">Role</th>
                         <th class="fs-4 text-white p-2" style="width: 10%;">Year</th>
-                        <th class="fs-4 text-white p-2" style="width: 45%;">Action</th>
+                        <th class="fs-4 text-white p-2" style="width: 50%;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -116,22 +116,24 @@ $organizations = $viewOrgs->allOrgsHeadAssigned();
                                      ?>
                                 </td>
                                 <td class="p-2"><?= clean_input($student['course_year']); ?></td>
-                                <td class="p-2 text-nowrap" style="height: 8vh;">
-                                    <?php if($student['status'] == 'Enrolled'){ if ($student['is_head'] == 1 || $student['is_assistant_head'] == 1 || $student['is_collector'] == 1 ){ ?>
-                                        <a class="text-success text-decoration-none pt-3">Already Assigned</a>
-                                        <a href="" data-id="<?= clean_input($student['student_id']); ?>" class="btn btn-warning resign-head" style="height: 3.6vh">Resign</a>
-                                    <?php } else {?>
-                                    <?php if ($has_no_heads){ ?>
-                                        <a data-id="<?= $student['student_id'] ?>" class="btn btn-success assign-head">Assign as Head</a>
-                                    <?php }} ?>
-                                    <a data-id="<?= $student['student_id'] ?>" class="btn btn-primary edit-student">Edit</a>
-                                    <a data-id="<?= $student['student_id'] ?>" class="btn btn-danger remove-student">Remove</a>
+                                <td class="p-2 d-flex align-items-center style="height: 8vh;">
+                                    
+                                <?php if ($has_no_heads && $student['is_head'] == 0 ){ ?>
+                                        <a data-id="<?= $student['student_id'] ?>" class="px-1 btn btn-success assign-head">Assign as Head</a>
+                                    <?php } if ($student['is_head'] == 1 || $student['is_assistant_head'] == 1 || $student['is_collector'] == 1 ){ ?>
+                                        <a class="text-success text-decoration-none mx-1">Already Assigned</a>
+                                        <a href="" data-id="<?= clean_input($student['student_id']); ?>" class="mx-1 btn btn-warning resign-head" style="height: 3.6vh">Resign</a>
+                                    <?php } ?>
+                                    <?php if($student['status'] == 'Enrolled'){ ?>
+                                    
+                                    <a data-id="<?= $student['student_id'] ?>" class="mx-1 btn btn-primary edit-student">Edit</a>
+                                    <a data-id="<?= $student['student_id'] ?>" class="mx-1 btn btn-danger remove-student">Remove</a>
                                     <?php } else if ($student['status'] == 'Undefined' && $student['status'] == 'Dropped') { ?>
-                                        <a data-id="<?= $student['student_id'] ?>" class="btn btn-danger enroll-undefined-student">Enroll</a>
+                                        <a data-id="<?= $student['student_id'] ?>" class="mx-1 btn btn-danger enroll-undefined-student">Enroll</a>
                                     <?php } else if ($student['status'] == 'Unenrolled') { ?>
-                                        <p class="text-danger pt-3">Required payments not paid.</p>
+                                        <p class="px-1 text-danger pt-2">Required payments not paid.</p>
                                     <?php } else { ?>
-                                    <p class="text-danger pt-3">Unable to do actions (<?= $student['status'] ?>). </p>
+                                        <a class="mx-1 text-danger pt-2">Unable to do actions (<?= $student['status'] ?>). </a>
                                     <?php } ?> 
                                 </td>
                             </tr>

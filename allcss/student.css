@@ -1,0 +1,200 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+* {
+    font-family: 'Roboto', sans-serif;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+body {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+}
+
+header {
+    height: 100%;
+    width: 15%;
+    color: white;
+    box-shadow: 2px 5px 10px 5px rgba(200, 200, 200, 0.8);
+}
+
+
+
+.custom-border-bottom {
+    border-bottom: 1px solid #9C1F1D;
+}
+
+
+.admin-icon {
+    height: 25%;
+    width: 100%;
+}
+
+.crimson {
+    color: #9C1F1D;
+}
+
+.admin-icon h2 {
+    color: black;
+}
+
+.icon-size {
+    font-size: 10em;
+}
+
+.admin-nav {
+    height: 60%;
+    width: 100%;
+}
+
+.enroll-student-button {
+    height: 15%;
+    width: 100%;
+}
+
+main {
+    height: 100%;
+    width: 85%;
+}
+
+.h-35 {
+    height: 35%;
+}
+
+.h-80 {
+    height: 80%;
+}
+
+.h-18 {
+    height: 18%;
+}
+
+.bg-crimson {
+    background-color: #9C1F1D;
+    color: white;
+}
+
+.bg-crimson:hover {
+    background-color: #fb9c9a;
+    color: black;
+}
+
+.bg-pink {
+    background-color: #fb9c9a;
+}
+
+.for-btn {
+    transition: 0.15s ease-in-out;
+    background-color: #9C1F1D;
+    color: white;
+}
+
+.for-btn:active i {
+    color: #9C1F1D;
+}
+
+.for-btn:active p {
+    color: #9C1F1D;
+}
+
+
+.add {
+    font-size: 10px;
+    position: absolute;
+}
+
+
+.h-20 {
+    height: 20%;
+}
+
+.li-unselected {
+    transition: 0.15s ease-in-out;
+}
+
+.li-unselected:hover {
+    background-color: #ffe8e8;
+
+}
+
+.ccs-green {
+    color: #31511E;
+}
+
+.max-h-100 {
+    max-height: 100%;
+}
+
+.bg-light-crimson {
+    background-color: #991B1B99; /* Crimson color with transparency */
+}
+
+
+
+.rounded-large {
+    border-radius: 15px;
+}
+
+.shadow-hover {
+    transition: 0.1s ease-in-out;
+}
+
+.shadow-hover:hover {
+    content: '';
+    box-shadow: inset 0 -1px 8px rgba(0, 0, 0, 0.2);
+    z-index: -1;
+}
+
+.w-18 {
+    width: 18%;
+}
+
+input {
+    transition: 0.1s ease-in-out;
+    border-bottom: 2px solid black;
+    outline: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+
+input:focus,
+select:focus {
+    border-bottom: 2px solid #9C1F1D;
+    outline: none;
+}
+
+.radio-label {
+    background-color: transparent;
+    color: black;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.radio-label.selected {
+    background-color: #9C1F1D;
+    color: white;
+}
+
+.radio-label:hover {
+    background-color: #fb9c9a;
+    color: black;
+}
+
+h5, h6, label {
+    color: black;
+}
+
+.blur-effect {
+    filter: blur(4px); /* Adjust the blur intensity */
+    transition: filter 0.2s ease; /* Smooth transition */
+}
+
+#approveFee {
+    filter: none !important; /* Ensure modal is not blurred */
+}

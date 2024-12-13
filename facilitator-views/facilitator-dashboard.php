@@ -11,6 +11,8 @@
     $total_collected = $objFaci->total_collection($faci_details['organization_id']);
     $recent_payments = $objFaci->recentPayments($faci_details['organization_id']);
     $students_enrolled = $objFaci->students_enrolled();
+
+    var_dump($_POST['request_uri']);
     ?>
     <div class="modal-container"></div>
     <div class="h-18 w-100 border-bottom">

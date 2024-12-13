@@ -1,1 +1,1 @@
-<?= header('Location: login.php'); ?>
+<?= header('Location: opms.php'); ?>

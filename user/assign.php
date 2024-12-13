@@ -5,6 +5,8 @@ session_start();
 if(empty($_SESSION['user'])){
     header('location: ../login.php');
 }
+
+
 ?>
 <?php require_once '../utilities/__head.php'; ?>
 <body>

@@ -51,9 +51,54 @@ $(document).ready(function () {
           datatype: "html",
           success: function (response) {
               $(".content-page").html(response);
+
+              $("#end-semester").on("click", function(e){
+                e.preventDefault();
+                formEndSemester();
+              });
           }
       });
     }
+
+    function formEndSemester(){
+      $.ajax({
+          type: "GET",
+          url: "../admin_views/end_semester_form.php",
+          datatype: "html",
+          success: function (response) {
+              $(".modal-container").html(response);
+              $("#endSemester").modal("show")
+
+              $("#form-end-semester").on("submit", function(e){
+                e.preventDefault(); 
+                endSemester();
+              });
+          }
+      });
+    }
+
+    function endSemester() {
+      $.ajax({
+        type: "POST",
+        url: "../admin_views/end_semester.php",
+        data: $("#form-end-semester").serialize(), // Serialize the form data
+        dataType: "json",
+        success: function (response) {
+          if (response.status == "error") {
+            // Display the error message in the invalid-feedback div
+            $("#sy_sem")
+              .addClass("is-invalid")
+              .siblings(".invalid-feedback")
+              .text(response.errors);
+              return;
+          }
+            $("#endSemester").modal("hide");
+            $("#form-end-semester")[0].reset();
+            viewDashboard();
+        }
+      });
+    }
+    
 
 
     function viewOrganization(){

@@ -69,8 +69,8 @@ class Facilitator {
                 INNER JOIN student ON payment.student_id = student.student_id
                 INNER JOIN course ON student.course_id = course.course_id
                 WHERE organization.organization_id = :organization_id
-                AND student.status = 'Enrolled'
                 AND collection_fees.start_date <= CURDATE()
+                AND payment.collection_status = 'Collecting'
                 ORDER BY student.last_name ASC";
     
         
@@ -231,8 +231,7 @@ class Facilitator {
                 INNER JOIN user ON student.student_id = user.user_id
                 LEFT JOIN facilitator ON user.user_id = facilitator.facilitator_id
                 LEFT JOIN organization ON facilitator.organization_id = organization.organization_id
-                WHERE student.status = 'Enrolled'
-                GROUP BY student.status, course.course_code
+                WHERE (student.status = 'Enrolled' || student.status = 'Unenrolled')
                 ORDER BY student.status, student.last_name, student.course_section, student.course_section ASC
                 ";
 

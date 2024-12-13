@@ -45,7 +45,7 @@ $payment_org = $paymentObj->paymentHistory($_SESSION['user']['user_id']);
                         <tr>
                             <td class="p-3"><?= $counter; ?></td>
                             <td class="p-3"><?= $ph['last_name'] . ', ' . $ph['first_name'] . ' ' . $ph['middle_name']; ?></td>
-                            <td class="p-3"><?= $ph['issued_by']; ?></td>
+                            <td class="p-3"><?= $ph['facilitator_id']; ?></td>
                             <td class="p-3"><?= $ph['amount_paid']; ?></td>
                             <td class="p-3"><?= $ph['date_issued']; ?></td>
                         </tr>

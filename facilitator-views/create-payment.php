@@ -61,7 +61,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
                     <div class="mx-2 text-black w-25">
                         <h6 class="form-label" style="margin: 0;">Fee to pay</h6>
                         <p>
-                            <?= $payments_details['amount_to_pay'];?>
+                            <?= $payments_details['balance'];?>
 
                         </p>
                     </div>

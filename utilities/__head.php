@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="../allcss/admin_home.css">
     <?php } else if($_SESSION['user']['is_facilitator'] == 1){ ?>
         <link rel="stylesheet" href="../allcss/facilitator_home.css">
+    <?php } else if ($_SESSION['user']['is_student'] == 1){ ?>
+        <link rel="stylesheet" href="../allcss/student.css">
     <?php } ?>
     <style>
 

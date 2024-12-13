@@ -106,7 +106,7 @@ $courses = $faciObj->viewCourse();
                                     ?>
                                 </td>
                                 <td class="p-2"><?= clean_input($student['payment_status']); ?></td>
-                                <td class="p-2 text-start"><?= clean_input($student['amount_to_pay']); ?></td>
+                                <td class="p-2 text-start"><?= clean_input($student['balance']); ?></td>
                                 <td class="p-2 text-nowrap" style="height: 8vh;">
                                     <?php if($student['payment_status'] == 'Unpaid'){ ?>
                                         <a data-id="<?= $student['payment_id'] ?>" class="btn btn-success create-payment">Create Payment</a>

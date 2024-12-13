@@ -128,7 +128,7 @@
             
             foreach($collection_fee as $org){
                 $sql_pending_balance = "UPDATE collection_fees SET pending_balance = pending_balance + :amount
-                WHERE collection_id = :collection_id AND label = 'required'";
+                WHERE collection_id = :collection_id AND label = 'Required'";
                 $query_pending_balance = $this->conn->prepare($sql_pending_balance);
     
                 $query_pending_balance->bindParam(":collection_id", $org['collection_id']);
@@ -136,12 +136,13 @@
     
                 $query_pending_balance->execute();
 
-                $sql_stud_org = "INSERT INTO payment(student_id, collection_id, semester, amount_to_pay) VALUES(:student_id, :collection_id, 'First Semester', :amount_to_pay);";
+                $sql_stud_org = "INSERT INTO payment(student_id, collection_id, semester, amount_to_pay, balance) VALUES(:student_id, :collection_id, 'First Semester', :amount_to_pay, :balance);";
                 $query_stud_org = $this->conn->prepare($sql_stud_org);
                 
                 $query_stud_org->bindParam(':student_id', $user_id);
                 $query_stud_org->bindParam(':collection_id', $org['collection_id']);
                 $query_stud_org->bindParam(':amount_to_pay', $org['amount']);
+                $query_stud_org->bindParam(':balance', $org['balance']);
         
                 $query_stud_org->execute();
             }

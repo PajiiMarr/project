@@ -1,54 +1,37 @@
-(function(){$(document).ready(function () {
-      $("#facilitator-dashboard-link").on("click", function(e){
-        e.preventDefault();
-        request_uri(this.dataset.id)
-      });
-      $("#facilitator-student-link").on("click", function(e){
-        e.preventDefault();
-        request_uri(this.dataset.id)
-      });
-      $("#facilitator-assign-officer").on("click", function(e){
-        e.preventDefault();
-        request_uri(this.dataset.id)
-      });
-      $("#facilitator-payment-link").on("click", function(e){
-        e.preventDefault();
-        request_uri(this.dataset.id)
-      });
-      $("#facilitator-organization-link").on("click", function(e){
-        e.preventDefault();
-        request_uri(this.dataset.id);
-      });
-      $("#facilitator-request-link").on("click", function(e){
-        e.preventDefault();
-        request_uri(this.dataset.id)
-      });
-      $("#request-payment").on("click", function(e){
-        e.preventDefault();
-        request_uri(this.dataset.id)
-      });
+(function () {
+  $(document).ready(function () {
+    let url = window.location.href;
 
-      $("#student-dashboard-link").on("click", function(e){
-        e.preventDefault();
-      });
-      $("#student-payment-link").on("click", function(e){
-        e.preventDefault();
-        request_uri(this.dataset.id)
-      });
-      $("#student-organization-link").on("click", function(e){
-        e.preventDefault();
-        request_uri(this.dataset.id)
-      });
-      
+    const handleLinkClick = function (e) {
+      e.preventDefault();
+      const request = this.dataset.id;
+      requestUri(request, url);
+    };
 
-      function request_uri(request){
-        $.ajax({
-            type: 'GET',
-            url: `../utilities/__scripts.php?request_uri=${request}`,
-            datatype: 'html',
-            success: function(response){
-                console.log(response)
-            }
-        });
-      }
-  });})()
+    $("#facilitator-dashboard-link").on("click", handleLinkClick);
+    $("#facilitator-student-link").on("click", handleLinkClick);
+    $("#facilitator-assign-officer").on("click", handleLinkClick);
+    $("#facilitator-payment-link").on("click", handleLinkClick);
+    $("#facilitator-organization-link").on("click", handleLinkClick);
+    $("#facilitator-request-link").on("click", handleLinkClick);
+    $("#request-payment").on("click", handleLinkClick);
+    $("#student-dashboard-link").on("click", handleLinkClick);
+    $("#student-payment-link").on("click", handleLinkClick);
+    $("#student-organization-link").on("click", handleLinkClick);
+
+    function requestUri(request, url) {
+      $.ajax({
+        type: 'POST', // Use POST method
+        url: `../users/${url}`, // Dynamic URL
+        data: { request_uri: request }, // Pass data dynamically
+        datatype: 'html',
+        success: function (response) {
+          console.log(response);
+        },
+        error: function (xhr, status, error) {
+          console.error("Request failed:", error);
+        }
+      });
+    }
+  });
+})();

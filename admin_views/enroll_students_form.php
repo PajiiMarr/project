@@ -16,7 +16,7 @@ $password = "temp_2020";
         <form method="POST" id="form-enroll-student">
             <div class="modal-body">
                 <div class="mb-2">
-                    <label for="code" class="form-label">email</label>
+                    <label for="code" class="form-label">Email</label>
                     <input type="email" class="form-control" id="email" name="email">
                     <div class="invalid-feedback"></div>
                 </div>

@@ -88,7 +88,7 @@ if($_SESSION['user']['is_admin'] == 1){
 
                     <?php if($facilitator['is_collector'] == 0){ ?>
                     <li class="header-list w-100 h-25 px-2 li-unselected li-student">
-                        <a href="assign.php" id="facilitator-assign-officer data-id="<?= $_SERVER['REQUEST_URI'] ?>"" class="anchor-tag student-anchor d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none crimson px-3">
+                        <a href="assign.php" id="facilitator-assign-officer" data-id="<?= $_SERVER['REQUEST_URI'] ?>"" class="anchor-tag student-anchor d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none crimson px-3">
                             <i class="fas fa-user-tie w-25 mt-1 fs-4"></i>
                             <p class="w-75 fs-5 pt-3">Assign Officer</p>
                         </a>

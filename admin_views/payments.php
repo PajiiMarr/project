@@ -69,7 +69,7 @@ $paymentHist = $objAdmin->paymentHistory();
                                 <tr>
                                     <td><?= $counter; ?></td>
                                     <td><?= $ph['last_name'] . ', ' . $ph['first_name'] . ' ' . $ph['middle_name']; ?></td>
-                                    <td><?= $ph['issued_by']?></td>
+                                    <td><?= $ph['facilitator_id']?></td>
                                     <td><?= $ph['org_name']?></td>
                                     <td class="text-start"><?= $ph['amount_paid']?></td>
                                     <td><?= $date->format('d F Y H:i:s')?></td>
