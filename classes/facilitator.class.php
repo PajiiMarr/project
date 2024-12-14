@@ -366,4 +366,15 @@ class Facilitator {
 
         $query->execute();
     }
+
+    function see_promisory($payment_id){
+        $sql = "SELECT * FROM payment WHERE payment_id = :payment_id";
+        $query = $this->conn->prepare($sql);
+
+        $query->bindParam(":payment_id", $payment_id);
+
+        $query->execute();
+
+        return $query->fetch();
+    }
 }

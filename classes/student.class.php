@@ -50,7 +50,7 @@ class Student {
         INNER JOIN collection_fees ON payment.collection_id = collection_fees.collection_id
         INNER JOIN organization ON collection_fees.organization_id = organization.organization_id
         INNER JOIN student ON payment.student_id = student.student_id
-        WHERE student.student_id = :student_id";
+        WHERE student.student_id = :student_id AND payment.collection_status = 'Collecting'";
         $query = $this->conn->prepare($sql);
 
         $query->bindParam(":student_id", $user_id);
@@ -58,7 +58,6 @@ class Student {
         $query->execute();
         return $query->fetchAll();
     }
-    
 
 
     function amount_paid($user_id, $sy_sem){
@@ -91,6 +90,30 @@ class Student {
         $query->execute();
 
         return $query->fetchAll();
+    }
+
+    function get_payment($payment_id){
+        $sql = "SELECT payment.*, organization.* FROM payment
+        INNER JOIN collection_id ON collection_fees.collection_id = payment.collection_id
+        INNER JOIN organization ON collection_fees.organization_id = organization.organization_id
+         WHERE payment_id = :payment_id";
+        $query = $this->conn->prepare($sql);
+
+        $query->bindParam(":payment_id", $payment_id);
+
+        $query->execute();
+
+        return $query->fetch();
+    }
+
+    function insert_promisory_note($payment_id, $note){
+        $sql = "UPDATE payment SET note = :note WHERE payment_id = :payment_id";
+        $query = $this->conn->prepare($sql);
+
+        $query->bindParam(":note", $note);
+        $query->bindParam(":payment_id", $payment_id);
+
+        $query->execute();
     }
 
 }

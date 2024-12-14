@@ -20,7 +20,7 @@
                     <i class="fa-regular fa-circle-user fs-4 crimson"></i>
                 </a>
                 <ul class="dropdown-menu text-small">
-                    <li><a class="dropdown-item" href="<?= isset($_SESSION['user']['is_facilitator']) || isset($_SESSION['user']['is_facilitator']) ? '../log_out.php' : '../admin/admin_logout.php'; ?>">Sign out</a></li>
+                    <li><a class="dropdown-item" href="">Sign out</a></li>
                 </ul>
             </div>
         </div>

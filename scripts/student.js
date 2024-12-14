@@ -48,9 +48,64 @@ $(document).ready(function () {
             datatype: "html",
             success: function (response) {
                 $(".content-page").html(response);
+                $('.promisory').on("click", function(e){
+                  e.preventDefault();
+                  requestPromisory(this.dataset.id);
+                });
             }
         });
     }
+
+    function requestPromisory(userId){
+        $.ajax({
+            type: "GET",
+            url: `../student_views/promisory_note_form.php?payment_id=${userId}`,
+            datatype: "html",
+            success: function (response) {
+                $(".modal-container").empty().html(response);
+                $("#promisoryNote").modal("show");
+                
+                $("#form-promisory-note").on("submit", function(e){
+                  e.preventDefault();
+                  promisoryNote();
+                });
+
+                $(".button-close").on("click", function(e){
+                  e.preventDefault();
+                  $("#promisoryNote").modal("hide");
+                })
+            }
+        });
+    }
+
+    function promisoryNote() {
+      $.ajax({
+        type: "POST", // Use POST request
+        url: "../student_views/promisory_note.php", // URL for saving organization
+        data: $("#form-promisory-note").serialize(), // Serialize the form data for submission
+        dataType: "json", // Expect JSON response
+        success: function (response) {
+          if (response.status === "error") {
+            if (response.errors) {
+              $("#note").addClass("is-invalid"); // Add invalid class
+              $("#note").siblings(".invalid-feedback") // Correctly reference invalid-feedback
+                .text(response.errors)
+                .show(); // Show error message
+            }
+          }
+
+          if(response.status == 'success'){
+            $("#promisoryNote").modal("hide");
+            $("#form-promisory-note")[0].reset();
+            viewOrganization();
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error("AJAX error:", status, error);
+        },
+      });
+    }
+
 
     function viewDashboard(sy_sem = null) {
       $.ajax({

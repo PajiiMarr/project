@@ -73,9 +73,6 @@
     } else if (url.endsWith("student/payments.php")) {
       $("#student-payment-link").trigger("click"); // Trigger the products click event
     }
-     else {
-      $("#facilitator-dashboard-link").trigger("click");
-    }
 
     function requests(){
       $.ajax({
@@ -329,7 +326,6 @@
 
           $(".create-payment").on("click", function(e) {
             e.preventDefault();
-            console.log("clicked")
             createPayment(this.dataset.id);
           });
 
@@ -338,6 +334,25 @@
             e.preventDefault();
             resignOrganizationHead(this.dataset.id);
           });
+
+
+
+          $(".please_pop").on("click", function(e){
+            e.preventDefault();
+            seeMore(this.dataset.id);
+          });
+        }
+      });
+    }
+
+    function seeMore(paymentId) {
+      $.ajax({
+        type: "GET",
+        url: `../facilitator-views/note_see_more.php?payment_id=${paymentId}`,
+        datatype: "html",
+        success: function (response){
+          $(".modal-container").empty().html(response);
+          $("#seeMore").modal('show');
         }
       });
     }
@@ -373,6 +388,8 @@
       });
     }
 
+    
+
     function assignOfficer(studentId) {
       $.ajax({
         type: "GET",
@@ -390,22 +407,7 @@
       });
     }
 
-    function assignOfficer(studentId) {
-      $.ajax({
-        type: "GET",
-        url: `../facilitator-views/assign_officer_form.php?student_id=${studentId}`,
-        datatype: "html",
-        success: function (response){
-          $(".modal-container").empty().html(response);
-          $("#assignOfficer").modal('show');
-
-          $("#form-assign-officer").on("submit", function(e){
-            e.preventDefault(e);
-            saveOfficer();
-          });
-        }
-      });
-    }
+    
 
     function saveOfficer() {
       $.ajax({
@@ -460,6 +462,9 @@
         }
       });
     }
+
+
+
 
     function createPayment(paymentId) {
       $.ajax({

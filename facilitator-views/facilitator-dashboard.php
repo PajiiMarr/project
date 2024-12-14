@@ -11,8 +11,6 @@
     $total_collected = $objFaci->total_collection($faci_details['organization_id']);
     $recent_payments = $objFaci->recentPayments($faci_details['organization_id']);
     $students_enrolled = $objFaci->students_enrolled();
-
-    var_dump($_POST['request_uri']);
     ?>
     <div class="modal-container"></div>
     <div class="h-18 w-100 border-bottom">
@@ -24,7 +22,7 @@
                 </a>
                 <ul class="dropdown-menu text-small">
                     
-                    <li><a class="dropdown-item" href="<?= isset($_SESSION['user']['is_facilitator']) || isset($_SESSION['user']['is_facilitator']) ? '../log_out.php' : '../admin/admin_logout.php'; ?>">Sign out</a></li>
+                    <li><a class="dropdown-item" href="">Sign out</a></li>
                 </ul>
             </div>
         </div>
